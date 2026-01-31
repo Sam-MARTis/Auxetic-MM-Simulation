@@ -13,16 +13,61 @@ class Vector:
         return self.x * other.x + self.y * other.y
     def magnitude(self) -> float:
         return (self.x ** 2 + self.y ** 2) ** 0.5
+    def __sub__(self, other: 'Vector') -> 'Vector':
+        return Vector(self.x - other.x, self.y - other.y)
+    def __truediv__(self, scalar: float) -> 'Vector':
+        a = 1/scalar
+        return Vector(self.x * a, self.y * a)
+    def __mul__(self, scalar: float) -> 'Vector':
+        return Vector(self.x * scalar, self.y * scalar)
+    def make_pygame_vector(self) -> pygame.Vector2:
+        return pygame.Vector2(self.x, self.y)
 
 def world_to_screen(position: Vector, world_size:float, magnification:float) -> Vector:
     return Vector((position.x+world_size/2)*magnification, (-(position.y)+world_size/2)*magnification)
 
 
 class Node:
-    def __init__(self, position: Vector):
+    def __init__(self, mass: float, position: Vector, velocity: Vector):
         self.connections = []
         self.position = position
+        self.velocity = velocity
+        self.mass = mass
+        if mass==0:
+            raise ValueError("Mass cannot be zero")
+        self.mass_inv = 1.0 / mass
     def render(self, screen: pygame.Surface, radius: float, colour: tuple):
         screen_position = world_to_screen(self.position, WORLD_SIZE, MAGNIFICATION)
         pygame.draw.circle(screen, colour, (int(screen_position.x), int(screen_position.y)), radius)
+    def step(self, dt: float):
+        self.position.x += self.velocity.x * dt
+        self.position.y += self.velocity.y * dt
+    def apply_force(self, force:Vector, dt:float):
+        impulse =  force * (dt * self.mass_inv)
+        self.velocity.x += impulse.x
+        self.velocity.y += impulse.y
+        self.velocity.x -= self.velocity.x * dt*VISCOCITY
+        self.velocity.y -= self.velocity.y * dt*VISCOCITY
 
+class Edge:
+    def __init__(self, k: float, l0: float, node_a: Node, node_b: Node):
+        self.k = k
+        self.l0 = l0
+        self.node_a = node_a
+        self.node_b = node_b
+
+    def attach_nodes(self):
+        self.node_a.connections.append(self)
+        self.node_b.connections.append(self)
+    def update_l0(self, l0):
+        self.l0 = l0
+    def step(self, dt:float):
+        r_vec = (self.node_a.position - self.node_b.position)
+        l = r_vec.magnitude()
+
+        force_magnitude = -self.k * (l - self.l0)
+        force_direction = r_vec / l if l != 0 else ValueError("Zero length vector in edge step")
+        self.node_a.apply_force(force=force_direction * force_magnitude, dt=dt)
+        self.node_b.apply_force(force= force_direction * force_magnitude * -1, dt=dt)
+    def render(self, screen: pygame.Surface):
+        pygame.draw.line(surface=screen, color=(255, 255, 255), start_pos=world_to_screen(self.node_a.position, WORLD_SIZE, MAGNIFICATION).make_pygame_vector(), end_pos=world_to_screen(self.node_b.position, WORLD_SIZE, MAGNIFICATION).make_pygame_vector(), width=1)
