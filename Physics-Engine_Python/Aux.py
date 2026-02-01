@@ -14,6 +14,11 @@ def initialize_nodes(node_count) -> list[Node]:
         nodes.append(Node(mass=NODE_MASS, position=Vector(x, y), velocity=Vector(vx, vy)))
     return nodes
 
+def edge_already_exists(node_a: Node, node_b: Node) -> bool:
+    node_a_edges = [edge.id for edge in node_a.edges]
+    node_b_edges = [edge.id for edge in node_b.edges]
+    return any(edge in node_b_edges for edge in node_a_edges)
+
 def initialize_edges(count, nodes: List[Node]) -> List[Edge]:
     edges: List[Edge] = []
     for i in range(count):
@@ -21,8 +26,9 @@ def initialize_edges(count, nodes: List[Node]) -> List[Edge]:
         node_b = nodes[np.random.randint(len(nodes))]
         if node_a == node_b:
             continue
-        edge = Edge(k=100.0, l0=0.8, node_a=node_a, node_b=node_b)
-        edge.attach_nodes()
+        if edge_already_exists(node_a, node_b):
+            continue
+        edge = Edge(k=100.0, l0=0.8, node_a=node_a, node_b=node_b, attach=True)
         edges.append(edge)
     return edges
 
