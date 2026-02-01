@@ -1,7 +1,7 @@
 import pygame
-from Objects import Vector, Node
+from Objects import *
 from constants import *
-from Aux import initialize_edges_distance_based, initialize_nodes, step_nodes, apply_edge_forces, apply_gravity
+from Aux import *
 
 
 
@@ -25,12 +25,12 @@ if __name__ == "__main__":
             step_nodes(nodes, substeps_dt)
             apply_edge_forces(edges, dt=substeps_dt)
             apply_gravity(nodes, dt=substeps_dt)
-
+        
         screen.fill((0, 0, 0))
-        for node in nodes:
-            node.render(screen=screen, radius=NODE_RADIUS, colour=NODE_COLOUR)
-        for edge in edges:
-            edge.render(screen=screen)
+
+        all_edges_intersection_check(edges)
+        render_everything(nodes, edges, screen)
+
         pygame.display.flip()
 
     pygame.quit()

@@ -86,11 +86,17 @@ class Edge:
         if attach:
             self.node_a.attach_edge(self)
             self.node_b.attach_edge(self)
+        self.m = 0
+        self.c = 0
+        self.is_intersecting = False
 
     def activate_edge(self, nodea, nodeb):
         self.node_a.attach_edge(self)
         self.node_b.attach_edge(self)
-
+    def update_line_properties(self):
+        dx = self.node_a.position.x - self.node_b.position.x
+        self.m = (self.node_a.position.y - self.node_b.position.y) / dx if dx != 0 else float('inf')
+        self.c = self.node_a.position.y - self.m * self.node_a.position.x
     def update_l0(self, l0):
         self.l0 = l0
     def step(self, dt:float):
@@ -101,5 +107,6 @@ class Edge:
         force_direction = r_vec / l if l != 0 else ValueError("Zero length vector in edge step")
         self.node_a.apply_force(force=force_direction * force_magnitude, dt=dt)
         self.node_b.apply_force(force= force_direction * force_magnitude * -1, dt=dt)
-    def render(self, screen: pygame.Surface):
-        pygame.draw.line(surface=screen, color=(255, 255, 255), start_pos=world_to_screen(self.node_a.position, WORLD_SIZE, MAGNIFICATION).make_pygame_vector(), end_pos=world_to_screen(self.node_b.position, WORLD_SIZE, MAGNIFICATION).make_pygame_vector(), width=1)
+    def render(self, screen: pygame.Surface, colour: tuple, width: int):
+        pygame.draw.line(surface=screen, color=colour, start_pos=world_to_screen(self.node_a.position, WORLD_SIZE, MAGNIFICATION).make_pygame_vector(), end_pos=world_to_screen(self.node_b.position, WORLD_SIZE, MAGNIFICATION).make_pygame_vector(), width=width)
+
