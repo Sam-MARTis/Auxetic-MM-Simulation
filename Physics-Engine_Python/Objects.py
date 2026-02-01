@@ -58,6 +58,12 @@ class Node:
     def step(self, dt: float):
         self.position.x += self.velocity.x * dt
         self.position.y += self.velocity.y * dt
+        if abs(self.position.x) > BOUNDARY_X_P:
+            self.position.x = max(min(self.position.x, BOUNDARY_X_P), BOUNDARY_X_N)
+            self.velocity.x = 0
+        if abs(self.position.y) > BOUNDARY_Y_P:
+            self.position.y = max(min(self.position.y, BOUNDARY_Y_P), BOUNDARY_Y_N)
+            self.velocity.y = 0
     def apply_force(self, force:Vector, dt:float):
         impulse =  force * (dt * self.mass_inv)
         self.velocity.x += impulse.x

@@ -20,9 +20,11 @@ if __name__ == "__main__":
                 running = False
 
         delta_time = clock.tick(60) / 1000  # seconds passed since last frame
-        step_nodes(nodes, delta_time)
-        apply_edge_forces(edges, dt=delta_time)
-        apply_gravity(nodes, dt=delta_time)
+        substeps_dt = delta_time / SUBSTEPS
+        for _ in range(SUBSTEPS):
+            step_nodes(nodes, substeps_dt)
+            apply_edge_forces(edges, dt=substeps_dt)
+            apply_gravity(nodes, dt=substeps_dt)
 
         screen.fill((0, 0, 0))
         for node in nodes:
