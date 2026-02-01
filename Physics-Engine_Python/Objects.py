@@ -28,11 +28,16 @@ def world_to_screen(position: Vector, world_size:float, magnification:float) -> 
 
 
 class Node:
+    _count = 0
+    
     def __init__(self, mass: float, position: Vector, velocity: Vector):
+        self.id = Node._count
+        Node._count += 1
         self.connections = []
         self.position = position
         self.velocity = velocity
         self.mass = mass
+        self.edges: list[Edge] = []
         if mass==0:
             raise ValueError("Mass cannot be zero")
         self.mass_inv = 1.0 / mass
@@ -48,17 +53,27 @@ class Node:
         self.velocity.y += impulse.y
         self.velocity.x -= self.velocity.x * dt*VISCOCITY
         self.velocity.y -= self.velocity.y * dt*VISCOCITY
+    def attach_edge(self, edge: 'Edge'):
+        self.edges.append(edge)
+        return self
 
 class Edge:
-    def __init__(self, k: float, l0: float, node_a: Node, node_b: Node):
+    _count = 0
+    def __init__(self, k: float, l0: float, node_a: Node, node_b: Node, attach:bool):
         self.k = k
         self.l0 = l0
         self.node_a = node_a
         self.node_b = node_b
+        self.id = Edge._count
+        Edge._count += 1
+        if attach:
+            self.node_a.attach_edge(self)
+            self.node_b.attach_edge(self)
 
-    def attach_nodes(self):
-        self.node_a.connections.append(self)
-        self.node_b.connections.append(self)
+    def activate_edge(self, nodea, nodeb):
+        self.node_a.attach_edge(self)
+        self.node_b.attach_edge(self)
+
     def update_l0(self, l0):
         self.l0 = l0
     def step(self, dt:float):
