@@ -51,3 +51,7 @@ def step_nodes(nodes: List[Node], dt: float):
 def apply_edge_forces(edges: List[Edge], dt: float):
 	for edge in edges:
 		edge.step(dt)
+
+def apply_gravity(nodes: List[Node], dt: float):
+	for node in nodes:
+		node.apply_force(Vector(0, -GRAVITY * node.mass), dt)
