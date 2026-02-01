@@ -1,16 +1,16 @@
 import pygame
 from Objects import Vector, Node
 from constants import *
-from Aux import initialize_edges, initialize_nodes, step_nodes, apply_edge_forces
+from Aux import initialize_edges_distance_based, initialize_nodes, step_nodes, apply_edge_forces
 
 
 
 if __name__ == "__main__":
     pygame.init()
     screen = pygame.display.set_mode((screen_size, screen_size))
-
-    nodes = initialize_nodes(100)
-    edges = initialize_edges(1000, nodes)
+    
+    nodes = initialize_nodes(NODE_COUNT)
+    edges = initialize_edges_distance_based(NODE_COUNT, nodes)
     running = True
     clock = pygame.time.Clock()
     delta_time = 0
