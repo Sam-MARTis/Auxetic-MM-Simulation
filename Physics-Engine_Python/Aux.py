@@ -4,12 +4,12 @@ from constants import *
 import numpy as np
 import pygame
 
-
+np.random.seed(42)
 
 def initialize_nodes(node_count) -> list[Node]:
     nodes: list[Node] = []
-    x_values = np.random.uniform(-WORLD_SIZE/4, WORLD_SIZE/4, int(node_count))
-    y_values = np.random.uniform(-WORLD_SIZE/4, WORLD_SIZE/4, int(node_count))
+    x_values = np.random.uniform(-WORLD_SIZE/DENSITY_FACTOR, WORLD_SIZE/DENSITY_FACTOR, int(node_count))
+    y_values = np.random.uniform(-WORLD_SIZE/DENSITY_FACTOR, WORLD_SIZE/DENSITY_FACTOR, int(node_count))
     vx_values = np.random.uniform(-STARTING_VEL, STARTING_VEL, int(node_count))
     vy_values = np.random.uniform(-STARTING_VEL, STARTING_VEL, int(node_count))
     for x, y, vx, vy in zip(x_values, y_values, vx_values, vy_values):
@@ -43,7 +43,7 @@ def initialize_edges_distance_based(count, nodes: List[Node]) -> List[Edge]:
             node_b = nodes[j]
             distance_sq = Helper.find_dist_sq_between_nodes(node_a, node_b)
             if distance_sq < LINK_DISTANCE ** 2:
-                edge = Edge(k=100.0, l0=(distance_sq**0.5), node_a=node_a, node_b=node_b, attach=True)
+                edge = Edge(k=LINK_STRENGTH, l0=(distance_sq**0.5)*1.1, node_a=node_a, node_b=node_b, attach=True)
                 edges.append(edge)
     return edges
 
@@ -62,19 +62,33 @@ def is_intersecting(edge_a: Edge, edge_b: Edge) -> bool:
     # print(hit)
     return hit
 
+
+
+
 def all_edges_intersection_check(edges: List[Edge]):
     update_edges_coordinate_properties(edges)
     num_edges = len(edges)
     for i in range(num_edges):
+        e1 = edges[i]
         for j in range(i + 1, num_edges):
-            e1 = edges[i]
             e2 = edges[j]
             if is_intersecting(e1, e2):
                 e1.is_intersecting = True
                 e2.is_intersecting = True
-            # else:
-            #     e1.is_intersecting = False
-            #     e2.is_intersecting = False
+                
+
+def delete_intersecting_edges(edges: List[Edge]):
+    update_edges_coordinate_properties(edges)
+    new_edges:List[Edge] = []
+    num_edges = len(edges)
+    for i in range(num_edges):
+        e1 = edges[i]
+        for j in range(i + 1, num_edges):
+            e2 = edges[j]
+            if is_intersecting(e1, e2):
+                new_edges.append(e1)
+                break
+    return new_edges
 
 def step_nodes(nodes: List[Node], dt: float):
 	for node in nodes:
@@ -83,9 +97,9 @@ def apply_edge_forces(edges: List[Edge], dt: float):
 	for edge in edges:
 		edge.step(dt)
 
-def apply_gravity(nodes: List[Node], dt: float):
+def apply_gravity(nodes: List[Node], dt: float, gravity: float):
 	for node in nodes:
-		node.apply_force(Vector(0, -GRAVITY * node.mass), dt)
+		node.apply_force(Vector(0, -gravity * node.mass), dt)
 
 
 
