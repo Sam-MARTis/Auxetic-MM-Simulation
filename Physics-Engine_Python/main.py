@@ -5,8 +5,7 @@ from Aux import *
 
 
 
-def do_animation(solid: Solid):
-    
+def do_animation(solid: Solid, dxf_edges: list[Edge]):
     pygame.init()
     gravity = GRAVITY
     hold = True
@@ -80,7 +79,7 @@ def do_animation(solid: Solid):
         
         screen.fill((0, 0, 0))
 
-        render_solid(solid, screen)
+        render_solid(solid=solid, dxf_edges=dxf_edges, screen=screen)
 
         pygame.display.flip()
 
@@ -92,14 +91,26 @@ if __name__ == "__main__":
     center = True
     size = WORLD_SIZE/2
     bounds, lines_vec, hinge_points = get_bounds_and_lines_and_hinge_points(filename="/home/odin/Academic/Research/Metamaterials/Auxetic Mechanical MM/Bistable/Computational Exploration/Modules/mm_pattern_01.dxf", min_distance=min_distance, max_distance=max_distance, center=center, size=size)
-    # nodes = initialize_nodes(NODE_COUNT)
+    dxf_edges:list[Edge] = []
+    for line in lines_vec:
+        a = line[0]
+        b = line[1]
+        print(f"Line from {a} to {b}")
+        node_a = Node(mass=NODE_MASS, position=Vector(a.x, a.y), velocity=Vector(0, 0))
+        node_b = Node(mass=NODE_MASS, position=Vector(b.x, b.y), velocity=Vector(0, 0))
+        edge = Edge(k=LINK_STRENGTH, l0=(b - a).magnitude(), node_a=node_a, node_b=node_b, attach=True)
+        dxf_edges.append(edge)
+        print(node_b.position)
     hinge_point_nodes = [Node(mass=NODE_MASS, position=hp, velocity=Vector(0, 0)) for hp in hinge_points]
-    nodes = initialize_nodes_uniform(bounds=bounds, node_count_x=int(np.sqrt(NODE_COUNT)), node_count_y=int(np.sqrt(NODE_COUNT)))
+    nodes = initialize_nodes_uniform_with_noise(bounds=bounds, node_count_x=int(np.sqrt(NODE_COUNT)), node_count_y=int(np.sqrt(NODE_COUNT)))
     nodes.extend(hinge_point_nodes)
     solid = Solid(nodes=nodes)
+    
     solid.initialize_edges_distance_based(distance_threshold=LINK_DISTANCE)
+
+    solid.remove_intersecting_edges(dxf_edges)
+    solid.remove_intersecting_edges(dxf_edges)
     
-    
-    do_animation(solid)
+    do_animation(solid, dxf_edges=dxf_edges)
     
 

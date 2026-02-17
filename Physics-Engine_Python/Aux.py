@@ -20,13 +20,26 @@ def initialize_nodes(node_count) -> list[Node]:
 def initialize_nodes_uniform(bounds: Tuple[float, float, float, float], node_count_x: int, node_count_y: int) -> list[Node]:
     nodes: list[Node] = []
     x_min, x_max, y_min, y_max = bounds
-    x_values = np.linspace(x_min, x_max, node_count_x)
-    y_values = np.linspace(y_min, y_max, node_count_y)
+    x_values = np.linspace(x_min+EPSILON_BIG, x_max - EPSILON_BIG, node_count_x)
+    y_values = np.linspace(y_min+EPSILON_BIG, y_max - EPSILON_BIG, node_count_y)
     for x in x_values:
         for y in y_values:
             nodes.append(Node(mass=NODE_MASS, position=Vector(x, y), velocity=Vector(0, 0)))
     return nodes
+def initialize_nodes_uniform_with_noise(bounds: Tuple[float, float, float, float], node_count_x: int, node_count_y: int) -> list[Node]:
+    nodes: list[Node] = []
+    x_min, x_max, y_min, y_max = bounds
+    x_values = np.linspace(x_min+EPSILON_BIG, x_max - EPSILON_BIG, node_count_x)
+    y_values = np.linspace(y_min+EPSILON_BIG, y_max - EPSILON_BIG, node_count_y)
+    for i in range(1, len(x_values)-1):
+        for j in range(1, len(y_values)-1):
+            x_values[i] += np.random.uniform(-NOISE, NOISE)
+            y_values[j] += np.random.uniform(-NOISE, NOISE)
 
+    for x in x_values:
+        for y in y_values:
+            nodes.append(Node(mass=NODE_MASS, position=Vector(x, y), velocity=Vector(0, 0)))
+    return nodes
 def edge_already_exists(node_a: Node, node_b: Node) -> bool:
     node_a_edges = [edge.id for edge in node_a.edges]
     node_b_edges = [edge.id for edge in node_b.edges]
@@ -105,13 +118,15 @@ def delete_intersecting_edges(edges: List[Edge]):
 
 
 
-def render_solid(solid: Solid, screen: pygame.Surface):
+def render_solid(solid: Solid,  dxf_edges: list[Edge], screen: pygame.Surface):
     for edge in solid.edges:
         edge.render(screen=screen, colour=EDGE_COLOUR_SELECTED if edge.is_intersecting else EDGE_COLOUR, width=EDGE_WIDTH)
         edge.is_intersecting = False
     for node in solid.nodes:
         node.render(screen=screen, radius=NODE_RADIUS, colour=NODE_COLOUR)
-        
+    if RENDER_DXF:
+        for edge in dxf_edges:
+            edge.render(screen=screen, colour=EDGE_COLOUR_SELECTED, width=EDGE_WIDTH)
 
 def nearest_points_on_line_segments(a0: Vector, a1: Vector, b0: Vector, b1: Vector):
     r = b0 - a0
@@ -151,7 +166,7 @@ def load_dxf_file(file_path: str):
 # hinge_points = []
 def get_bounds_and_lines_and_hinge_points(filename:str, min_distance:float, max_distance:float, center:bool, size:float):
     msp, doc = load_dxf_file(filename)
-    lines_vec:list[Vector] = []
+    lines_vec:list[Tuple[Vector, Vector]] = []
     lines = []
     hinge_points:list[Vector] = []
 

@@ -125,15 +125,49 @@ class Edge:
         self.node_a = None
         self.node_b = None
         self.active = False
-def _step_node(node_dt):
-    node, dt = node_dt
-    node.step(dt)
-    return node
 
-def _step_edge(edge_dt):
-    edge, dt = edge_dt
-    edge.step(dt)
-    return edge
+
+def is_intersecting(edge_a: Edge, edge_b: Edge) -> bool:
+    dm = edge_a.m - edge_b.m
+    x_meet = (edge_b.c - edge_a.c) / dm if dm != 0 else float('inf')
+    y_meet = edge_a.m * x_meet + edge_a.c
+    hit = True
+    hit_a = x_meet <( max(edge_a.node_a.position.x, edge_a.node_b.position.x)-EPSILON) and (x_meet > min(edge_a.node_a.position.x, edge_a.node_b.position.x)+EPSILON)
+    hit_b = x_meet <( max(edge_b.node_a.position.x, edge_b.node_b.position.x)-EPSILON) and (x_meet > min(edge_b.node_a.position.x, edge_b.node_b.position.x)+EPSILON)
+    hit = hit_a and hit_b
+    # print(hit)
+    return hit
+
+
+def nearest_points_on_line_segments(a0: Vector, a1: Vector, b0: Vector, b1: Vector):
+    r = b0 - a0
+    u = a1 - a0
+    v = b1 - b0
+
+    ru = r.dot(u)
+    rv = r.dot(v)
+    uu = u.dot(u)
+    uv = u.dot(v)
+    vv = v.dot(v)
+
+    det = uu * vv - uv * uv
+    s, t = 0, 0
+
+    if det < 1e-6 * uu * vv:
+        s = max(0, min(1, ru / uu))
+        t = 0
+    else:
+        s = max(0, min(1, (ru * vv - rv * uv) / det))
+        t = max(0, min(1, (ru * uv - rv * uu) / det))
+
+    S = max(0, min(1, (t * uv + ru) / uu))
+    T = max(0, min(1, (s * uv - rv) / vv))
+
+    A:Vector = a0 + u * S
+    B:Vector = b0 + v * T
+    return A, B, (B - A).magnitude()
+
+
 class Solid:
     def __init__(self, nodes: List[Node]):
         self.nodes = nodes
@@ -158,26 +192,39 @@ class Solid:
                 node_b = self.nodes[j]
                 distance_sq = Helper.find_dist_sq_between_nodes(node_a, node_b)
                 if distance_sq < distance_threshold ** 2:
-                    edge = Edge(k=LINK_STRENGTH, l0=(distance_sq**0.5)*1.1, node_a=node_a, node_b=node_b, attach=True)
+                    edge = Edge(k=LINK_STRENGTH, l0=(distance_sq**0.5)*1.0, node_a=node_a, node_b=node_b, attach=True)
                     self.add_edge(edge)
         return self.edges
+
+    def remove_intersecting_edges(self, edges_external: list[Edge]):
+        # for edge in self.edges:
+        #     edge.update_line_properties()
+        # for external_edge in edges_external:
+        #     external_edge.update_line_properties()
+        remove_indices = [False] * len(self.edges)
+        for i, edge in enumerate(self.edges):
+            for external_edge in edges_external:
+                _, _, dist = nearest_points_on_line_segments(edge.node_a.position, edge.node_b.position, external_edge.node_a.position, external_edge.node_b.position)
+                if dist < EPSILON:
+                    # self.delete_edge(edge)
+                    remove_indices[i] = True
+                    break
+
+        for i in reversed(range(len(remove_indices))):
+            if remove_indices[i]:
+                self.delete_edge(self.edges[i])
 
     def delete_edge(self, edge: Edge):
         edge.delete_edge()
         self.edges.remove(edge)
         
         
-    def step_nodes(self, dt):
-        self.nodes = self.pool.starmap(
-            _step_node,
-            [(node, dt) for node in self.nodes]
-        )
-
-    def apply_edge_forces(self, dt):
-        self.edges = self.pool.starmap(
-            _step_edge,
-            [(edge, dt) for edge in self.edges]
-        )
+    def step_nodes(self, dt: float):
+        for node in self.nodes:
+            node.step(dt)
+    def apply_edge_forces(self, dt: float):
+        for edge in self.edges:
+            edge.step(dt)
 
     def apply_gravity(self, dt: float, gravity: float):
         for node in self.nodes:
