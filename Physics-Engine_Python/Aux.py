@@ -17,6 +17,16 @@ def initialize_nodes(node_count) -> list[Node]:
         nodes.append(Node(mass=NODE_MASS, position=Vector(x, y), velocity=Vector(vx, vy)))
     return nodes
 
+def initialize_nodes_uniform(bounds: Tuple[float, float, float, float], node_count_x: int, node_count_y: int) -> list[Node]:
+    nodes: list[Node] = []
+    x_min, x_max, y_min, y_max = bounds
+    x_values = np.linspace(x_min, x_max, node_count_x)
+    y_values = np.linspace(y_min, y_max, node_count_y)
+    for x in x_values:
+        for y in y_values:
+            nodes.append(Node(mass=NODE_MASS, position=Vector(x, y), velocity=Vector(0, 0)))
+    return nodes
+
 def edge_already_exists(node_a: Node, node_b: Node) -> bool:
     node_a_edges = [edge.id for edge in node_a.edges]
     node_b_edges = [edge.id for edge in node_b.edges]
@@ -139,7 +149,7 @@ def load_dxf_file(file_path: str):
     return msp, doc
 
 # hinge_points = []
-def get_bounds_and_hinge_points(filename:str, min_distance:float, max_distance:float, center:bool, size:float):
+def get_bounds_and_lines_and_hinge_points(filename:str, min_distance:float, max_distance:float, center:bool, size:float):
     msp, doc = load_dxf_file(filename)
     lines_vec:list[Vector] = []
     lines = []
@@ -202,4 +212,4 @@ def get_bounds_and_hinge_points(filename:str, min_distance:float, max_distance:f
             i[1].x *= scaling
             i[1].y *= scaling
         bounds = (bounds[0] * scaling, bounds[1] * scaling, bounds[2] * scaling, bounds[3] * scaling)
-    return lines_vec, hinge_points, bounds
+    return bounds, lines_vec, hinge_points

@@ -87,8 +87,15 @@ def do_animation(solid: Solid):
     pygame.quit()
 
 if __name__ == "__main__":
-
-    nodes = initialize_nodes(NODE_COUNT)
+    min_distance = 1e-6
+    max_distance = 5e-2
+    center = True
+    size = WORLD_SIZE/2
+    bounds, lines_vec, hinge_points = get_bounds_and_lines_and_hinge_points(filename="/home/odin/Academic/Research/Metamaterials/Auxetic Mechanical MM/Bistable/Computational Exploration/Modules/mm_pattern_01.dxf", min_distance=min_distance, max_distance=max_distance, center=center, size=size)
+    # nodes = initialize_nodes(NODE_COUNT)
+    hinge_point_nodes = [Node(mass=NODE_MASS, position=hp, velocity=Vector(0, 0)) for hp in hinge_points]
+    nodes = initialize_nodes_uniform(bounds=bounds, node_count_x=int(np.sqrt(NODE_COUNT)), node_count_y=int(np.sqrt(NODE_COUNT)))
+    nodes.extend(hinge_point_nodes)
     solid = Solid(nodes=nodes)
     solid.initialize_edges_distance_based(distance_threshold=LINK_DISTANCE)
     
