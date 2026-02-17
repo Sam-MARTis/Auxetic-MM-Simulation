@@ -34,6 +34,8 @@ def initialize_edges_random(count, nodes: List[Node]) -> List[Edge]:
         edges.append(edge)
     return edges
 
+
+
 def initialize_edges_distance_based(count, nodes: List[Node]) -> List[Edge]:
     edges: List[Edge] = []
     num_nodes = count
