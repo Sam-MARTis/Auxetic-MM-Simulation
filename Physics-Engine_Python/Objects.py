@@ -89,10 +89,12 @@ class Edge:
         self.m = 0
         self.c = 0
         self.is_intersecting = False
+        self.active = attach
 
     def activate_edge(self, nodea, nodeb):
         self.node_a.attach_edge(self)
         self.node_b.attach_edge(self)
+        self.active = True
     def update_line_properties(self):
         dx = self.node_a.position.x - self.node_b.position.x
         self.m = (self.node_a.position.y - self.node_b.position.y) / dx if dx != 0 else float('inf')
@@ -100,13 +102,47 @@ class Edge:
     def update_l0(self, l0):
         self.l0 = l0
     def step(self, dt:float):
-        r_vec = (self.node_a.position - self.node_b.position)
-        l = r_vec.magnitude()
+        if self.active:
+            r_vec = (self.node_a.position - self.node_b.position)
+            l = r_vec.magnitude()
 
-        force_magnitude = -self.k * (l - self.l0)
-        force_direction = r_vec / l if l != 0 else ValueError("Zero length vector in edge step")
-        self.node_a.apply_force(force=force_direction * force_magnitude, dt=dt)
-        self.node_b.apply_force(force= force_direction * force_magnitude * -1, dt=dt)
+            force_magnitude = -self.k * (l - self.l0)
+            force_direction = r_vec / l if l != 0 else ValueError("Zero length vector in edge step")
+            self.node_a.apply_force(force=force_direction * force_magnitude, dt=dt)
+            self.node_b.apply_force(force= force_direction * force_magnitude * -1, dt=dt)
+        else:
+            return
     def render(self, screen: pygame.Surface, colour: tuple, width: int):
-        pygame.draw.line(surface=screen, color=colour, start_pos=world_to_screen(self.node_a.position, WORLD_SIZE, MAGNIFICATION).make_pygame_vector(), end_pos=world_to_screen(self.node_b.position, WORLD_SIZE, MAGNIFICATION).make_pygame_vector(), width=width)
+        if self.active:
+            pygame.draw.line(surface=screen, color=colour, start_pos=world_to_screen(self.node_a.position, WORLD_SIZE, MAGNIFICATION).make_pygame_vector(), end_pos=world_to_screen(self.node_b.position, WORLD_SIZE, MAGNIFICATION).make_pygame_vector(), width=width)
+    def delete_edge(self):
+        self.node_a.edges.remove(self)
+        self.node_b.edges.remove(self)
+        self.node_a = None
+        self.node_b = None
+        self.active = False
 
+class Solid:
+    def __init__(self, nodes: List[Node]):
+        self.nodes = nodes
+        self.edges: list[Edge] = []
+        
+    def add_edge(self, edge: Edge):
+        self.edges.append(edge)
+        
+    def edge_already_exists(self, node_a: Node, node_b: Node) -> bool:
+        node_a_edges = [edge.id for edge in node_a.edges]
+        node_b_edges = [edge.id for edge in node_b.edges]
+        return any(edge in node_b_edges for edge in node_a_edges)
+    
+    def edge_already_exists_id(self, id_a: int, id_b: int) -> bool:
+        return self.edge_already_exists(self.nodes[id_a], self.nodes[id_b])
+    
+    def delete_edge(self, edge: Edge):
+        edge.delete_edge()
+        self.edges.remove(edge)
+        
+    def step(self, dt:float, substeps:int):
+        pass
+        
+    

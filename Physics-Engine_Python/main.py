@@ -16,6 +16,7 @@ def do_animation(nodes: list[Node], edges: list[Edge]):
     running = True
     clock = pygame.time.Clock()
     delta_time = 0
+    i = 0
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -45,6 +46,11 @@ def do_animation(nodes: list[Node], edges: list[Edge]):
                 if node_selected_by_mouse:
                     print(f"Node released: {node_selected_by_mouse}")
                 node_selected_by_mouse = None
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_1:
+                    edges[i].delete_edge()
+                    i+=1
+                    print("Deleted edge")
 
         delta_time = clock.tick(60) / 1000  # seconds passed since last frame
         substeps_dt = delta_time / SUBSTEPS
