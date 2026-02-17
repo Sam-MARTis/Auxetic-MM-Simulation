@@ -1,7 +1,7 @@
 from typing import List, Callable
 import pygame
 from constants import *
-
+from multiprocessing import Pool, cpu_count
 
 
 class Helper:
@@ -125,7 +125,15 @@ class Edge:
         self.node_a = None
         self.node_b = None
         self.active = False
+def _step_node(node_dt):
+    node, dt = node_dt
+    node.step(dt)
+    return node
 
+def _step_edge(edge_dt):
+    edge, dt = edge_dt
+    edge.step(dt)
+    return edge
 class Solid:
     def __init__(self, nodes: List[Node]):
         self.nodes = nodes
@@ -159,12 +167,17 @@ class Solid:
         self.edges.remove(edge)
         
         
-    def step_nodes(self, dt: float):
-        for node in self.nodes:
-            node.step(dt)
-    def apply_edge_forces(self, dt: float):
-        for edge in self.edges:
-            edge.step(dt)
+    def step_nodes(self, dt):
+        self.nodes = self.pool.starmap(
+            _step_node,
+            [(node, dt) for node in self.nodes]
+        )
+
+    def apply_edge_forces(self, dt):
+        self.edges = self.pool.starmap(
+            _step_edge,
+            [(edge, dt) for edge in self.edges]
+        )
 
     def apply_gravity(self, dt: float, gravity: float):
         for node in self.nodes:
