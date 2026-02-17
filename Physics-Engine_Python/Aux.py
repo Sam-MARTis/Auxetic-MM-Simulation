@@ -1,4 +1,4 @@
-from Objects import Vector, Node, Edge, Helper
+from Objects import Vector, Node, Edge, Helper, Solid
 from typing import Callable, List, Tuple
 from constants import *
 import numpy as np
@@ -111,4 +111,11 @@ def render_everything(nodes: List[Node], edges: List[Edge], screen: pygame.Surfa
         edge.render(screen=screen, colour=EDGE_COLOUR_SELECTED if edge.is_intersecting else EDGE_COLOUR, width=EDGE_WIDTH)
         edge.is_intersecting = False
     for node in nodes:
+        node.render(screen=screen, radius=NODE_RADIUS, colour=NODE_COLOUR)
+
+def render_solid(solid: Solid, screen: pygame.Surface):
+    for edge in solid.edges:
+        edge.render(screen=screen, colour=EDGE_COLOUR_SELECTED if edge.is_intersecting else EDGE_COLOUR, width=EDGE_WIDTH)
+        edge.is_intersecting = False
+    for node in solid.nodes:
         node.render(screen=screen, radius=NODE_RADIUS, colour=NODE_COLOUR)

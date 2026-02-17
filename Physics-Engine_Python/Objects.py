@@ -125,6 +125,7 @@ class Edge:
 class Solid:
     def __init__(self, nodes: List[Node]):
         self.nodes = nodes
+        self.num_nodes = len(nodes)
         self.edges: list[Edge] = []
         
     def add_edge(self, edge: Edge):
@@ -138,11 +139,38 @@ class Solid:
     def edge_already_exists_id(self, id_a: int, id_b: int) -> bool:
         return self.edge_already_exists(self.nodes[id_a], self.nodes[id_b])
     
+    def initialize_edges_distance_based(self, distance_threshold:float) -> List[Edge]:
+        for i in range(self.num_nodes):
+            for j in range(i+1, self.num_nodes):
+                node_a = self.nodes[i]
+                node_b = self.nodes[j]
+                distance_sq = Helper.find_dist_sq_between_nodes(node_a, node_b)
+                if distance_sq < distance_threshold ** 2:
+                    edge = Edge(k=LINK_STRENGTH, l0=(distance_sq**0.5)*1.1, node_a=node_a, node_b=node_b, attach=True)
+                    self.add_edge(edge)
+        return self.edges
+
     def delete_edge(self, edge: Edge):
         edge.delete_edge()
         self.edges.remove(edge)
         
-    def step(self, dt:float, substeps:int):
-        pass
         
-    
+    def step_nodes(self, dt: float):
+        for node in self.nodes:
+            node.step(dt)
+    def apply_edge_forces(self, dt: float):
+        for edge in self.edges:
+            edge.step(dt)
+
+    def apply_gravity(self, dt: float, gravity: float):
+        for node in self.nodes:
+            node.apply_force(Vector(0, -gravity * node.mass), dt)
+
+    def step(self, dt:float, substeps:int, gravity:float):
+        substeps_dt = dt / substeps
+        for _ in range(substeps):
+            self.step_nodes(substeps_dt)
+            self.apply_gravity(dt=substeps_dt, gravity=gravity)
+        self.apply_edge_forces(dt=substeps_dt)
+
+
