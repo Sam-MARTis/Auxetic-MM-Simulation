@@ -6,12 +6,8 @@ def load_dxf_file(file_path: str):
     msp = doc.modelspace()
     return msp, doc
 
-
-# lines = []
-# lines_vec:list[Vector] = []
-
 # hinge_points = []
-def get_bounds_and_hinge_points(filename:str, min_distance:float, max_distance:float):
+def get_bounds_and_hinge_points(filename:str, min_distance:float, max_distance:float, center:bool, size:float):
     msp, doc = load_dxf_file(filename)
     lines_vec:list[Vector] = []
     lines = []
@@ -51,10 +47,33 @@ def get_bounds_and_hinge_points(filename:str, min_distance:float, max_distance:f
         if i[0].y > maxy: maxy = i[0].y
 
     bounds = (minx, maxx, miny, maxy)
+    if center:
+        cx = (minx + maxx) / 2
+        cy = (miny + maxy) / 2
+        bounds = (-cx, cx, -cy, cy)
+        for hp in hinge_points:
+            hp.x -= cx
+            hp.y -= cy
+        for i in lines_vec:
+            i[0].x -= cx
+            i[0].y -= cy
+            i[1].x -= cx
+            i[1].y -= cy
+    if size:
+        scaling = size / (maxx - minx)
+        for hp in hinge_points:
+            hp.x *= scaling
+            hp.y *= scaling
+        for i in lines_vec:
+            i[0].x *= scaling
+            i[0].y *= scaling
+            i[1].x *= scaling
+            i[1].y *= scaling
+        bounds = (bounds[0] * scaling, bounds[1] * scaling, bounds[2] * scaling, bounds[3] * scaling)
     return lines_vec, hinge_points, bounds
 
 if __name__ == "__main__":
-    lines_vec, hinge_points, bounds = get_bounds_and_hinge_points("mm_pattern_01.dxf", 1e-6, 5e-2)
+    lines_vec, hinge_points, bounds = get_bounds_and_hinge_points("mm_pattern_01.dxf", 1e-6, 5e-2, True, None)
     for (start, end) in lines_vec:
         plt.plot([start.x, end.x], [start.y, end.y], 'b-')
     print(f"Bounds: {bounds}")
