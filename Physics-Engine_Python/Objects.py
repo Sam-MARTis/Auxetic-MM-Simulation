@@ -26,11 +26,15 @@ class Vector:
         return (self.x ** 2 + self.y ** 2) ** 0.5
     def __sub__(self, other: 'Vector') -> 'Vector':
         return Vector(self.x - other.x, self.y - other.y)
+    def __add__(self, other: 'Vector') -> 'Vector':
+        return Vector(self.x + other.x, self.y + other.y)
     def __truediv__(self, scalar: float) -> 'Vector':
         a = 1/scalar
         return Vector(self.x * a, self.y * a)
     def __mul__(self, scalar: float) -> 'Vector':
         return Vector(self.x * scalar, self.y * scalar)
+    def __repr__(self):
+        return f"v̄({self.x:.5g}, {self.y:.5g})"
     def make_pygame_vector(self) -> pygame.Vector2:
         return pygame.Vector2(self.x, self.y)
 

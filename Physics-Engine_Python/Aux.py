@@ -3,6 +3,7 @@ from typing import Callable, List, Tuple
 from constants import *
 import numpy as np
 import pygame
+import ezdxf as dxf
 
 np.random.seed(42)
 
@@ -92,26 +93,7 @@ def delete_intersecting_edges(edges: List[Edge]):
                 break
     return new_edges
 
-def step_nodes(nodes: List[Node], dt: float):
-	for node in nodes:
-		node.step(dt)
-def apply_edge_forces(edges: List[Edge], dt: float):
-	for edge in edges:
-		edge.step(dt)
 
-def apply_gravity(nodes: List[Node], dt: float, gravity: float):
-	for node in nodes:
-		node.apply_force(Vector(0, -gravity * node.mass), dt)
-
-
-
-
-def render_everything(nodes: List[Node], edges: List[Edge], screen: pygame.Surface):
-    for edge in edges:
-        edge.render(screen=screen, colour=EDGE_COLOUR_SELECTED if edge.is_intersecting else EDGE_COLOUR, width=EDGE_WIDTH)
-        edge.is_intersecting = False
-    for node in nodes:
-        node.render(screen=screen, radius=NODE_RADIUS, colour=NODE_COLOUR)
 
 def render_solid(solid: Solid, screen: pygame.Surface):
     for edge in solid.edges:
@@ -119,3 +101,105 @@ def render_solid(solid: Solid, screen: pygame.Surface):
         edge.is_intersecting = False
     for node in solid.nodes:
         node.render(screen=screen, radius=NODE_RADIUS, colour=NODE_COLOUR)
+        
+
+def nearest_points_on_line_segments(a0: Vector, a1: Vector, b0: Vector, b1: Vector):
+    r = b0 - a0
+    u = a1 - a0
+    v = b1 - b0
+
+    ru = r.dot(u)
+    rv = r.dot(v)
+    uu = u.dot(u)
+    uv = u.dot(v)
+    vv = v.dot(v)
+
+    det = uu * vv - uv * uv
+    s, t = 0, 0
+
+    if det < 1e-6 * uu * vv:
+        s = max(0, min(1, ru / uu))
+        t = 0
+    else:
+        s = max(0, min(1, (ru * vv - rv * uv) / det))
+        t = max(0, min(1, (ru * uv - rv * uu) / det))
+
+    S = max(0, min(1, (t * uv + ru) / uu))
+    T = max(0, min(1, (s * uv - rv) / vv))
+
+    A:Vector = a0 + u * S
+    B:Vector = b0 + v * T
+    return A, B, (B - A).magnitude()
+
+        
+        
+def load_dxf_file(file_path: str):
+    doc = dxf.readfile(file_path)
+    msp = doc.modelspace()
+    return msp, doc
+
+# hinge_points = []
+def get_bounds_and_hinge_points(filename:str, min_distance:float, max_distance:float, center:bool, size:float):
+    msp, doc = load_dxf_file(filename)
+    lines_vec:list[Vector] = []
+    lines = []
+    hinge_points:list[Vector] = []
+
+    for e in msp.query("INSERT"):
+        block = e.block()
+        m = e.matrix44()
+        for line in block.query("LINE"):
+            start = line.dxf.start
+            end = line.dxf.end
+            start = m.transform(start)
+            end = m.transform(end)
+            lines.append((start, end))
+            lines_vec.append((Vector(start.x, start.y), Vector(end.x, end.y)))
+    for e in msp.query("LINE"):
+        start = e.dxf.start
+        end = e.dxf.end
+        lines.append((start, end))
+        lines_vec.append((Vector(start.x, start.y), Vector(end.x, end.y)))
+    
+    for i in range(len(lines_vec)):
+        for j in range(i, len(lines_vec)):
+            A, B, dist = nearest_points_on_line_segments(lines_vec[i][0], lines_vec[i][1], lines_vec[j][0], lines_vec[j][1])
+            if min_distance < dist < max_distance:
+                hinge_point = (A + B) / 2
+                hinge_points.append(hinge_point)
+    minx = float("inf")
+    maxx = -float("inf")
+    miny = float("inf")
+    maxy = -float("inf")
+
+    for i in lines_vec:
+        if i[0].x < minx: minx = i[0].x
+        if i[0].x > maxx: maxx = i[0].x
+        if i[0].y < miny: miny = i[0].y
+        if i[0].y > maxy: maxy = i[0].y
+
+    bounds = (minx, maxx, miny, maxy)
+    if center:
+        cx = (minx + maxx) / 2
+        cy = (miny + maxy) / 2
+        bounds = (-cx, cx, -cy, cy)
+        for hp in hinge_points:
+            hp.x -= cx
+            hp.y -= cy
+        for i in lines_vec:
+            i[0].x -= cx
+            i[0].y -= cy
+            i[1].x -= cx
+            i[1].y -= cy
+    if size:
+        scaling = size / (maxx - minx)
+        for hp in hinge_points:
+            hp.x *= scaling
+            hp.y *= scaling
+        for i in lines_vec:
+            i[0].x *= scaling
+            i[0].y *= scaling
+            i[1].x *= scaling
+            i[1].y *= scaling
+        bounds = (bounds[0] * scaling, bounds[1] * scaling, bounds[2] * scaling, bounds[3] * scaling)
+    return lines_vec, hinge_points, bounds

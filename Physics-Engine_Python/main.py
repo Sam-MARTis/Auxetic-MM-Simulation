@@ -68,16 +68,9 @@ def do_animation(solid: Solid):
                 print(f"Remaining edges: {len(solid.edges)}")
 
         delta_time = clock.tick(60) / 1000  # seconds passed since last frame
-        # substeps_dt = delta_time / SUBSTEPS
-        # for _ in range(SUBSTEPS):
-            
-        #     step_nodes(nodes, substeps_dt)
-        #     apply_gravity(nodes, dt=substeps_dt, gravity=gravity)
-        # apply_edge_forces(edges, dt=substeps_dt)
+
         solid.step(dt=delta_time, substeps=SUBSTEPS, gravity=gravity)
-        # if hold:
-        #     for node in nodes[-5:]:
-        #         node.position.y =0.5
+
         if node_selected_by_mouse:
             mouse_pos = pygame.mouse.get_pos()
             world_x = mouse_pos[0] / MAGNIFICATION - WORLD_SIZE / 2
@@ -87,7 +80,6 @@ def do_animation(solid: Solid):
         
         screen.fill((0, 0, 0))
 
-        # render_everything(nodes, edges, screen)
         render_solid(solid, screen)
 
         pygame.display.flip()
@@ -97,13 +89,10 @@ def do_animation(solid: Solid):
 if __name__ == "__main__":
 
     nodes = initialize_nodes(NODE_COUNT)
-    # nodes[-5:] = [Node(mass=NODE_MASS, position=Vector(i/10, 0.5), velocity=Vector(0, 0)) for i in range(5)]
-    # edges = initialize_edges_distance_based(NODE_COUNT, nodes)
     solid = Solid(nodes=nodes)
     solid.initialize_edges_distance_based(distance_threshold=LINK_DISTANCE)
     
     
-    # edges = all_edges_intersection_check(edges)
     do_animation(solid)
     
 
