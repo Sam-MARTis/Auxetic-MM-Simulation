@@ -94,6 +94,7 @@ class Edge:
         self.c = 0
         self.is_intersecting = False
         self.active = attach
+        self.l0_inv = max(1.0 / l0 , 50)
 
     def activate_edge(self, nodea, nodeb):
         self.node_a.attach_edge(self)
@@ -109,8 +110,9 @@ class Edge:
         if self.active:
             r_vec = (self.node_a.position - self.node_b.position)
             l = r_vec.magnitude()
-
-            force_magnitude = -self.k * (l - self.l0)
+            dl = (l - self.l0)
+            
+            force_magnitude = -self.k * dl * np.abs(dl)
             force_direction = r_vec / l if l != 0 else ValueError("Zero length vector in edge step")
             self.node_a.apply_force(force=force_direction * force_magnitude, dt=dt)
             self.node_b.apply_force(force= force_direction * force_magnitude * -1, dt=dt)

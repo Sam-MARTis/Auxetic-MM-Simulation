@@ -33,8 +33,8 @@ def initialize_nodes_uniform_with_noise(bounds: Tuple[float, float, float, float
     y_values = np.linspace(y_min+EPSILON_BIG, y_max - EPSILON_BIG, node_count_y)
     for i in range(1, len(x_values)-1):
         for j in range(1, len(y_values)-1):
-            x_values[i] += np.random.uniform(-NOISE, NOISE)
-            y_values[j] += np.random.uniform(-NOISE, NOISE)
+            x_values[i] += np.random.normal(0, NOISE)
+            y_values[j] += np.random.normal(0, NOISE)
 
     for x in x_values:
         for y in y_values:

@@ -90,7 +90,8 @@ if __name__ == "__main__":
     max_distance = 5e-2
     center = True
     size = WORLD_SIZE/2
-    bounds, lines_vec, hinge_points = get_bounds_and_lines_and_hinge_points(filename="/home/odin/Academic/Research/Metamaterials/Auxetic Mechanical MM/Bistable/Computational Exploration/Modules/mm_pattern_01.dxf", min_distance=min_distance, max_distance=max_distance, center=center, size=size)
+    file_pattern_2cross2 = "/home/odin/Academic/Research/Metamaterials/Auxetic Mechanical MM/Bistable/Computational Exploration/Modules/pattern_4x4.dxf"
+    bounds, lines_vec, hinge_points = get_bounds_and_lines_and_hinge_points(filename=file_pattern_2cross2, min_distance=min_distance, max_distance=max_distance, center=center, size=size)
     dxf_edges:list[Edge] = []
     for line in lines_vec:
         a = line[0]

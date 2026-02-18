@@ -93,13 +93,13 @@ if __name__ == "__main__":
     
     msp_unit.add_blockref("UnitCell", insert=(0, 0))
     
-    doc_unit.saveas("unit_cell.dxf")
+    # doc_unit.saveas("unit_cell.dxf")
     
     # Create pattern - create the block in pattern document as well
     pattern_unit_cell = Unit_Cell(doc_pattern, msp_pattern, "UnitCell", cut_size, θ_in_radians, edge_gap, side_gap)
     
     # Generate pattern array
-    n = 5  # number of repetitions in each direction
+    n = 4  # number of repetitions in each direction
     for i in range(n):
         for j in range(n):
             x = (i + is_odd(i+j)) * unit_cell.dx
@@ -114,4 +114,4 @@ if __name__ == "__main__":
     msp_pattern.add_line((unit_cell.dx*n, unit_cell.dy*n), (0, unit_cell.dy*n))
     msp_pattern.add_line((0, unit_cell.dy*n), (0, 0))
 
-    doc_pattern.saveas("pattern2.dxf")
+    doc_pattern.saveas(f"pattern_{n}x{n}.dxf")
