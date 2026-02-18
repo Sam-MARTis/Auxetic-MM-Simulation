@@ -1,4 +1,4 @@
-from Objects import Vector, Node, Edge, Helper, Solid
+from Objects import Vector, Node, Edge, Helper, Solid, world_to_screen
 from typing import Callable, List, Tuple
 from constants import *
 import numpy as np
@@ -117,13 +117,36 @@ def delete_intersecting_edges(edges: List[Edge]):
     return new_edges
 
 
-
+def render(self, screen: pygame.Surface, radius: float, colour: tuple):
+    screen_position = world_to_screen(self.position, WORLD_SIZE, MAGNIFICATION)
+    pygame.draw.circle(screen, colour, (int(screen_position.x), int(screen_position.y)), radius)
+    
+    
+    
 def render_solid(solid: Solid,  dxf_edges: list[Edge], screen: pygame.Surface):
     for edge in solid.edges:
         edge.render(screen=screen, colour=EDGE_COLOUR_SELECTED if edge.is_intersecting else EDGE_COLOUR, width=EDGE_WIDTH)
         edge.is_intersecting = False
     for node in solid.nodes:
         node.render(screen=screen, radius=NODE_RADIUS, colour=NODE_COLOUR)
+    if RENDER_DXF:
+        for edge in dxf_edges:
+            edge.render(screen=screen, colour=EDGE_COLOUR_SELECTED, width=EDGE_WIDTH)
+
+def render_solid_low_level(solid:Solid, dxf_edges: list[Edge], screen: pygame.Surface):
+    for edge in solid.edges:
+        pos1 = solid.node_positions[2*edge.node_a.id:2*edge.node_a.id+2]
+        pos2 = solid.node_positions[2*edge.node_b.id:2*edge.node_b.id+2]
+        node1_pos = Vector(pos1[0], pos1[1])
+        node2_pos = Vector(pos2[0], pos2[1])
+        node1_screen_pos = world_to_screen(node1_pos, WORLD_SIZE, MAGNIFICATION)
+        node2_screen_pos = world_to_screen(node2_pos, WORLD_SIZE, MAGNIFICATION)
+        pygame.draw.line(screen, EDGE_COLOUR_SELECTED if edge.is_intersecting else EDGE_COLOUR, (int(node1_screen_pos.x), int(node1_screen_pos.y)), (int(node2_screen_pos.x), int(node2_screen_pos.y)), width=EDGE_WIDTH)
+        edge.is_intersecting = False
+    for i in range(solid.num_nodes):
+        pos = solid.node_positions[2*i:2*i+2]
+        screen_pos = world_to_screen(Vector(pos[0], pos[1]), WORLD_SIZE, MAGNIFICATION)
+        pygame.draw.circle(screen, NODE_COLOUR, (int(screen_pos.x), int(screen_pos.y)), NODE_RADIUS)
     if RENDER_DXF:
         for edge in dxf_edges:
             edge.render(screen=screen, colour=EDGE_COLOUR_SELECTED, width=EDGE_WIDTH)

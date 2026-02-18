@@ -1,5 +1,6 @@
 from typing import List, Callable
 import pygame
+import numpy as np
 from constants import *
 from multiprocessing import Pool, cpu_count
 
@@ -187,7 +188,25 @@ class Solid:
         self.nodes.sort(key=lambda node: node.id)
         self.num_nodes = len(nodes)
         self.edges: list[Edge] = []
-        
+    
+    def prime(self):
+        node_positions:list[float] = []
+        node_velocities:list[float] = []
+        for node in self.nodes:
+            node_positions.append(node.position.x)
+            node_positions.append(node.position.y)
+            node_velocities.append(node.velocity.x)
+            node_velocities.append(node.velocity.y)
+        self.node_velocities = np.array(node_velocities, dtype=np.float64)
+        self.node_positions = np.array(node_positions, dtype=np.float64)
+        edges_data:list[float] = []
+        for edge in self.edges:
+            edges_data.append(edge.node_a.id)
+            edges_data.append(edge.node_b.id)
+            edges_data.append(edge.k)
+            edges_data.append(edge.l0)
+        self.edges_data = np.array(edges_data)
+
     def add_edge(self, edge: Edge):
         self.edges.append(edge)
         
@@ -243,7 +262,10 @@ class Solid:
     def apply_gravity(self, dt: float, gravity: float):
         for node in self.nodes:
             node.apply_force(Vector(0, -gravity * node.mass), dt)
-        
+    def apply_gravity_low_level(self, dt: float, gravity: float):
+        for i in range(self.num_nodes):
+            self.node_velocities[2*i+1] -= gravity * dt
+
     def compute_forces(self, nodes_pos:list[Vector], nodes_vel:list[Vector]):
         self.forces: list[Vector] = [Vector(0, 0) for _ in self.nodes]
         for i in range(len(nodes_pos)):
@@ -260,12 +282,34 @@ class Solid:
             self.forces[edge.node_b.id] -= force
         return self.forces
     
+    def compute_forces_low_level(self, nodes_pos:np.ndarray, nodes_vel:np.ndarray):
+        forces = np.zeros_like(nodes_pos)
+        # for i in range(self.num_nodes):
+        #     forces[i] -= nodes_vel[i] * VISCOCITY
+        forces -= nodes_vel * VISCOCITY
+        for edge in self.edges:
+            id1 = 2*edge.node_a.id
+            id2 = 2*edge.node_b.id
+            node_pos_a = nodes_pos[id1:id1+2]
+            node_pos_b = nodes_pos[id2:id2+2]
+            dpos = node_pos_b - node_pos_a
+            s = np.linalg.norm(dpos)
+            dr = s - edge.l0
+            force = edge.k * (dr/s)*dpos/edge.l0
+            # if np.random.rand() < 0.01:
+                # print(f"Force on edge {edge.id}: {force}, k={edge.k}, d={dr}")
+
+            # force = edge.compute_forces(node_pos_a, node_pos_b)
+            forces[id1:id1+2] += force
+            forces[id2:id2+2] -= force
+        return forces
+    
 
 
     def step(self, dt:float, substeps:int, gravity:float):
         substeps_dt = dt / substeps
-        p0 = np.array([node.position for node in self.nodes])
-        v0 = np.array([node.velocity for node in self.nodes])
+        p0 = np.array([node.position for node in self.nodes], dtype=np.float64)
+        v0 = np.array([node.velocity for node in self.nodes], dtype=np.float64)
         for _ in range(substeps):
             # self.step_nodes(substeps_dt)
             # self.apply_edge_forces(dt=substeps_dt)
@@ -293,3 +337,20 @@ class Solid:
             self.nodes[i].velocity = v0[i]
             pass
         self.apply_gravity(dt=dt, gravity=gravity)
+    
+    def step2(self, dt:float, substeps:int, gravity:float):
+        substep_dt = dt / substeps
+        for _ in range(substeps):
+            
+            k1 = np.array(self.compute_forces_low_level(nodes_pos=self.node_positions, nodes_vel=self.node_velocities))
+            x1 = self.node_positions + self.node_velocities * substep_dt * 0.5
+            v1 = self.node_velocities + k1 * substep_dt * 0.5
+            k2 = np.array(self.compute_forces_low_level(nodes_pos=x1, nodes_vel=v1))
+            x2 = self.node_positions + v1 * substep_dt * 0.5
+            v2 = self.node_velocities + k2 * substep_dt * 0.5
+            k3 = np.array(self.compute_forces_low_level(nodes_pos=x2, nodes_vel=v2))
+            x3 = self.node_positions + v2 * substep_dt
+            v3 = self.node_velocities + k3 * substep_dt
+            k4 = np.array(self.compute_forces_low_level(nodes_pos=x3, nodes_vel=v3))
+            self.node_positions += (self.node_velocities + 2 * v1 + 2 * v2 + v3) * substep_dt / 6
+            self.node_velocities += (k1 + 2 * k2 + 2 * k3 + k4) * substep_dt / 6

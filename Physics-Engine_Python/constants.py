@@ -1,7 +1,7 @@
 import numpy as np
 EPSILON = 1e-6
 EPSILON_BIG = 1e-4
-
+DT = 1e-1
 WORLD_SIZE = 10
 MAGNIFICATION = 100
 NODE_RADIUS = 3
@@ -11,12 +11,14 @@ NODE_MASS = 1
 NODE_COUNT = 900
 DENSITY_FACTOR = 3.5
 STARTING_VEL = 0.5
-VISCOCITY = 30
+
+SCALING = 1
+VISCOCITY = 5*SCALING
 
 SHAPE_SIZE = WORLD_SIZE/2
 
 GRAVITY_ENABLED = False
-GRAVITY = 1.81*0
+GRAVITY = 1.81
 
 SUBSTEPS = 5
 
@@ -27,12 +29,12 @@ BOUNDARY_Y_N = -WORLD_SIZE/2.1
 
 adjacent_bond_size = SHAPE_SIZE/np.sqrt(NODE_COUNT)
 # For distance based attachment of links
-LINK_DISTANCE =  adjacent_bond_size*np.sqrt(3)
+LINK_DISTANCE =  adjacent_bond_size*np.sqrt(2.5)
 
 EDGE_COLOUR = (0, 200, 200)
 EDGE_COLOUR_SELECTED = (200, 100, 0)
 EDGE_WIDTH = 1
-LINK_STRENGTH =200
+LINK_STRENGTH = 40*SCALING
 
 screen_size = WORLD_SIZE * (MAGNIFICATION)
 RENDER_DXF = True

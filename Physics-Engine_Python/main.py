@@ -45,12 +45,13 @@ def do_animation(solid: Solid, dxf_edges: list[Edge]):
             # Mouseclick once
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
-                for node in solid.nodes:
-                    node_screen_pos = world_to_screen(node.position, WORLD_SIZE, MAGNIFICATION)
+                for i in range(len(solid.nodes)):
+                    node_pos = Vector(solid.node_positions[2*i], solid.node_positions[2*i+1])
+                    node_screen_pos = world_to_screen(node_pos, WORLD_SIZE, MAGNIFICATION)
                     dx = mouse_pos[0] - node_screen_pos.x
                     dy = mouse_pos[1] - node_screen_pos.y
                     if dx**2 + dy**2 < 2*NODE_RADIUS**2:
-                        node_selected_by_mouse = node
+                        node_selected_by_mouse = i
                         break
                 print("MOUSEDOWN")
                 if node_selected_by_mouse:
@@ -66,20 +67,20 @@ def do_animation(solid: Solid, dxf_edges: list[Edge]):
                 print("Deleted edge")
                 print(f"Remaining edges: {len(solid.edges)}")
 
-        delta_time = clock.tick(60) / 1000  # seconds passed since last frame
+        delta_time = DT  # seconds passed since last frame
 
-        solid.step(dt=delta_time, substeps=SUBSTEPS, gravity=gravity)
+        solid.step2(dt=delta_time, substeps=SUBSTEPS, gravity=gravity)
 
         if node_selected_by_mouse:
             mouse_pos = pygame.mouse.get_pos()
             world_x = mouse_pos[0] / MAGNIFICATION - WORLD_SIZE / 2
             world_y = -(mouse_pos[1] / MAGNIFICATION - WORLD_SIZE / 2)
-            node_selected_by_mouse.position.x = world_x
-            node_selected_by_mouse.position.y = world_y
-        
+            solid.node_positions[2*i] = world_x
+            solid.node_positions[2*i+1] = world_y
+
         screen.fill((0, 0, 0))
 
-        render_solid(solid=solid, dxf_edges=dxf_edges, screen=screen)
+        render_solid_low_level(solid=solid, dxf_edges=dxf_edges, screen=screen)
 
         pygame.display.flip()
 
@@ -115,6 +116,7 @@ if __name__ == "__main__":
     solid.remove_intersecting_edges(dxf_edges)
     solid.remove_intersecting_edges(dxf_edges)
     
+    solid.prime()
     do_animation(solid, dxf_edges=dxf_edges)
     
 
