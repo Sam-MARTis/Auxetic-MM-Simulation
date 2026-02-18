@@ -90,18 +90,19 @@ if __name__ == "__main__":
     max_distance = 5e-2
     center = True
     size = WORLD_SIZE/2
-    file_pattern_2cross2 = "/home/odin/Academic/Research/Metamaterials/Auxetic Mechanical MM/Bistable/Computational Exploration/Modules/pattern_4x4.dxf"
+    n=2
+    file_pattern_2cross2 = f"/home/odin/Academic/Research/Metamaterials/Auxetic Mechanical MM/Bistable/Computational Exploration/Modules/pattern_{n}x{n}.dxf"
     bounds, lines_vec, hinge_points = get_bounds_and_lines_and_hinge_points(filename=file_pattern_2cross2, min_distance=min_distance, max_distance=max_distance, center=center, size=size)
     dxf_edges:list[Edge] = []
     for line in lines_vec:
         a = line[0]
         b = line[1]
-        print(f"Line from {a} to {b}")
+        # print(f"Line from {a} to {b}")
         node_a = Node(mass=NODE_MASS, position=Vector(a.x, a.y), velocity=Vector(0, 0))
         node_b = Node(mass=NODE_MASS, position=Vector(b.x, b.y), velocity=Vector(0, 0))
         edge = Edge(k=LINK_STRENGTH, l0=(b - a).magnitude(), node_a=node_a, node_b=node_b, attach=True)
         dxf_edges.append(edge)
-        print(node_b.position)
+        # print(node_b.position)
     
     Node._count=0
     nodes = initialize_nodes_uniform_with_noise(bounds=bounds, node_count_x=int(np.sqrt(NODE_COUNT)), node_count_y=int(np.sqrt(NODE_COUNT)))

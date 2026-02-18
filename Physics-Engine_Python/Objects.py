@@ -33,6 +33,8 @@ class Vector:
         return Vector(self.x * a, self.y * a)
     def __mul__(self, scalar: float) -> 'Vector':
         return Vector(self.x * scalar, self.y * scalar)
+    def __rmul__(self, scalar: float) -> 'Vector':
+        return self * scalar
     def __repr__(self):
         return f"v̄({self.x:.5g}, {self.y:.5g})"
     def make_pygame_vector(self) -> pygame.Vector2:
@@ -128,6 +130,14 @@ class Edge:
         self.node_a = None
         self.node_b = None
         self.active = False
+    def compute_forces(self, pos_a:Vector, pos_b:Vector):
+        r_vec = pos_a - pos_b
+        l = r_vec.magnitude()
+        dl = (l - self.l0)
+
+        force_magnitude = -self.k * dl
+        force_direction = r_vec / l if l != 0 else ValueError("Zero length vector in edge step")
+        return force_direction * force_magnitude
 
 
 def is_intersecting(edge_a: Edge, edge_b: Edge) -> bool:
@@ -234,31 +244,52 @@ class Solid:
         for node in self.nodes:
             node.apply_force(Vector(0, -gravity * node.mass), dt)
         
-    def compute_forces(self):
+    def compute_forces(self, nodes_pos:list[Vector], nodes_vel:list[Vector]):
         self.forces: list[Vector] = [Vector(0, 0) for _ in self.nodes]
-        for i in range(len(self.nodes)):
-            self.forces[i] -= self.nodes[i].velocity * VISCOCITY
+        for i in range(len(nodes_pos)):
+            self.forces[i] -= nodes_vel[i] * VISCOCITY
         for edge in self.edges:
-            r_vec = (edge.node_a.position - edge.node_b.position)
-            l = r_vec.magnitude()
-            dl = (l - edge.l0)
-            force_magnitude = -edge.k * dl * np.abs(dl)
-            force_with_direction = r_vec * (force_magnitude/ l) if l != 0 else ValueError("Zero length vector in edge step")
-            # edge.node_a.apply_force(force=force_with_direction, dt=dt)
-            # edge.node_b.apply_force(force=force_with_direction * -1, dt=dt)
-            self.forces[edge.node_a.id] += force_with_direction
-            self.forces[edge.node_b.id] -= force_with_direction
+            force = edge.compute_forces(nodes_pos[edge.node_a.id], nodes_pos[edge.node_b.id])
+            # l = r_vec.magnitude()
+            # dl = (l - edge.l0)
+            # force_magnitude = -edge.k * dl * np.abs(dl)
+            # force_with_direction = r_vec * (force_magnitude/ l) if l != 0 else ValueError("Zero length vector in edge step")
+            # # edge.node_a.apply_force(force=force_with_direction, dt=dt)
+            # # edge.node_b.apply_force(force=force_with_direction * -1, dt=dt)
+            self.forces[edge.node_a.id] += force
+            self.forces[edge.node_b.id] -= force
         return self.forces
     
 
 
     def step(self, dt:float, substeps:int, gravity:float):
         substeps_dt = dt / substeps
+        p0 = np.array([node.position for node in self.nodes])
+        v0 = np.array([node.velocity for node in self.nodes])
         for _ in range(substeps):
             # self.step_nodes(substeps_dt)
             # self.apply_edge_forces(dt=substeps_dt)
-            forces = self.compute_forces()
-            for i, node in enumerate(self.nodes):
-                node.velocity += forces[i] * (substeps_dt) 
-                node.position += node.velocity * substeps_dt
+            # p0 = np.array([node.position for node in self.nodes])
+            # v0 = np.array([node.velocity for node in self.nodes])
+            forces = np.array(self.compute_forces(p0, v0))
+            k1 = forces
+            v1 = v0 + k1 * (substeps_dt * 0.5)
+            p1 = p0 + v0 * (substeps_dt * 0.5)
+            k2 = np.array(self.compute_forces(p1, v1))
+            v2 = v0 + k2 * (substeps_dt * 0.5)
+            p2 = p0 + v1 * (substeps_dt * 0.5) 
+            k3 = np.array(self.compute_forces(p2, v2))
+            v3 = v0 + k3 * substeps_dt
+            p3 = p0 + v2 * substeps_dt
+            k4 = np.array(self.compute_forces(p3, v3))
+            p0 += (v0 + 2 * v1 + 2 * v2 + v3) * substeps_dt / 6
+            v0 += (k1 + 2 * k2 + 2 * k3 + k4) *substeps_dt/ 6
+
+            # for i, node in enumerate(self.nodes):
+            #     node.velocity += forces[i] * (substeps_dt) 
+            #     node.position += node.velocity * substeps_dt
+        for i in range(len(self.nodes)):
+            self.nodes[i].position = p0[i]
+            self.nodes[i].velocity = v0[i]
+            pass
         self.apply_gravity(dt=dt, gravity=gravity)

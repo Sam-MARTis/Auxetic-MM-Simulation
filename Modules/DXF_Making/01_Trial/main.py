@@ -99,7 +99,7 @@ if __name__ == "__main__":
     pattern_unit_cell = Unit_Cell(doc_pattern, msp_pattern, "UnitCell", cut_size, θ_in_radians, edge_gap, side_gap)
     
     # Generate pattern array
-    n = 4  # number of repetitions in each direction
+    n = 2  # number of repetitions in each direction
     for i in range(n):
         for j in range(n):
             x = (i + is_odd(i+j)) * unit_cell.dx
