@@ -102,8 +102,10 @@ if __name__ == "__main__":
         edge = Edge(k=LINK_STRENGTH, l0=(b - a).magnitude(), node_a=node_a, node_b=node_b, attach=True)
         dxf_edges.append(edge)
         print(node_b.position)
-    hinge_point_nodes = [Node(mass=NODE_MASS, position=hp, velocity=Vector(0, 0)) for hp in hinge_points]
+    
+    Node._count=0
     nodes = initialize_nodes_uniform_with_noise(bounds=bounds, node_count_x=int(np.sqrt(NODE_COUNT)), node_count_y=int(np.sqrt(NODE_COUNT)))
+    hinge_point_nodes = [Node(mass=NODE_MASS, position=hp, velocity=Vector(0, 0)) for hp in hinge_points]
     nodes.extend(hinge_point_nodes)
     solid = Solid(nodes=nodes)
     

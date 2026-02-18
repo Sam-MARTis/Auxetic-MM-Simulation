@@ -106,6 +106,7 @@ class Edge:
         self.c = self.node_a.position.y - self.m * self.node_a.position.x
     def update_l0(self, l0):
         self.l0 = l0
+        self.l0_inv = max(1.0 / l0 , 50)
     def step(self, dt:float):
         if self.active:
             r_vec = (self.node_a.position - self.node_b.position)
@@ -173,6 +174,7 @@ def nearest_points_on_line_segments(a0: Vector, a1: Vector, b0: Vector, b1: Vect
 class Solid:
     def __init__(self, nodes: List[Node]):
         self.nodes = nodes
+        self.nodes.sort(key=lambda node: node.id)
         self.num_nodes = len(nodes)
         self.edges: list[Edge] = []
         
@@ -231,12 +233,32 @@ class Solid:
     def apply_gravity(self, dt: float, gravity: float):
         for node in self.nodes:
             node.apply_force(Vector(0, -gravity * node.mass), dt)
+        
+    def compute_forces(self):
+        self.forces: list[Vector] = [Vector(0, 0) for _ in self.nodes]
+        for i in range(len(self.nodes)):
+            self.forces[i] -= self.nodes[i].velocity * VISCOCITY
+        for edge in self.edges:
+            r_vec = (edge.node_a.position - edge.node_b.position)
+            l = r_vec.magnitude()
+            dl = (l - edge.l0)
+            force_magnitude = -edge.k * dl * np.abs(dl)
+            force_with_direction = r_vec * (force_magnitude/ l) if l != 0 else ValueError("Zero length vector in edge step")
+            # edge.node_a.apply_force(force=force_with_direction, dt=dt)
+            # edge.node_b.apply_force(force=force_with_direction * -1, dt=dt)
+            self.forces[edge.node_a.id] += force_with_direction
+            self.forces[edge.node_b.id] -= force_with_direction
+        return self.forces
+    
+
 
     def step(self, dt:float, substeps:int, gravity:float):
         substeps_dt = dt / substeps
         for _ in range(substeps):
-            self.step_nodes(substeps_dt)
-            self.apply_gravity(dt=substeps_dt, gravity=gravity)
-        self.apply_edge_forces(dt=substeps_dt)
-
-
+            # self.step_nodes(substeps_dt)
+            # self.apply_edge_forces(dt=substeps_dt)
+            forces = self.compute_forces()
+            for i, node in enumerate(self.nodes):
+                node.velocity += forces[i] * (substeps_dt) 
+                node.position += node.velocity * substeps_dt
+        self.apply_gravity(dt=dt, gravity=gravity)
