@@ -3,7 +3,7 @@ import pygame
 import numpy as np
 from constants import *
 from multiprocessing import Pool, cpu_count
-
+import numba as nb
 
 class Helper:
     @staticmethod
@@ -181,6 +181,43 @@ def nearest_points_on_line_segments(a0: Vector, a1: Vector, b0: Vector, b1: Vect
     B:Vector = b0 + v * T
     return A, B, (B - A).magnitude()
 
+@nb.njit(parallel=True)
+def compute_forces_low_level_parallel(nodes_pos:np.ndarray, nodes_vel:np.ndarray, edge_node_data:np.ndarray, edge_prop_data:np.ndarray, num_nodes:int, num_edges: int):
+
+    num_threads = nb.get_num_threads()
+    
+    thread_forces = np.zeros((num_threads, 2*num_nodes))
+    forces = np.zeros(num_nodes*2)
+
+    for edge_id in nb.prange(num_edges):
+        thread_idx = nb.get_thread_id()
+        node_id1 = edge_node_data[2*edge_id]
+        node_id2 = edge_node_data[2*edge_id+1]
+        edge_k = edge_prop_data[2*edge_id]
+        edge_l0 = edge_prop_data[2*edge_id+1]
+        dx = nodes_pos[2*node_id2] - nodes_pos[2*node_id1]
+        dy = nodes_pos[2*node_id2+1] - nodes_pos[2*node_id1+1]
+        ds = np.sqrt(dx*dx + dy*dy)
+        ds += (EPSILON_BIG * (ds < EPSILON_BIG))
+        # dpos = node_pos_b - node_pos_a
+        dr = ds - edge_l0
+        mul = edge_k*dr/ds 
+        forcex = mul * dx
+        forcey = mul * dy
+        # if np.random.rand() < 0.01:
+            # print(f"Force on edge {edge.id}: {force}, k={edge.k}, d={dr}")
+
+        # force = edge.compute_forces(node_pos_a, node_pos_b)
+        thread_forces[thread_idx, 2*node_id1] += forcex
+        thread_forces[thread_idx, 2*node_id2] -= forcex
+        thread_forces[thread_idx, 2*node_id1+1] += forcey
+        thread_forces[thread_idx, 2*node_id2+1] -= forcey
+    
+    for i in nb.prange(2*num_nodes):
+        for thread_idx in range(num_threads):
+            forces[i] += thread_forces[thread_idx, i]
+    forces -= nodes_vel * VISCOCITY
+    return forces
 
 class Solid:
     def __init__(self, nodes: List[Node]):
@@ -199,13 +236,17 @@ class Solid:
             node_velocities.append(node.velocity.y)
         self.node_velocities = np.array(node_velocities, dtype=np.float64)
         self.node_positions = np.array(node_positions, dtype=np.float64)
-        edges_data:list[float] = []
+        edges_node_data:list[float] = []
+        edges_prop_data:list[float] = []
+        
         for edge in self.edges:
-            edges_data.append(edge.node_a.id)
-            edges_data.append(edge.node_b.id)
-            edges_data.append(edge.k)
-            edges_data.append(edge.l0)
-        self.edges_data = np.array(edges_data)
+            edges_node_data.append(edge.node_a.id)
+            edges_node_data.append(edge.node_b.id)
+            edges_prop_data.append(edge.k)
+            edges_prop_data.append(edge.l0)
+        self.edges_node_data = np.array(edges_node_data, dtype=np.int64)
+        self.edges_prop_data = np.array(edges_prop_data)
+        self.num_edges = len(self.edges)
 
     def add_edge(self, edge: Edge):
         self.edges.append(edge)
@@ -227,6 +268,7 @@ class Solid:
                 if distance_sq < distance_threshold ** 2:
                     edge = Edge(k=LINK_STRENGTH, l0=(distance_sq**0.5)*1.0, node_a=node_a, node_b=node_b, attach=True)
                     self.add_edge(edge)
+        self.num_edges = len(self.edges)
         return self.edges
 
     def remove_intersecting_edges(self, edges_external: list[Edge]):
@@ -250,8 +292,8 @@ class Solid:
     def delete_edge(self, edge: Edge):
         edge.delete_edge()
         self.edges.remove(edge)
-        
-        
+        self.num_edges -= 1
+
     def step_nodes(self, dt: float):
         for node in self.nodes:
             node.step(dt)
@@ -304,6 +346,11 @@ class Solid:
             forces[id2:id2+2] -= force
         return forces
     
+    def compute_forces_low_level_parallel(self, nodes_pos:np.ndarray, nodes_vel:np.ndarray):
+        # print("Doing parallel computation")
+        return compute_forces_low_level_parallel(nodes_pos=nodes_pos, nodes_vel=nodes_vel, edge_node_data=self.edges_node_data, edge_prop_data=self.edges_prop_data, num_nodes=self.num_nodes, num_edges=self.num_edges)
+
+    
 
 
     def step(self, dt:float, substeps:int, gravity:float):
@@ -342,15 +389,15 @@ class Solid:
         substep_dt = dt / substeps
         for _ in range(substeps):
             
-            k1 = np.array(self.compute_forces_low_level(nodes_pos=self.node_positions, nodes_vel=self.node_velocities))
+            k1 = np.array(self.compute_forces_low_level_parallel(nodes_pos=self.node_positions, nodes_vel=self.node_velocities))
             x1 = self.node_positions + self.node_velocities * substep_dt * 0.5
             v1 = self.node_velocities + k1 * substep_dt * 0.5
-            k2 = np.array(self.compute_forces_low_level(nodes_pos=x1, nodes_vel=v1))
+            k2 = np.array(self.compute_forces_low_level_parallel(nodes_pos=x1, nodes_vel=v1))
             x2 = self.node_positions + v1 * substep_dt * 0.5
             v2 = self.node_velocities + k2 * substep_dt * 0.5
-            k3 = np.array(self.compute_forces_low_level(nodes_pos=x2, nodes_vel=v2))
+            k3 = np.array(self.compute_forces_low_level_parallel(nodes_pos=x2, nodes_vel=v2))
             x3 = self.node_positions + v2 * substep_dt
             v3 = self.node_velocities + k3 * substep_dt
-            k4 = np.array(self.compute_forces_low_level(nodes_pos=x3, nodes_vel=v3))
+            k4 = np.array(self.compute_forces_low_level_parallel(nodes_pos=x3, nodes_vel=v3))
             self.node_positions += (self.node_velocities + 2 * v1 + 2 * v2 + v3) * substep_dt / 6
             self.node_velocities += (k1 + 2 * k2 + 2 * k3 + k4) * substep_dt / 6

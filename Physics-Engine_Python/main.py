@@ -2,6 +2,7 @@ import pygame
 from Objects import *
 from constants import *
 from Aux import *
+import numba as nb
 
 
 
@@ -87,6 +88,7 @@ def do_animation(solid: Solid, dxf_edges: list[Edge]):
     pygame.quit()
 
 if __name__ == "__main__":
+    nb.set_num_threads(17)
     min_distance = 1e-6
     max_distance = 5e-2
     center = True
