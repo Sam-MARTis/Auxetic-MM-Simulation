@@ -5,6 +5,7 @@ from constants import *
 from multiprocessing import Pool, cpu_count
 import numba as nb
 import scipy.sparse as sp
+from scipy.sparse.linalg import spsolve
 
 class Helper:
     @staticmethod
@@ -287,7 +288,10 @@ class Solid:
             idx = self.coordinate_indices_to_constrain[i]
             self.node_positions[idx] = self.curve_functions[i](t)
             
-        
+    def solve(self):
+        x_fixed = self.node_positions[self.fixed_indices]
+        rhs = -self.L_fc @ x_fixed
+        self.node_positions[self.free_indices] = spsolve(self.L_ff, rhs)
 
     def add_edge(self, edge: Edge):
         self.edges.append(edge)
@@ -345,6 +349,10 @@ class Solid:
         for i in range(self.num_nodes):
             self.node_velocities[2*i+1] -= gravity * dt
 
+    
     def step(self, dt:float, substeps:int, gravity:float):
-        
+        for _ in range(substeps):
+            self.apply_constraint(self.t)
+            
+            self.t += dt / substeps
         pass
