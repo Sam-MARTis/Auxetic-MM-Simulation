@@ -266,6 +266,29 @@ class Solid:
 
     
 
+    def set_constraint(self, coordinate_indices_to_constrain: list[int], curve_functions: list[Callable[[float], float]]):
+        self.coordinate_indices_to_constrain = coordinate_indices_to_constrain
+        self.constraint_node_mask = np.zeros(2*self.num_nodes, dtype=bool)
+        for idx in coordinate_indices_to_constrain:
+            self.constraint_node_mask[idx] = True
+        self.curve_functions = curve_functions
+        
+        self.free_indices  = np.where(~self.constraint_node_mask)[0]
+        self.fixed_indices = np.where( self.constraint_node_mask)[0]
+
+        self.L_ff = self.L[self.free_indices, :][:, self.free_indices]
+        self.L_fc = self.L[self.free_indices, :][:, self.fixed_indices]
+
+        
+        
+    
+    def apply_constraint(self, t:float):
+        for i in range(len(self.coordinate_indices_to_constrain)):
+            idx = self.coordinate_indices_to_constrain[i]
+            self.node_positions[idx] = self.curve_functions[i](t)
+            
+        
+
     def add_edge(self, edge: Edge):
         self.edges.append(edge)
         
