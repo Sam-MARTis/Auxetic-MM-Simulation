@@ -139,18 +139,19 @@ def render_solid(solid: Solid,  dxf_edges: list[Edge], screen: pygame.Surface):
 
 def render_solid_low_level(solid:Solid, dxf_edges: list[Edge], screen: pygame.Surface):
     for i in range(solid.num_edges):
-        edge = solid.edges[i]
+        # edge = solid.edges[i]
         node_1_id = solid.node_edges_connection[2*i]
         node_2_id = solid.node_edges_connection[2*i+1]
-        # print(f"Rendering edge {i} between nodes {node_1_id} and {node_2_id}")
+        # print(f"Rendering ednode_edges_connectionge {i} between nodes {node_1_id} and {node_2_id}")
         pos1 = solid.node_positions[2*node_1_id:2*node_1_id+2]
         pos2 = solid.node_positions[2*node_2_id:2*node_2_id+2]
         node1_pos = Vector(pos1[0], pos1[1])
         node2_pos = Vector(pos2[0], pos2[1])
         node1_screen_pos = world_to_screen(node1_pos, WORLD_SIZE, MAGNIFICATION)
         node2_screen_pos = world_to_screen(node2_pos, WORLD_SIZE, MAGNIFICATION)
-        pygame.draw.line(screen, EDGE_COLOUR_SELECTED if edge.is_intersecting else EDGE_COLOUR, (int(node1_screen_pos.x), int(node1_screen_pos.y)), (int(node2_screen_pos.x), int(node2_screen_pos.y)), width=EDGE_WIDTH)
-        edge.is_intersecting = False
+        # pygame.draw.line(screen, EDGE_COLOUR_SELECTED if edge.is_intersecting else EDGE_COLOUR, (int(node1_screen_pos.x), int(node1_screen_pos.y)), (int(node2_screen_pos.x), int(node2_screen_pos.y)), width=EDGE_WIDTH)
+        pygame.draw.line(screen, EDGE_COLOUR, (int(node1_screen_pos.x), int(node1_screen_pos.y)), (int(node2_screen_pos.x), int(node2_screen_pos.y)), width=EDGE_WIDTH)
+        # edge.is_intersecting = False
     for i in range(solid.num_nodes):
         pos = solid.node_positions[2*i:2*i+2]
         screen_pos = world_to_screen(Vector(pos[0], pos[1]), WORLD_SIZE, MAGNIFICATION)
