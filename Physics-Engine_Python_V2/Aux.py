@@ -26,8 +26,9 @@ def initialize_nodes_uniform(bounds: Tuple[float, float, float, float], node_cou
         for y in y_values:
             nodes.append(Node(mass=NODE_MASS, position=Vector(x, y), velocity=Vector(0, 0)))
     return nodes
-def initialize_nodes_uniform_with_noise(bounds: Tuple[float, float, float, float], node_count_x: int, node_count_y: int) -> list[Node]:
+def initialize_nodes_uniform_with_noise(bounds: Tuple[float, float, float, float], node_count_x: int, node_count_y: int, get_boundary_nodes:bool = False) -> Tuple[list[Node], list[Node]]:
     nodes: list[Node] = []
+    boundary_nodes:list[Node] = []
     x_min, x_max, y_min, y_max = bounds
     x_values = np.linspace(x_min+EPSILON_BIG, x_max - EPSILON_BIG, node_count_x)
     y_values = np.linspace(y_min+EPSILON_BIG, y_max - EPSILON_BIG, node_count_y)
@@ -38,8 +39,11 @@ def initialize_nodes_uniform_with_noise(bounds: Tuple[float, float, float, float
 
     for x in x_values:
         for y in y_values:
-            nodes.append(Node(mass=NODE_MASS, position=Vector(x, y), velocity=Vector(0, 0)))
-    return nodes
+            node = Node(mass=NODE_MASS, position=Vector(x, y), velocity=Vector(0, 0))
+            nodes.append(node)
+            if(x <= x_min + EPSILON_BIG or x >= x_max - EPSILON_BIG or y <= y_min + EPSILON_BIG or y >= y_max - EPSILON_BIG):
+                boundary_nodes.append(node)
+    return nodes, boundary_nodes
 def edge_already_exists(node_a: Node, node_b: Node) -> bool:
     node_a_edges = [edge.id for edge in node_a.edges]
     node_b_edges = [edge.id for edge in node_b.edges]
@@ -134,9 +138,11 @@ def render_solid(solid: Solid,  dxf_edges: list[Edge], screen: pygame.Surface):
             edge.render(screen=screen, colour=EDGE_COLOUR_SELECTED, width=EDGE_WIDTH)
 
 def render_solid_low_level(solid:Solid, dxf_edges: list[Edge], screen: pygame.Surface):
-    for edge in solid.edges:
-        pos1 = solid.node_positions[2*edge.node_a.id:2*edge.node_a.id+2]
-        pos2 = solid.node_positions[2*edge.node_b.id:2*edge.node_b.id+2]
+    for i in range(solid.num_edges):
+        node_1_id = solid.node_edges_connection[2*i]
+        node_2_id = solid.node_edges_connection[2*i+1]
+        pos1 = solid.node_positions[2*node_1_id:2*node_1_id+2]
+        pos2 = solid.node_positions[2*node_2_id:2*node_2_id+2]
         node1_pos = Vector(pos1[0], pos1[1])
         node2_pos = Vector(pos2[0], pos2[1])
         node1_screen_pos = world_to_screen(node1_pos, WORLD_SIZE, MAGNIFICATION)
@@ -251,3 +257,23 @@ def get_bounds_and_lines_and_hinge_points(filename:str, min_distance:float, max_
             i[1].y *= scaling
         bounds = (bounds[0] * scaling, bounds[1] * scaling, bounds[2] * scaling, bounds[3] * scaling)
     return bounds, lines_vec, hinge_points
+
+
+def get_constraint_indices_and_constraint_functions(nodes:list[Node], bounds: Tuple[float, float, float, float]) -> list[Callable[[float], float]]:
+    constraint_functions = []
+    constraint_indices = []
+    for node in nodes:
+        left = (node.position.x - (bounds[0] + 2*EPSILON_BIG))<0
+        right = (node.position.x - (bounds[1] - 2*EPSILON_BIG))>0
+        up=(node.position.y - (bounds[2] + 2*EPSILON_BIG))<0
+        down=(node.position.y - (bounds[3] - 2*EPSILON_BIG))>0
+        NONBOUNDED_MIDDLE_SIZE = 0.2
+        middle = np.abs(node.position.y - (bounds[2] + bounds[3]) / 2) < NONBOUNDED_MIDDLE_SIZE*(bounds[3]-bounds[2])
+        if middle or up or down:
+            continue
+        constraint_indices.append(2*node.id)
+        if left:
+            constraint_functions.append(lambda t: -t*PARAMETER_MULTIPLIER)
+        if right:
+            constraint_functions.append(lambda t: t*PARAMETER_MULTIPLIER)
+    return constraint_indices, constraint_functions
