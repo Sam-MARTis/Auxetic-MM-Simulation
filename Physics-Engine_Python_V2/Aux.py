@@ -139,9 +139,10 @@ def render_solid(solid: Solid,  dxf_edges: list[Edge], screen: pygame.Surface):
 
 def render_solid_low_level(solid:Solid, dxf_edges: list[Edge], screen: pygame.Surface):
     for i in range(solid.num_edges):
+        edge = solid.edges[i]
         node_1_id = solid.node_edges_connection[2*i]
         node_2_id = solid.node_edges_connection[2*i+1]
-        print(f"Rendering edge {i} between nodes {node_1_id} and {node_2_id}")
+        # print(f"Rendering edge {i} between nodes {node_1_id} and {node_2_id}")
         pos1 = solid.node_positions[2*node_1_id:2*node_1_id+2]
         pos2 = solid.node_positions[2*node_2_id:2*node_2_id+2]
         node1_pos = Vector(pos1[0], pos1[1])
