@@ -183,44 +183,6 @@ def nearest_points_on_line_segments(a0: Vector, a1: Vector, b0: Vector, b1: Vect
     B:Vector = b0 + v * T
     return A, B, (B - A).magnitude()
 
-@nb.njit(parallel=True)
-def compute_forces_low_level_parallel(nodes_pos:np.ndarray, nodes_vel:np.ndarray, edge_node_data:np.ndarray, edge_prop_data:np.ndarray, num_nodes:int, num_edges: int):
-
-    num_threads = nb.get_num_threads()
-    
-    thread_forces = np.zeros((num_threads, 2*num_nodes))
-    forces = np.zeros(num_nodes*2)
-
-    for edge_id in nb.prange(num_edges):
-        thread_idx = nb.get_thread_id()
-        node_id1 = edge_node_data[2*edge_id]
-        node_id2 = edge_node_data[2*edge_id+1]
-        edge_k = edge_prop_data[2*edge_id]
-        edge_l0 = edge_prop_data[2*edge_id+1]
-        dx = nodes_pos[2*node_id2] - nodes_pos[2*node_id1]
-        dy = nodes_pos[2*node_id2+1] - nodes_pos[2*node_id1+1]
-        ds = np.sqrt(dx*dx + dy*dy)
-        ds += (EPSILON_BIG * (ds < EPSILON_BIG))
-        # dpos = node_pos_b - node_pos_a
-        dr = ds - edge_l0
-        mul = edge_k*dr/ds 
-        forcex = mul * dx
-        forcey = mul * dy
-        # if np.random.rand() < 0.01:
-            # print(f"Force on edge {edge.id}: {force}, k={edge.k}, d={dr}")
-
-        # force = edge.compute_forces(node_pos_a, node_pos_b)
-        thread_forces[thread_idx, 2*node_id1] += forcex
-        thread_forces[thread_idx, 2*node_id2] -= forcex
-        thread_forces[thread_idx, 2*node_id1+1] += forcey
-        thread_forces[thread_idx, 2*node_id2+1] -= forcey
-    
-    for i in nb.prange(2*num_nodes):
-        for thread_idx in range(num_threads):
-            forces[i] += thread_forces[thread_idx, i]
-    forces -= nodes_vel * VISCOCITY
-    return forces
-
 class Solid:
     def __init__(self, nodes: List[Node]):
         self.nodes = nodes
@@ -239,7 +201,8 @@ class Solid:
 
         self.node_edges_connection = np.ones(2*self.num_edges, dtype=np.int32)* (-1)
         self.edges_properties = np.zeros(self.num_edges, dtype=np.float64)
-        self.edges_extension_sq = np.zeros(self.num_edges, dtype=np.float64)
+        self.edges_extension_natural = np.zeros(self.num_edges, dtype=np.float64)
+        self.edges_extension_inv = np.zeros(self.num_edges, dtype=np.float64)
         self.K_arr = sp.dok_array((2*self.num_nodes, 2*self.num_nodes), dtype=np.float64)
 
         for i in range(self.num_edges):
@@ -251,7 +214,9 @@ class Solid:
             self.K_arr[2*edge.node_b.id, 2*edge.node_a.id] = edge.k
             self.K_arr[2*edge.node_b.id+1, 2*edge.node_a.id+1] = edge.k
             self.edges_properties[i] = edge.k
-            self.edges_extension_sq[i] = edge.l0**2
+            self.edges_extension_natural[i] = edge.l0
+            self.edges_extension_inv[i] = 1.0 / edge.l0
+
         self.L = np.zeros((2*self.num_nodes, 2*self.num_nodes), dtype=np.float64)
         print(f"Performing verification check of K_ij")
         for i in range(2*self.num_nodes):
@@ -289,17 +254,62 @@ class Solid:
         
         
     
-    def apply_constraint(self, t:float):
+    def evolve_constraint(self, t:float):
         # print(f"Length of coordinate_indices_to_constrain: {len(self.coordinate_indices_to_constrain)}")
         # print(f"Length of curve_functions: {len(self.curve_functions)}")
         for i in range(len(self.coordinate_indices_to_constrain)):
             idx = self.coordinate_indices_to_constrain[i]
             self.node_positions[idx] = self.curve_functions[i](t)
-            
+          
+    def cache_edges_extension_inv(self):
+        pos = np.reshape(self.node_positions, (DIMS, self.num_nodes))
+        for i in range(self.num_edges):
+            node1_id = self.node_edges_connection[i]
+            node2_id = self.node_edges_connection[i+1]
+            p1 = pos[:, node1_id]
+            p2 = pos[:, node2_id]
+            dij = p1-p2
+            norm_dij = np.linalg.norm(dij)
+            self.edges_extension_inv[i] = 1.0 / norm_dij if norm_dij > EPSILON else 0.0
+
+
+    def assemble_gradient_and_hessian(self):
+        g = np.zeros((DIMS, self.num_nodes), dtype=np.float64)
+        C = np.zeros((DIMS, DIMS, self.num_nodes, self.num_nodes), dtype=np.float64)
+        pos = np.reshape(self.node_positions, (DIMS, self.num_nodes))
+
+        for i in range(self.num_edges):
+            node1_id = self.node_edges_connection[2*i]
+            node2_id = self.node_edges_connection[2*i+1]
+            dij = pos[:, node1_id] - pos[:, node2_id]
+
+            k   = self.K_arr[node1_id, node2_id]
+            inv = self.edges_extension_inv[i]
+            l0  = self.edges_extension_natural[i]
+            e   = dij * inv
+
+            f   = k * (1 - l0*inv) * dij
+            g[:, node1_id] += f
+            g[:, node2_id] -= f
+
+            Cij = k * ((1 - l0*inv) * np.eye(DIMS) + l0*inv * np.outer(e, e))
+            C[:, :, node1_id, node1_id] += Cij
+            C[:, :, node2_id, node2_id] += Cij
+            C[:, :, node1_id, node2_id] -= Cij
+            C[:, :, node2_id, node1_id] -= Cij
+        H = C.transpose(0, 2, 1, 3).reshape(DIMS*self.num_nodes, DIMS*self.num_nodes)
+        return g.ravel(), H
+
+    def apply_constraints_hessian(self, g, H):
+        H[self.fixed_indices, :] = 0.0
+        H[:, self.fixed_indices] = 0.0
+        H[self.fixed_indices, self.fixed_indices] = 1.0
+        g.ravel()[self.fixed_indices] = 0.0
+        return g, H
+    
     def solve(self):
-        x_fixed = self.node_positions[self.fixed_indices]
-        rhs = -self.L_fc @ x_fixed
-        self.node_positions[self.free_indices] = spsolve(self.L_ff, rhs)
+        self.cache_edges_extension_inv()
+        pass
 
     def add_edge(self, edge: Edge):
         self.edges.append(edge)
@@ -360,7 +370,7 @@ class Solid:
     
     def step(self, dt:float, substeps:int):
         for _ in range(substeps):
-            self.apply_constraint(self.t)
+            self.evolve_constraint(self.t)
             self.solve()
             
             self.t += dt / substeps
