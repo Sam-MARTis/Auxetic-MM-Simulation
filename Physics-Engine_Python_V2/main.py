@@ -70,7 +70,7 @@ def do_animation(solid: Solid, dxf_edges: list[Edge]):
 
         delta_time = DT  # seconds passed since last frame
 
-        solid.step2(dt=delta_time, substeps=SUBSTEPS, gravity=gravity)
+        # solid.step(dt=delta_time, substeps=SUBSTEPS)
 
         if node_selected_by_mouse:
             mouse_pos = pygame.mouse.get_pos()
@@ -124,8 +124,9 @@ if __name__ == "__main__":
     solid.remove_intersecting_edges(dxf_edges)
     constraint_indices, constraint_functions = get_constraint_indices_and_constraint_functions(nodes=solid.nodes, bounds=bounds)
     solid.prime()
-    # solid.set_constraint(coordinate_indices_to_constrain=constraint_indices, curve_functions=constraint_functions)
-
-    # do_animation(solid, dxf_edges=dxf_edges)
+    solid.set_constraint(coordinate_indices_to_constrain=constraint_indices, curve_functions=constraint_functions)
+    solid.step(dt=DT, substeps=SUBSTEPS)
+    
+    do_animation(solid, dxf_edges=dxf_edges)
     
 

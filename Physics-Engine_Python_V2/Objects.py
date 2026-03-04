@@ -236,10 +236,10 @@ class Solid:
             node_positions[2*i] = self.nodes[i].position.x
             node_positions[2*i+1] = self.nodes[i].position.y
         self.node_positions = node_positions
-        
-        self.node_edges_connection = np.ones(2*self.num_edges)* (-1)
-        self.edges_properties = np.zeros(self.num_edges)
-        self.edges_extension_sq = np.zeros(self.num_edges)
+
+        self.node_edges_connection = np.ones(2*self.num_edges, dtype=np.int32)* (-1)
+        self.edges_properties = np.zeros(self.num_edges, dtype=np.float64)
+        self.edges_extension_sq = np.zeros(self.num_edges, dtype=np.float64)
         self.K_arr = sp.dok_array((2*self.num_nodes, 2*self.num_nodes), dtype=np.float64)
 
         for i in range(self.num_edges):
@@ -259,15 +259,17 @@ class Solid:
                 raise RuntimeError(f"K[{i}, {i}] = {self.K_arr[i, i]}")
         print(f"Finished verification check of K_ij")
         
+        # for i in range(2*self.num_nodes):
+        #     if i % 100 == 0:
+        #         print(f"Processing row {i} out of {2*self.num_nodes}")
+        #     for j in range(2*self.num_nodes):
+        #         self.L[i, j] = -self.K_arr[i, j]
+        #         self.L[j, i] = -self.K_arr[i, j]
+        #         self.L[i, i] += self.K_arr[i, j]
+        #         self.L[j, j] += self.K_arr[i, j]
+        self.L -= self.K_arr
         for i in range(2*self.num_nodes):
-            if i % 100 == 0:
-                print(f"Processing row {i} out of {2*self.num_nodes}")
-            for j in range(2*self.num_nodes):
-                self.L[i, j] = -self.K_arr[i, j]
-                self.L[j, i] = -self.K_arr[i, j]
-                self.L[i, i] += self.K_arr[i, j]
-                self.L[j, j] += self.K_arr[i, j]
-
+            self.L[i, i] = self.L[i, :].sum()
 
     
 
@@ -288,6 +290,8 @@ class Solid:
         
     
     def apply_constraint(self, t:float):
+        # print(f"Length of coordinate_indices_to_constrain: {len(self.coordinate_indices_to_constrain)}")
+        # print(f"Length of curve_functions: {len(self.curve_functions)}")
         for i in range(len(self.coordinate_indices_to_constrain)):
             idx = self.coordinate_indices_to_constrain[i]
             self.node_positions[idx] = self.curve_functions[i](t)
@@ -354,7 +358,7 @@ class Solid:
             self.node_velocities[2*i+1] -= gravity * dt
 
     
-    def step(self, dt:float, substeps:int, gravity:float):
+    def step(self, dt:float, substeps:int):
         for _ in range(substeps):
             self.apply_constraint(self.t)
             self.solve()

@@ -3,7 +3,7 @@ import numpy as np
 EPSILON = 1e-6
 EPSILON_BIG = 1e-4
 DT = 1e-1
-PARAMETER_MULTIPLIER = 1e-7
+PARAMETER_MULTIPLIER = 0
 
 DIMS = 2
 

@@ -141,6 +141,7 @@ def render_solid_low_level(solid:Solid, dxf_edges: list[Edge], screen: pygame.Su
     for i in range(solid.num_edges):
         node_1_id = solid.node_edges_connection[2*i]
         node_2_id = solid.node_edges_connection[2*i+1]
+        print(f"Rendering edge {i} between nodes {node_1_id} and {node_2_id}")
         pos1 = solid.node_positions[2*node_1_id:2*node_1_id+2]
         pos2 = solid.node_positions[2*node_2_id:2*node_2_id+2]
         node1_pos = Vector(pos1[0], pos1[1])
@@ -271,9 +272,12 @@ def get_constraint_indices_and_constraint_functions(nodes:list[Node], bounds: Tu
         middle = np.abs(node.position.y - (bounds[2] + bounds[3]) / 2) < NONBOUNDED_MIDDLE_SIZE*(bounds[3]-bounds[2])
         if middle or up or down:
             continue
-        constraint_indices.append(2*node.id)
         if left:
-            constraint_functions.append(lambda t: -t*PARAMETER_MULTIPLIER)
-        if right:
-            constraint_functions.append(lambda t: t*PARAMETER_MULTIPLIER)
+            constraint_functions.append(lambda t: node.position.x - t*PARAMETER_MULTIPLIER)
+            constraint_indices.append(2*node.id)
+        elif right:
+            constraint_functions.append(lambda t: node.position.x + t*PARAMETER_MULTIPLIER)
+            constraint_indices.append(2*node.id + 1)
+        # else:
+        #     raise RuntimeError(f"Unreachable")
     return constraint_indices, constraint_functions
