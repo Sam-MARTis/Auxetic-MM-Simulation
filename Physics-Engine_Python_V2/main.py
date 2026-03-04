@@ -108,17 +108,24 @@ if __name__ == "__main__":
         # print(node_b.position)
     
     Node._count=0
-    nodes = initialize_nodes_uniform_with_noise(bounds=bounds, node_count_x=int(np.sqrt(NODE_COUNT)), node_count_y=int(np.sqrt(NODE_COUNT)))
+    print(f"Node class count: {Node._count}")
+    nodes, boundary_nodes = initialize_nodes_uniform_with_noise(bounds=bounds, node_count_x=int(np.sqrt(NODE_COUNT)), node_count_y=int(np.sqrt(NODE_COUNT)), get_boundary_nodes=True)
+    print(f"Nodes without hinge points len: {len(nodes)} vs Class node count: {Node._count}")
     hinge_point_nodes = [Node(mass=NODE_MASS, position=hp, velocity=Vector(0, 0)) for hp in hinge_points]
+    print(f"hinge points len: {len(hinge_point_nodes)} vs Class node count: {Node._count}")
     nodes.extend(hinge_point_nodes)
+    print(f"Node count: {len(nodes)}")
+    print(f"Class node count: {Node._count}")
     solid = Solid(nodes=nodes)
     
     solid.initialize_edges_distance_based(distance_threshold=LINK_DISTANCE)
 
     solid.remove_intersecting_edges(dxf_edges)
     solid.remove_intersecting_edges(dxf_edges)
-    
+    constraint_indices, constraint_functions = get_constraint_indices_and_constraint_functions(nodes=solid.nodes, bounds=bounds)
     solid.prime()
-    do_animation(solid, dxf_edges=dxf_edges)
+    # solid.set_constraint(coordinate_indices_to_constrain=constraint_indices, curve_functions=constraint_functions)
+
+    # do_animation(solid, dxf_edges=dxf_edges)
     
 
