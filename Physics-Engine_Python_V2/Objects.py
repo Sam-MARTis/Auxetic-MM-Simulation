@@ -241,6 +241,7 @@ class Solid:
         self.edges_properties = np.zeros(self.num_edges)
         self.edges_extension_sq = np.zeros(self.num_edges)
         self.K_arr = sp.dok_array((2*self.num_nodes, 2*self.num_nodes), dtype=np.float64)
+
         for i in range(self.num_edges):
             edge = self.edges[i]
             self.node_edges_connection[2*i] = edge.node_a.id
@@ -259,11 +260,14 @@ class Solid:
         print(f"Finished verification check of K_ij")
         
         for i in range(2*self.num_nodes):
+            if i % 100 == 0:
+                print(f"Processing row {i} out of {2*self.num_nodes}")
             for j in range(2*self.num_nodes):
                 self.L[i, j] = -self.K_arr[i, j]
                 self.L[j, i] = -self.K_arr[i, j]
                 self.L[i, i] += self.K_arr[i, j]
                 self.L[j, j] += self.K_arr[i, j]
+
 
     
 
@@ -353,6 +357,7 @@ class Solid:
     def step(self, dt:float, substeps:int, gravity:float):
         for _ in range(substeps):
             self.apply_constraint(self.t)
+            self.solve()
             
             self.t += dt / substeps
         pass
