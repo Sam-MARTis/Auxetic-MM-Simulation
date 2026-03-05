@@ -268,7 +268,7 @@ def get_constraint_indices_and_constraint_functions(nodes:list[Node], bounds: Tu
     for node in nodes:
         left  = node.position.x < bounds[0] + 2*EPSILON_BIG
         right = node.position.x > bounds[1] - 2*EPSILON_BIG
-        down = node.position.y > bounds[3] - 2*EPSILON_BIG
+        down = node.position.y < bounds[2] + 2*EPSILON_BIG
         NONBOUNDED_MIDDLE_SIZE = 0.2
 
         middle = np.abs(node.position.y - (bounds[2] + bounds[3]) / 2) < NONBOUNDED_MIDDLE_SIZE*(bounds[3]-bounds[2])

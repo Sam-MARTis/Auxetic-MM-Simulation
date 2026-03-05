@@ -204,56 +204,14 @@ class Solid:
         self.edges_properties = np.zeros(self.num_edges, dtype=np.float64)
         self.edges_extension_natural = np.zeros(self.num_edges, dtype=np.float64)
         self.edges_extension = np.zeros(self.num_edges, dtype=np.float64)
-        # self.K_arr = sp.dok_array((self.num_nodes, self.num_nodes), dtype=np.float64)
-        pos = self.node_positions.reshape((DIMS, self.num_nodes))
         for i in range(self.num_edges):
             edge = self.edges[i]
             self.node_edges_connection[2*i] = edge.node_a.id
             self.node_edges_connection[2*i+1] = edge.node_b.id
-            # self.K_arr[edge.node_a.id, edge.node_b.id] -= edge.k
-            # self.K_arr[edge.node_a.id, edge.node_a.id] += edge.k
-            # self.K_arr[edge.node_b.id, edge.node_a.id] -= edge.k
-            # self.K_arr[edge.node_b.id, edge.node_b.id] += edge.k
             self.edges_properties[i] = edge.k
             self.edges_extension_natural[i] = edge.l0
             self.edges_extension[i] = 0
-            
-            # # edge = self.edges[i]
-            # # a, b = edge.node_a.id, edge.node_b.id
-            # p1 = pos[:, edge.node_a.id]
-            # p2 = pos[:, edge.node_b.id]
-            # d_vec = p1 - p2
-            # d = np.linalg.norm(d_vec) 
-            # # # compute geometry
-            # # d_vec = edge.node_a.x - edge.node_b.x   # 2-vector
-            # # d = np.linalg.norm(d_vec)
-            # n = d_vec / d                             # unit vector
-
-            # # # 2x2 H matrix
-            # nn = np.outer(n, n)
-            # geometric = ((d - edge.l0) / d) * (np.eye(2) - nn)
-            # H = edge.k * (nn + geometric)
-
-            # da = [2*edge.node_a.id, 2*edge.node_a.id+1]
-            # db = [2*edge.node_b.id, 2*edge.node_b.id+1]
-
-            # # diagonal blocks
-            # self.K_arr[np.ix_(da, da)] += H
-            # self.K_arr[np.ix_(db, db)] += H
-
-            # # # off-diagonal blocks
-            # self.K_arr[np.ix_(da, db)] -= H
-            # self.K_arr[np.ix_(db, da)] -= H
-
-        self.L = np.zeros((2*self.num_nodes, 2*self.num_nodes), dtype=np.float64)
-        # print(f"Performing verification check of K_ij")
-        # for i in range(2*self.num_nodes):
-        #     if self.K_arr[i, i] != 0:
-        #         raise RuntimeError(f"K[{i}, {i}] = {self.K_arr[i, i]}")
-        # print(f"Finished verification check of K_ij")
-        
-     
-    
+  
 
     def set_constraint(self, coordinate_indices_to_constrain: list[int], curve_functions: list[Callable[[float], float]]):
         self.coordinate_indices_to_constrain = coordinate_indices_to_constrain
@@ -268,15 +226,12 @@ class Solid:
         
     
     def evolve_constraint(self, t:float):
-        # print(f"Length of coordinate_indices_to_constrain: {len(self.coordinate_indices_to_constrain)}")
-        # print(f"Length of curve_functions: {len(self.curve_functions)}")
         for i in range(len(self.coordinate_indices_to_constrain)):
             idx = self.coordinate_indices_to_constrain[i]
             self.node_positions[idx] = self.curve_functions[i](t)
           
     def cache_edges_extension(self):
-        # node_positions is interleaved [x0,y0,x1,y1,...], so reshape to (N,2) then
-        # transpose to (2,N) so that pos[:,i] = [xi, yi] for node i.
+
         pos = self.node_positions.reshape(self.num_nodes, DIMS).T
         collapsed = []
         for i in range(self.num_edges):
@@ -447,12 +402,20 @@ class Solid:
     def apply_gravity_low_level(self, dt: float, gravity: float):
         for i in range(self.num_nodes):
             self.node_velocities[2*i+1] -= gravity * dt
+    def compute_energy_from_extension_cache(self):
+        self.energy = 0.0
+        for i in range(self.num_edges):
+            k  = self.edges_properties[i]
+            d  = self.edges_extension[i]   
+            l0 = self.edges_extension_natural[i]
+            self.energy += 0.5 * k * (d - l0) ** 2
+        
 
-    
-    def step(self, dt:float, substeps:int):
+    def step(self, dt:float, substeps:int, report_energy:bool):
         for _ in range(substeps):
             self.evolve_constraint(self.t)
             self.solve(tol=TOLERANCE_SOLVER, max_iter=MAX_ITER_SOLVER)
-            
             self.t += dt / substeps
-        pass
+        if report_energy:
+            self.compute_energy_from_extension_cache()
+            return self.energy

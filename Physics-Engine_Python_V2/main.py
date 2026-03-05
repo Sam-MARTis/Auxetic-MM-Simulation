@@ -6,11 +6,53 @@ import numba as nb
 
 
 
+PLOT_W, PLOT_H = 500, 300
+PLOT_PAD = 40   # pixels of margin inside the plot window
+
+def draw_energy_plot(plot_screen: pygame.Surface, t_hist: list, e_hist: list):
+    """Redraw the energy-vs-t plot on plot_screen."""
+    plot_screen.fill((15, 15, 30))
+    W, H = plot_screen.get_size()
+    iw = W - 2*PLOT_PAD   # inner width
+    ih = H - 2*PLOT_PAD   # inner height
+
+    # Axes
+    pygame.draw.line(plot_screen, (180,180,180), (PLOT_PAD, PLOT_PAD), (PLOT_PAD, PLOT_PAD+ih), 1)
+    pygame.draw.line(plot_screen, (180,180,180), (PLOT_PAD, PLOT_PAD+ih), (PLOT_PAD+iw, PLOT_PAD+ih), 1)
+
+    if len(t_hist) < 2:
+        return
+
+    t_min, t_max = t_hist[0],  max(t_hist[-1], t_hist[0]+1e-9)
+    e_min, e_max = min(e_hist), max(e_hist)
+    if e_max == e_min:
+        e_max = e_min + 1.0   # avoid degenerate range
+
+    def to_px(t, e):
+        x = PLOT_PAD + int((t - t_min) / (t_max - t_min) * iw)
+        y = PLOT_PAD + ih - int((e - e_min) / (e_max - e_min) * ih)
+        return x, y
+
+    pts = [to_px(t, e) for t, e in zip(t_hist, e_hist)]
+    if len(pts) >= 2:
+        pygame.draw.lines(plot_screen, (0, 220, 180), False, pts, 2)
+
+    font = pygame.font.SysFont(None, 18)
+    plot_screen.blit(font.render(f"t={t_hist[-1]:.3f}", True, (200,200,200)), (PLOT_PAD+iw-60, PLOT_PAD+ih+4))
+    plot_screen.blit(font.render(f"E={e_hist[-1]:.3e}", True, (200,200,200)), (2, PLOT_PAD))
+    plot_screen.blit(font.render("Energy vs t", True, (220,220,220)), (W//2-30, 4))
+
+
 def do_animation(solid: Solid, dxf_edges: list[Edge]):
     pygame.init()
     gravity = GRAVITY
     hold = True
     screen = pygame.display.set_mode((screen_size, screen_size))
+    pygame.display.set_caption("Spring Network")
+    plot_screen = pygame.Surface((PLOT_W, PLOT_H))
+
+    t_hist: list[float] = []
+    e_hist: list[float] = []
     
     node_selected_by_mouse = None
     del_edge_key_clicked = False
@@ -70,8 +112,10 @@ def do_animation(solid: Solid, dxf_edges: list[Edge]):
                 print(f"Remaining edges: {len(solid.edges)}")
 
         delta_time = DT  # seconds passed since last frame
-        solid.step(dt=delta_time, substeps=SUBSTEPS)
-        # solid.step(dt=delta_time, substeps=SUBSTEPS)
+        energy = solid.step(dt=delta_time, substeps=SUBSTEPS, report_energy=True)
+        t_hist.append(solid.t)
+        e_hist.append(energy)
+        print(f"t={solid.t:.4f}  E={energy:.6e}")
 
         if node_selected_by_mouse:
             mouse_pos = pygame.mouse.get_pos()
@@ -81,9 +125,10 @@ def do_animation(solid: Solid, dxf_edges: list[Edge]):
             solid.node_positions[2*i+1] = world_y
 
         screen.fill((0, 0, 0))
-
         render_solid_low_level(solid=solid, dxf_edges=dxf_edges, screen=screen)
 
+        draw_energy_plot(plot_screen, t_hist, e_hist)
+        screen.blit(plot_screen, (screen_size - PLOT_W - 5, 5))
         pygame.display.flip()
 
     pygame.quit()
