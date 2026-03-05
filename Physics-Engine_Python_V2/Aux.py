@@ -153,9 +153,11 @@ def render_solid_low_level(solid:Solid, dxf_edges: list[Edge], screen: pygame.Su
         pygame.draw.line(screen, EDGE_COLOUR, (int(node1_screen_pos.x), int(node1_screen_pos.y)), (int(node2_screen_pos.x), int(node2_screen_pos.y)), width=EDGE_WIDTH)
         # edge.is_intersecting = False
     for i in range(solid.num_nodes):
+        
         pos = solid.node_positions[2*i:2*i+2]
+        constrained = (2*i in solid.fixed_indices) or (2*i+1 in solid.fixed_indices) 
         screen_pos = world_to_screen(Vector(pos[0], pos[1]), WORLD_SIZE, MAGNIFICATION)
-        pygame.draw.circle(screen, NODE_COLOUR, (int(screen_pos.x), int(screen_pos.y)), NODE_RADIUS)
+        pygame.draw.circle(screen, NODE_COLOUR if not constrained else NODE_COLOUR_SELECTED, (int(screen_pos.x), int(screen_pos.y)), NODE_RADIUS)
     if RENDER_DXF:
         for edge in dxf_edges:
             edge.render(screen=screen, colour=EDGE_COLOUR_SELECTED, width=EDGE_WIDTH)

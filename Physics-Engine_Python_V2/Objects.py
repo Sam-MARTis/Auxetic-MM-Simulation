@@ -47,7 +47,7 @@ class Vector:
         return pygame.Vector2(self.x, self.y)
 
 def world_to_screen(position: Vector, world_size:float, magnification:float) -> Vector:
-    return Vector((position.x+world_size/2)*magnification, (-(position.y)+world_size/2)*magnification)
+    return Vector((position.x+world_size/2)*magnification , (-(position.y)+world_size/2)*magnification + PLOT_H/2)
 
 
 class Node:
@@ -233,26 +233,26 @@ class Solid:
             self.node_positions[idx] = self.curve_functions[i](t)
           
     def cache_edges_extension(self):
+        pos = self.node_positions.reshape(self.num_nodes, DIMS).T  # (DIMS, num_nodes)
 
-        pos = self.node_positions.reshape(self.num_nodes, DIMS).T
-        collapsed = []
-        for i in range(self.num_edges):
-            node1_id = self.node_edges_connection[2*i]
-            node2_id = self.node_edges_connection[2*i+1]
-            p1 = pos[:, node1_id]
-            p2 = pos[:, node2_id]
-            dij = p1 - p2
-            norm_dij = np.linalg.norm(dij)
-            if norm_dij <= EPSILON:
-                self.edges_extension[i] = 0.0  
-                collapsed.append((i, node1_id, node2_id, norm_dij))
-            else:
-                self.edges_extension[i] = norm_dij 
-        if collapsed:
+        node1_ids = self.node_edges_connection[0::2]  # (num_edges,)
+        node2_ids = self.node_edges_connection[1::2]
+
+        dij = pos[:, node1_ids] - pos[:, node2_ids]  # (DIMS, num_edges)
+        norms = np.linalg.norm(dij, axis=0)           # (num_edges,)
+
+        collapsed_mask = norms <= EPSILON
+        self.edges_extension[:] = np.where(collapsed_mask, 0.0, norms)
+
+        if np.any(collapsed_mask):
+            idx = np.where(collapsed_mask)[0]
             warnings.warn(
-                f"[cache_edges_extension] {len(collapsed)} collapsed edge(s) "
+                f"[cache_edges_extension] {len(idx)} collapsed edge(s) "
                 f"(d <= {EPSILON}): " +
-                ", ".join(f"edge {ei} (n{a}-n{b}, d={d:.2e})" for ei, a, b, d in collapsed)
+                ", ".join(
+                    f"edge {i} (n{node1_ids[i]}-n{node2_ids[i]}, d={norms[i]:.2e})"
+                    for i in idx
+                )
             )
 
 
@@ -308,26 +308,24 @@ class Solid:
         return g, H
 
     def apply_constraints_on_hessian_and_gradient(self, g: np.ndarray, H: sp.csc_matrix):
-        H = H.tolil()
-        H[self.fixed_indices, :] = 0.0
-        H[:, self.fixed_indices] = 0.0
-        H[self.fixed_indices, self.fixed_indices] = 1.0
-        g[self.fixed_indices] = 0.0
+
+        H = H.tolil() 
+        fixed = self.fixed_indices
+        for idx in fixed:
+            H.rows[idx] = [idx]
+            H.data[idx] = [1.0]
         H = H.tocsc()
+    
+        for idx in fixed:
+            start, end = H.indptr[idx], H.indptr[idx + 1]
+            H.data[start:end] = 0.0
 
-        diag = np.array(H.diagonal())
-        zero_free_mask = diag == 0.0
-        zero_free_mask[self.fixed_indices] = False
-        zero_free_dofs = np.where(zero_free_mask)[0]
-        if zero_free_dofs.size > 0:
-            H = H.tolil()
-            H[zero_free_dofs, zero_free_dofs] = EPSILON
-            H = H.tocsc()
-            warnings.warn(
-                f"[apply_constraints] {zero_free_dofs.size} free DOF(s) have zero "
-                f"diagonal (isolated/collapsed-only nodes); regularised with {EPSILON:.1e}."
-            )
-
+            diag_pos = np.searchsorted(H.indices[start:end], idx)
+            if diag_pos < (end - start) and H.indices[start + diag_pos] == idx:
+                H.data[start + diag_pos] = 1.0
+        
+        g[fixed] = 0.0
+        
         return g, H
 
     def solve(self, tol, max_iter):
@@ -340,7 +338,7 @@ class Solid:
                 _iters += 1
                 _s = time.perf_counter(); self.cache_edges_extension();                         _t['cache_edges']      += time.perf_counter() - _s
                 _s = time.perf_counter(); g, H = self.assemble_gradient_and_hessian();          _t['assemble_g_H']     += time.perf_counter() - _s
-                _s = time.perf_counter(); g, H = self.apply_constraints_on_hessian_and_gradient(g, H); _t['apply_constraints'] += time.perf_counter() - _s
+                _s = time.perf_counter(); g, H = self.apply_constraints_on_hessian_and_gradient(g, H); _t['apply_constraints_on_hhessian_and_gradient'] += time.perf_counter() - _s
                 _s = time.perf_counter(); dx = spsolve(H, -g);                                  _t['linalg_solve']     += time.perf_counter() - _s
                 _s = time.perf_counter()
                 self.node_positions += 0.5*dx

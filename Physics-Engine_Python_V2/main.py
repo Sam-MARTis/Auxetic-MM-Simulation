@@ -1,13 +1,11 @@
 import pygame
+import time
 from Objects import *
 from constants import *
 from Aux import *
 import numba as nb
 
 
-
-PLOT_W, PLOT_H = 500, 300
-PLOT_PAD = 40   # pixels of margin inside the plot window
 
 def draw_energy_plot(plot_screen: pygame.Surface, t_hist: list, e_hist: list):
     """Redraw the energy-vs-t plot on plot_screen."""
@@ -110,13 +108,6 @@ def do_animation(solid: Solid, dxf_edges: list[Edge]):
                 # i+=1
                 print("Deleted edge")
                 print(f"Remaining edges: {len(solid.edges)}")
-
-        delta_time = DT  # seconds passed since last frame
-        energy = solid.step(dt=delta_time, substeps=SUBSTEPS, report_energy=True)
-        t_hist.append(solid.t)
-        e_hist.append(energy)
-        print(f"t={solid.t:.4f}  E={energy:.6e}")
-
         if node_selected_by_mouse:
             mouse_pos = pygame.mouse.get_pos()
             world_x = mouse_pos[0] / MAGNIFICATION - WORLD_SIZE / 2
@@ -124,12 +115,31 @@ def do_animation(solid: Solid, dxf_edges: list[Edge]):
             solid.node_positions[2*i] = world_x
             solid.node_positions[2*i+1] = world_y
 
+        if(solid.t < MAX_T):
+            delta_time = DT
+            _s = time.perf_counter() if PROFILE_PERFORMANCE else 0
+            energy = solid.step(dt=delta_time, substeps=SUBSTEPS, report_energy=True)
+            _step_ms = (time.perf_counter() - _s) * 1e3 if PROFILE_PERFORMANCE else 0
+            t_hist.append(solid.t)
+            e_hist.append(energy)
+            print(f"t={solid.t:.4f}  E={energy:.6e}")
+
+        _s = time.perf_counter() if PROFILE_PERFORMANCE else 0
         screen.fill((0, 0, 0))
         render_solid_low_level(solid=solid, dxf_edges=dxf_edges, screen=screen)
+        _render_ms = (time.perf_counter() - _s) * 1e3 if PROFILE_PERFORMANCE else 0
 
+        _s = time.perf_counter() if PROFILE_PERFORMANCE else 0
         draw_energy_plot(plot_screen, t_hist, e_hist)
         screen.blit(plot_screen, (screen_size - PLOT_W - 5, 5))
+        _plot_ms = (time.perf_counter() - _s) * 1e3 if PROFILE_PERFORMANCE else 0
+
+        _s = time.perf_counter() if PROFILE_PERFORMANCE else 0
         pygame.display.flip()
+        _flip_ms = (time.perf_counter() - _s) * 1e3 if PROFILE_PERFORMANCE else 0
+
+        if PROFILE_PERFORMANCE:
+            print(f"  [render]  solid={_render_ms:.2f}ms  plot={_plot_ms:.2f}ms  flip={_flip_ms:.2f}ms  | step={_step_ms:.2f}ms")
 
     pygame.quit()
 
