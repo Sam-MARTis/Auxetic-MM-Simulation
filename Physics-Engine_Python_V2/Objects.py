@@ -7,6 +7,8 @@ import numba as nb
 import scipy.sparse as sp
 from scipy.sparse.linalg import spsolve
 import warnings
+import time
+from collections import defaultdict
 
 class Helper:
     @staticmethod
@@ -242,10 +244,10 @@ class Solid:
             dij = p1 - p2
             norm_dij = np.linalg.norm(dij)
             if norm_dij <= EPSILON:
-                self.edges_extension[i] = 0.0  # sentinel: skip this edge in assembly
+                self.edges_extension[i] = 0.0  
                 collapsed.append((i, node1_id, node2_id, norm_dij))
             else:
-                self.edges_extension[i] = norm_dij  # store d, not (d - l0)
+                self.edges_extension[i] = norm_dij 
         if collapsed:
             warnings.warn(
                 f"[cache_edges_extension] {len(collapsed)} collapsed edge(s) "
@@ -255,53 +257,72 @@ class Solid:
 
 
     def assemble_gradient_and_hessian(self):
-        g = np.zeros((DIMS*self.num_nodes), dtype=np.float64)
-        C = np.zeros((DIMS*self.num_nodes, DIMS*self.num_nodes), dtype=np.float64)
-        pos = self.node_positions.reshape(self.num_nodes, DIMS).T
+        N   = self.num_nodes
+        DOF = DIMS * N
+        g   = np.zeros(DOF, dtype=np.float64)
 
-        for i in range(self.num_edges):
-            node1_id = self.node_edges_connection[2*i]
-            node2_id = self.node_edges_connection[2*i+1]
-            dij = pos[:, node1_id] - pos[:, node2_id]
+        nec  = self.node_edges_connection         
+        n1   = nec[0::2]                           
+        n2   = nec[1::2]                          
+        k    = self.edges_properties               
+        d    = self.edges_extension                
+        l0   = self.edges_extension_natural        
 
-            k  = self.edges_properties[i]
-            d  = self.edges_extension[i]   # current distance (0 = collapsed, skip)
-            l0 = self.edges_extension_natural[i]
+        pos  = self.node_positions.reshape(N, DIMS).T
 
-            if d == 0.0:  # coincident nodes — no safe unit vector or stiffness
-                continue
+        live = d != 0.0
+        n1, n2, k, d, l0 = n1[live], n2[live], k[live], d[live], l0[live]
 
-            inv = 1.0 / d          # 1/d used throughout
-            e   = dij * inv        # unit vector along edge
+        dx = pos[0, n1] - pos[0, n2]              
+        dy = pos[1, n1] - pos[1, n2]              
 
-            f   = k * (1 - l0*inv) * dij
-            g[2*node1_id:2*node1_id+2] += f
-            g[2*node2_id:2*node2_id+2] -= f
+        inv   = 1.0 / d                           
+        alpha = k * (1.0 - l0 * inv)              
+        beta  = k * l0 * inv                      
 
-            Cij = k * ((1 - l0*inv) * np.eye(DIMS) + l0*inv * np.outer(e, e))
-            C[2*node1_id: 2*node1_id+2, 2*node1_id:2*node1_id+2] += Cij
-            C[2*node2_id:2*node2_id+2, 2*node2_id:2*node2_id+2] += Cij
-            C[2*node1_id:2*node1_id+2, 2*node2_id:2*node2_id+2] -= Cij
-            C[2*node2_id:2*node2_id+2, 2*node1_id:2*node1_id+2] -= Cij
-        # H = C.transpose(0, 2, 1, 3).reshape(DIMS*self.num_nodes, DIMS*self.num_nodes)
-        return g, C
+        fx = alpha * dx
+        fy = alpha * dy
+        np.add.at(g, 2*n1,   fx);  np.add.at(g, 2*n1+1, fy)
+        np.add.at(g, 2*n2,  -fx);  np.add.at(g, 2*n2+1,-fy)
 
-    def apply_constraints_on_hessian_and_gradient(self, g:np.ndarray, H:np.ndarray):
+        ex = dx * inv                             
+        ey = dy * inv                             
+
+        c00 = alpha + beta * ex * ex
+        c01 = beta * ex * ey
+        c11 = alpha + beta * ey * ey
+
+        r1x, r1y = 2*n1,   2*n1+1
+        r2x, r2y = 2*n2,   2*n2+1
+
+        rows = np.concatenate([r1x,r1x,r1y,r1y, r2x,r2x,r2y,r2y,
+                                r1x,r1x,r1y,r1y, r2x,r2x,r2y,r2y])
+        cols = np.concatenate([r1x,r1y,r1x,r1y, r2x,r2y,r2x,r2y,
+                                r2x,r2y,r2x,r2y, r1x,r1y,r1x,r1y])
+        vals = np.concatenate([ c00, c01, c01, c11,
+                                 c00, c01, c01, c11,
+                                -c00,-c01,-c01,-c11,
+                                -c00,-c01,-c01,-c11])
+
+        H = sp.csc_matrix((vals, (rows, cols)), shape=(DOF, DOF))
+        return g, H
+
+    def apply_constraints_on_hessian_and_gradient(self, g: np.ndarray, H: sp.csc_matrix):
+        H = H.tolil()
         H[self.fixed_indices, :] = 0.0
         H[:, self.fixed_indices] = 0.0
         H[self.fixed_indices, self.fixed_indices] = 1.0
         g[self.fixed_indices] = 0.0
+        H = H.tocsc()
 
-        # Free DOFs whose diagonal is still zero after BC application have no live
-        # spring connection (e.g. nodes whose only edges are collapsed / coincident).
-        # A zero diagonal row makes H singular. Pin them with a small Tikhonov term
-        # so the solve does not fail; their displacement will be driven to ~zero.
-        diag = np.diag(H)
-        zero_free_mask = (diag == 0.0)
-        zero_free_mask[self.fixed_indices] = False  # already handled above
+        diag = np.array(H.diagonal())
+        zero_free_mask = diag == 0.0
+        zero_free_mask[self.fixed_indices] = False
         zero_free_dofs = np.where(zero_free_mask)[0]
         if zero_free_dofs.size > 0:
-            H[zero_free_dofs, zero_free_dofs] = EPSILON  # small regularisation
+            H = H.tolil()
+            H[zero_free_dofs, zero_free_dofs] = EPSILON
+            H = H.tocsc()
             warnings.warn(
                 f"[apply_constraints] {zero_free_dofs.size} free DOF(s) have zero "
                 f"diagonal (isolated/collapsed-only nodes); regularised with {EPSILON:.1e}."
@@ -309,43 +330,41 @@ class Solid:
 
         return g, H
 
-    # def _compute_energy(self, positions: np.ndarray) -> float:
-    #     """E = 0.5 * sum_edges K_ij * (||x_i - x_j|| - l0)^2"""
-    #     pos = positions.reshape(DIMS, self.num_nodes)
-    #     E = 0.0
-    #     for i in range(self.num_edges):
-    #         n1 = self.node_edges_connection[2*i]
-    #         n2 = self.node_edges_connection[2*i+1]
-    #         dij = pos[:, n1] - pos[:, n2]
-    #         d   = np.linalg.norm(dij)
-    #         l0  = self.edges_extension_natural[i]
-    #         k   = self.K_arr[n1, n2]
-    #         E  += 0.5 * k * (d - l0) ** 2
-    #     return E
-
     def solve(self, tol, max_iter):
+        if PROFILE_PERFORMANCE:
+            _t = defaultdict(float)
+            _iters = 0
 
         for iteration in range(max_iter):
-            self.cache_edges_extension()
-            g, H = self.assemble_gradient_and_hessian()
-            g, H = self.apply_constraints_on_hessian_and_gradient(g, H)
+            if PROFILE_PERFORMANCE:
+                _iters += 1
+                _s = time.perf_counter(); self.cache_edges_extension();                         _t['cache_edges']      += time.perf_counter() - _s
+                _s = time.perf_counter(); g, H = self.assemble_gradient_and_hessian();          _t['assemble_g_H']     += time.perf_counter() - _s
+                _s = time.perf_counter(); g, H = self.apply_constraints_on_hessian_and_gradient(g, H); _t['apply_constraints'] += time.perf_counter() - _s
+                _s = time.perf_counter(); dx = spsolve(H, -g);                                  _t['linalg_solve']     += time.perf_counter() - _s
+                _s = time.perf_counter()
+                self.node_positions += 0.5*dx
+                for i, idx in enumerate(self.coordinate_indices_to_constrain):
+                    self.node_positions[idx] = self.curve_functions[i](self.t)
+                _t['position_update'] += time.perf_counter() - _s
+            else:
+                self.cache_edges_extension()
+                g, H = self.assemble_gradient_and_hessian()
+                g, H = self.apply_constraints_on_hessian_and_gradient(g, H)
+                dx = spsolve(H, -g)
+                self.node_positions += 0.5*dx
+                for i, idx in enumerate(self.coordinate_indices_to_constrain):
+                    self.node_positions[idx] = self.curve_functions[i](self.t)
 
-            # H_inv = np.linalg.inv(H)
-            # dx = -H_inv @ g
-            dx = np.linalg.solve(H, -g)
-
-            self.node_positions += 0.5*dx
-
-            # Hard-clamp: re-enforce Dirichlet values so constraint DOFs never drift
-            for i, idx in enumerate(self.coordinate_indices_to_constrain):
-                self.node_positions[idx] = self.curve_functions[i](self.t)
-
-            # Convergence: stop when the free-DOF update is small enough
             free_norm = np.linalg.norm(dx[self.free_indices])
             if free_norm < tol:
                 break
         else:
             print(f"Warning: did not converge in {max_iter} iterations (||dx||={free_norm:.3e})")
+
+        if PROFILE_PERFORMANCE:
+            self._profile = _t
+            self._profile_iters = _iters
 
     def add_edge(self, edge: Edge):
         self.edges.append(edge)
@@ -412,10 +431,33 @@ class Solid:
         
 
     def step(self, dt:float, substeps:int, report_energy:bool):
+        if PROFILE_PERFORMANCE:
+            _step_t = defaultdict(float)
+            _step_iters = 0
+
         for _ in range(substeps):
-            self.evolve_constraint(self.t)
-            self.solve(tol=TOLERANCE_SOLVER, max_iter=MAX_ITER_SOLVER)
+            if PROFILE_PERFORMANCE:
+                _s = time.perf_counter(); self.evolve_constraint(self.t); _step_t['evolve_constraint'] += time.perf_counter() - _s
+                _s = time.perf_counter(); self.solve(tol=TOLERANCE_SOLVER, max_iter=MAX_ITER_SOLVER); _step_t['solve_total'] += time.perf_counter() - _s
+                for k, v in self._profile.items():
+                    _step_t[f'  {k}'] += v
+                _step_iters += self._profile_iters
+            else:
+                self.evolve_constraint(self.t)
+                self.solve(tol=TOLERANCE_SOLVER, max_iter=MAX_ITER_SOLVER)
             self.t += dt / substeps
+
+        if PROFILE_PERFORMANCE:
+            total = sum(v for k, v in _step_t.items() if not k.startswith('  '))
+            print(f"\n{'─'*52}")
+            print(f" step profile  |  substeps={substeps}  NR iters={_step_iters}")
+            print(f"{'─'*52}")
+            for k, v in _step_t.items():
+                pct = 100*v/total if total > 0 else 0
+                print(f"  {k:<28s}  {v*1e3:7.2f} ms  {pct:5.1f}%")
+            print(f"  {'TOTAL':<28s}  {total*1e3:7.2f} ms")
+            print(f"{'─'*52}")
+
         if report_energy:
             self.compute_energy_from_extension_cache()
             return self.energy
