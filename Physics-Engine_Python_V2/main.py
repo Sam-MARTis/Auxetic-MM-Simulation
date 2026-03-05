@@ -58,6 +58,7 @@ def do_animation(solid: Solid, dxf_edges: list[Edge]):
     clock = pygame.time.Clock()
     delta_time = 0
     i = 0
+    time.sleep(3)
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
