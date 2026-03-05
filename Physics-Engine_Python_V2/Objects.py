@@ -203,40 +203,56 @@ class Solid:
         self.node_edges_connection = np.ones(2*self.num_edges, dtype=np.int32)* (-1)
         self.edges_properties = np.zeros(self.num_edges, dtype=np.float64)
         self.edges_extension_natural = np.zeros(self.num_edges, dtype=np.float64)
-        self.edges_extension_inv = np.zeros(self.num_edges, dtype=np.float64)
-        self.K_arr = sp.dok_array((2*self.num_nodes, 2*self.num_nodes), dtype=np.float64)
-
+        self.edges_extension = np.zeros(self.num_edges, dtype=np.float64)
+        # self.K_arr = sp.dok_array((self.num_nodes, self.num_nodes), dtype=np.float64)
+        pos = self.node_positions.reshape((DIMS, self.num_nodes))
         for i in range(self.num_edges):
             edge = self.edges[i]
             self.node_edges_connection[2*i] = edge.node_a.id
             self.node_edges_connection[2*i+1] = edge.node_b.id
-            self.K_arr[2*edge.node_a.id, 2*edge.node_b.id] = edge.k
-            self.K_arr[2*edge.node_a.id+1, 2*edge.node_b.id+1] = edge.k
-            self.K_arr[2*edge.node_b.id, 2*edge.node_a.id] = edge.k
-            self.K_arr[2*edge.node_b.id+1, 2*edge.node_a.id+1] = edge.k
+            # self.K_arr[edge.node_a.id, edge.node_b.id] -= edge.k
+            # self.K_arr[edge.node_a.id, edge.node_a.id] += edge.k
+            # self.K_arr[edge.node_b.id, edge.node_a.id] -= edge.k
+            # self.K_arr[edge.node_b.id, edge.node_b.id] += edge.k
             self.edges_properties[i] = edge.k
             self.edges_extension_natural[i] = edge.l0
-            self.edges_extension_inv[i] = 1.0 / edge.l0
+            self.edges_extension[i] = 0
+            
+            # # edge = self.edges[i]
+            # # a, b = edge.node_a.id, edge.node_b.id
+            # p1 = pos[:, edge.node_a.id]
+            # p2 = pos[:, edge.node_b.id]
+            # d_vec = p1 - p2
+            # d = np.linalg.norm(d_vec) 
+            # # # compute geometry
+            # # d_vec = edge.node_a.x - edge.node_b.x   # 2-vector
+            # # d = np.linalg.norm(d_vec)
+            # n = d_vec / d                             # unit vector
+
+            # # # 2x2 H matrix
+            # nn = np.outer(n, n)
+            # geometric = ((d - edge.l0) / d) * (np.eye(2) - nn)
+            # H = edge.k * (nn + geometric)
+
+            # da = [2*edge.node_a.id, 2*edge.node_a.id+1]
+            # db = [2*edge.node_b.id, 2*edge.node_b.id+1]
+
+            # # diagonal blocks
+            # self.K_arr[np.ix_(da, da)] += H
+            # self.K_arr[np.ix_(db, db)] += H
+
+            # # # off-diagonal blocks
+            # self.K_arr[np.ix_(da, db)] -= H
+            # self.K_arr[np.ix_(db, da)] -= H
 
         self.L = np.zeros((2*self.num_nodes, 2*self.num_nodes), dtype=np.float64)
-        print(f"Performing verification check of K_ij")
-        for i in range(2*self.num_nodes):
-            if self.K_arr[i, i] != 0:
-                raise RuntimeError(f"K[{i}, {i}] = {self.K_arr[i, i]}")
-        print(f"Finished verification check of K_ij")
-        
+        # print(f"Performing verification check of K_ij")
         # for i in range(2*self.num_nodes):
-        #     if i % 100 == 0:
-        #         print(f"Processing row {i} out of {2*self.num_nodes}")
-        #     for j in range(2*self.num_nodes):
-        #         self.L[i, j] = -self.K_arr[i, j]
-        #         self.L[j, i] = -self.K_arr[i, j]
-        #         self.L[i, i] += self.K_arr[i, j]
-        #         self.L[j, j] += self.K_arr[i, j]
-        self.L -= self.K_arr
-        for i in range(2*self.num_nodes):
-            self.L[i, i] = self.L[i, :].sum()
-
+        #     if self.K_arr[i, i] != 0:
+        #         raise RuntimeError(f"K[{i}, {i}] = {self.K_arr[i, i]}")
+        # print(f"Finished verification check of K_ij")
+        
+     
     
 
     def set_constraint(self, coordinate_indices_to_constrain: list[int], curve_functions: list[Callable[[float], float]]):
@@ -249,10 +265,6 @@ class Solid:
         self.free_indices  = np.where(~self.constraint_node_mask)[0]
         self.fixed_indices = np.where( self.constraint_node_mask)[0]
 
-        self.L_ff = self.L[self.free_indices, :][:, self.free_indices]
-        self.L_fc = self.L[self.free_indices, :][:, self.fixed_indices]
-
-        
         
     
     def evolve_constraint(self, t:float):
@@ -262,8 +274,10 @@ class Solid:
             idx = self.coordinate_indices_to_constrain[i]
             self.node_positions[idx] = self.curve_functions[i](t)
           
-    def cache_edges_extension_inv(self):
-        pos = np.reshape(self.node_positions, (DIMS, self.num_nodes))
+    def cache_edges_extension(self):
+        # node_positions is interleaved [x0,y0,x1,y1,...], so reshape to (N,2) then
+        # transpose to (2,N) so that pos[:,i] = [xi, yi] for node i.
+        pos = self.node_positions.reshape(self.num_nodes, DIMS).T
         collapsed = []
         for i in range(self.num_edges):
             node1_id = self.node_edges_connection[2*i]
@@ -273,13 +287,13 @@ class Solid:
             dij = p1 - p2
             norm_dij = np.linalg.norm(dij)
             if norm_dij <= EPSILON:
-                self.edges_extension_inv[i] = 0.0
+                self.edges_extension[i] = 0.0  # sentinel: skip this edge in assembly
                 collapsed.append((i, node1_id, node2_id, norm_dij))
             else:
-                self.edges_extension_inv[i] = 1.0 / norm_dij
+                self.edges_extension[i] = norm_dij  # store d, not (d - l0)
         if collapsed:
             warnings.warn(
-                f"[cache_edges_extension_inv] {len(collapsed)} collapsed edge(s) "
+                f"[cache_edges_extension] {len(collapsed)} collapsed edge(s) "
                 f"(d <= {EPSILON}): " +
                 ", ".join(f"edge {ei} (n{a}-n{b}, d={d:.2e})" for ei, a, b, d in collapsed)
             )
@@ -288,22 +302,22 @@ class Solid:
     def assemble_gradient_and_hessian(self):
         g = np.zeros((DIMS*self.num_nodes), dtype=np.float64)
         C = np.zeros((DIMS*self.num_nodes, DIMS*self.num_nodes), dtype=np.float64)
-        pos = np.reshape(self.node_positions, (DIMS, self.num_nodes))
+        pos = self.node_positions.reshape(self.num_nodes, DIMS).T
 
         for i in range(self.num_edges):
             node1_id = self.node_edges_connection[2*i]
             node2_id = self.node_edges_connection[2*i+1]
             dij = pos[:, node1_id] - pos[:, node2_id]
 
-            k   = self.K_arr[node1_id, node2_id]
-            inv = self.edges_extension_inv[i]
-            l0  = self.edges_extension_natural[i]
+            k  = self.edges_properties[i]
+            d  = self.edges_extension[i]   # current distance (0 = collapsed, skip)
+            l0 = self.edges_extension_natural[i]
 
-
-            if inv == 0.0:
+            if d == 0.0:  # coincident nodes — no safe unit vector or stiffness
                 continue
 
-            e   = dij * inv
+            inv = 1.0 / d          # 1/d used throughout
+            e   = dij * inv        # unit vector along edge
 
             f   = k * (1 - l0*inv) * dij
             g[2*node1_id:2*node1_id+2] += f
@@ -322,42 +336,61 @@ class Solid:
         H[:, self.fixed_indices] = 0.0
         H[self.fixed_indices, self.fixed_indices] = 1.0
         g[self.fixed_indices] = 0.0
+
+        # Free DOFs whose diagonal is still zero after BC application have no live
+        # spring connection (e.g. nodes whose only edges are collapsed / coincident).
+        # A zero diagonal row makes H singular. Pin them with a small Tikhonov term
+        # so the solve does not fail; their displacement will be driven to ~zero.
+        diag = np.diag(H)
+        zero_free_mask = (diag == 0.0)
+        zero_free_mask[self.fixed_indices] = False  # already handled above
+        zero_free_dofs = np.where(zero_free_mask)[0]
+        if zero_free_dofs.size > 0:
+            H[zero_free_dofs, zero_free_dofs] = EPSILON  # small regularisation
+            warnings.warn(
+                f"[apply_constraints] {zero_free_dofs.size} free DOF(s) have zero "
+                f"diagonal (isolated/collapsed-only nodes); regularised with {EPSILON:.1e}."
+            )
+
         return g, H
 
-    def _compute_energy(self, positions: np.ndarray) -> float:
-        """E = 0.5 * sum_edges K_ij * (||x_i - x_j|| - l0)^2"""
-        pos = positions.reshape(DIMS, self.num_nodes)
-        E = 0.0
-        for i in range(self.num_edges):
-            n1 = self.node_edges_connection[2*i]
-            n2 = self.node_edges_connection[2*i+1]
-            dij = pos[:, n1] - pos[:, n2]
-            d   = np.linalg.norm(dij)
-            l0  = self.edges_extension_natural[i]
-            k   = self.K_arr[n1, n2]
-            E  += 0.5 * k * (d - l0) ** 2
-        return E
+    # def _compute_energy(self, positions: np.ndarray) -> float:
+    #     """E = 0.5 * sum_edges K_ij * (||x_i - x_j|| - l0)^2"""
+    #     pos = positions.reshape(DIMS, self.num_nodes)
+    #     E = 0.0
+    #     for i in range(self.num_edges):
+    #         n1 = self.node_edges_connection[2*i]
+    #         n2 = self.node_edges_connection[2*i+1]
+    #         dij = pos[:, n1] - pos[:, n2]
+    #         d   = np.linalg.norm(dij)
+    #         l0  = self.edges_extension_natural[i]
+    #         k   = self.K_arr[n1, n2]
+    #         E  += 0.5 * k * (d - l0) ** 2
+    #     return E
 
     def solve(self, tol, max_iter):
 
-
         for iteration in range(max_iter):
-            self.cache_edges_extension_inv()
+            self.cache_edges_extension()
             g, H = self.assemble_gradient_and_hessian()
             g, H = self.apply_constraints_on_hessian_and_gradient(g, H)
 
- 
-            print(f"Check if H is symmetric: {np.allclose(H, H.T)}")
-            print(f"Check if any diagonals are zero: {np.any(np.isclose(np.diag(H), 0))}\n\n")
-            H_inv = np.linalg.inv(H)
-            
-            dx = -H_inv @ g
-    
+            # H_inv = np.linalg.inv(H)
+            # dx = -H_inv @ g
+            dx = np.linalg.solve(H, -g)
 
-            self.node_positions += dx*0.8
+            self.node_positions += 0.5*dx
 
+            # Hard-clamp: re-enforce Dirichlet values so constraint DOFs never drift
+            for i, idx in enumerate(self.coordinate_indices_to_constrain):
+                self.node_positions[idx] = self.curve_functions[i](self.t)
+
+            # Convergence: stop when the free-DOF update is small enough
+            free_norm = np.linalg.norm(dx[self.free_indices])
+            if free_norm < tol:
+                break
         else:
-            print(f"Warning: did not converge in {max_iter} iterations")
+            print(f"Warning: did not converge in {max_iter} iterations (||dx||={free_norm:.3e})")
 
     def add_edge(self, edge: Edge):
         self.edges.append(edge)

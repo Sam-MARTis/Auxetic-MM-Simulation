@@ -45,7 +45,7 @@ def do_animation(solid: Solid, dxf_edges: list[Edge]):
                     del_edge_key_clicked = False
             # Mouseclick once
             if event.type == pygame.MOUSEBUTTONDOWN:
-                solid.step(dt=delta_time, substeps=SUBSTEPS)
+                
                 mouse_pos = pygame.mouse.get_pos()
                 for i in range(len(solid.nodes)):
                     node_pos = Vector(solid.node_positions[2*i], solid.node_positions[2*i+1])
@@ -70,7 +70,7 @@ def do_animation(solid: Solid, dxf_edges: list[Edge]):
                 print(f"Remaining edges: {len(solid.edges)}")
 
         delta_time = DT  # seconds passed since last frame
-
+        solid.step(dt=delta_time, substeps=SUBSTEPS)
         # solid.step(dt=delta_time, substeps=SUBSTEPS)
 
         if node_selected_by_mouse:
