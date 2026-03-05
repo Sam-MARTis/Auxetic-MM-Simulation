@@ -265,21 +265,34 @@ def get_bounds_and_lines_and_hinge_points(filename:str, min_distance:float, max_
 def get_constraint_indices_and_constraint_functions(nodes:list[Node], bounds: Tuple[float, float, float, float]) -> list[Callable[[float], float]]:
     constraint_functions = []
     constraint_indices = []
+    constraint_indices.append(0)
+    constraint_indices.append(1)
+    constraint_functions.append(lambda t: bounds[0] + 2*EPSILON_BIG)
+    constraint_functions.append(lambda t: bounds[2] + 2*EPSILON_BIG)    
     for node in nodes:
         left = (node.position.x - (bounds[0] + 2*EPSILON_BIG))<0
         right = (node.position.x - (bounds[1] - 2*EPSILON_BIG))>0
         up=(node.position.y - (bounds[2] + 2*EPSILON_BIG))<0
         down=(node.position.y - (bounds[3] - 2*EPSILON_BIG))>0
         NONBOUNDED_MIDDLE_SIZE = 0.2
-        middle = np.abs(node.position.y - (bounds[2] + bounds[3]) / 2) < NONBOUNDED_MIDDLE_SIZE*(bounds[3]-bounds[2])
-        if middle or up or down:
+        middle_y = np.abs(node.position.y - (bounds[2] + bounds[3]) / 2) < NONBOUNDED_MIDDLE_SIZE*(bounds[3]-bounds[2])
+        if middle_y or up:
             continue
+        if down:
+            print("Setting down constraints")
+            y0 = node.position.y
+            constraint_functions.append(lambda t, _y0=y0: _y0 + t*PARAMETER_MULTIPLIER)
+            constraint_indices.append(2*node.id+1)
         if left:
-            constraint_functions.append(lambda t: node.position.x - t*PARAMETER_MULTIPLIER)
+            # Capture x0 by value — avoids late-binding closure bug where all
+            # lambdas would otherwise reference the last node in the loop.
+            x0 = node.position.x
+            constraint_functions.append(lambda t, _x0=x0: _x0 - t*PARAMETER_MULTIPLIER)
             constraint_indices.append(2*node.id)
         elif right:
-            constraint_functions.append(lambda t: node.position.x + t*PARAMETER_MULTIPLIER)
-            constraint_indices.append(2*node.id + 1)
+            x0 = node.position.x
+            constraint_functions.append(lambda t, _x0=x0: _x0 + t*PARAMETER_MULTIPLIER)
+            constraint_indices.append(2*node.id)
         # else:
         #     raise RuntimeError(f"Unreachable")
     return constraint_indices, constraint_functions
