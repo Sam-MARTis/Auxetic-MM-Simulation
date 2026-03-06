@@ -350,7 +350,7 @@ class Solid:
                 g, H = self.assemble_gradient_and_hessian()
                 g, H = self.apply_constraints_on_hessian_and_gradient(g, H)
                 dx = spsolve(H, -g)
-                self.node_positions += 0.5*dx
+                self.node_positions += dx
                 for i, idx in enumerate(self.coordinate_indices_to_constrain):
                     self.node_positions[idx] = self.curve_functions[i](self.t)
 
@@ -382,7 +382,9 @@ class Solid:
                 node_b = self.nodes[j]
                 distance_sq = Helper.find_dist_sq_between_nodes(node_a, node_b)
                 if distance_sq < distance_threshold ** 2:
-                    edge = Edge(k=LINK_STRENGTH, l0=(distance_sq**0.5)*1.0, node_a=node_a, node_b=node_b, attach=True)
+                    distance = np.sqrt(distance_sq)
+                    
+                    edge = Edge(k=LINK_STRENGTH*LINK_DISTANCE/distance, l0=distance, node_a=node_a, node_b=node_b, attach=True)
                     self.add_edge(edge)
         self.num_edges = len(self.edges)
         return self.edges
@@ -443,7 +445,7 @@ class Solid:
             else:
                 self.evolve_constraint(self.t)
                 self.solve(tol=TOLERANCE_SOLVER, max_iter=MAX_ITER_SOLVER)
-            self.t += dt / substeps
+            # self.t += dt / substeps
 
         if PROFILE_PERFORMANCE:
             total = sum(v for k, v in _step_t.items() if not k.startswith('  '))

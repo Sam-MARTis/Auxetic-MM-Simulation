@@ -137,6 +137,14 @@ def render_solid(solid: Solid,  dxf_edges: list[Edge], screen: pygame.Surface):
         for edge in dxf_edges:
             edge.render(screen=screen, colour=EDGE_COLOUR_SELECTED, width=EDGE_WIDTH)
 
+def map_strain_to_pygame_colour(strain: float) -> tuple:
+    # Map the strain value to a colour gradient
+    strain_scaled = 50000*strain
+    r = max(min(int(125+strain_scaled), 255), 0)
+    b = max(min(int(125-strain_scaled), 255), 0)
+    g = 0
+    return (r, g, b)
+
 def render_solid_low_level(solid:Solid, dxf_edges: list[Edge], screen: pygame.Surface):
     for i in range(solid.num_edges):
         # edge = solid.edges[i]
@@ -150,7 +158,10 @@ def render_solid_low_level(solid:Solid, dxf_edges: list[Edge], screen: pygame.Su
         node1_screen_pos = world_to_screen(node1_pos, WORLD_SIZE, MAGNIFICATION)
         node2_screen_pos = world_to_screen(node2_pos, WORLD_SIZE, MAGNIFICATION)
         # pygame.draw.line(screen, EDGE_COLOUR_SELECTED if edge.is_intersecting else EDGE_COLOUR, (int(node1_screen_pos.x), int(node1_screen_pos.y)), (int(node2_screen_pos.x), int(node2_screen_pos.y)), width=EDGE_WIDTH)
-        pygame.draw.line(screen, EDGE_COLOUR, (int(node1_screen_pos.x), int(node1_screen_pos.y)), (int(node2_screen_pos.x), int(node2_screen_pos.y)), width=EDGE_WIDTH)
+        l0 = solid.edges_extension_natural[i]
+        colour = map_strain_to_pygame_colour((solid.edges_extension[i]-l0)/l0)
+
+        pygame.draw.line(screen, colour, (int(node1_screen_pos.x), int(node1_screen_pos.y)), (int(node2_screen_pos.x), int(node2_screen_pos.y)), width=EDGE_WIDTH)
         # edge.is_intersecting = False
     for i in range(solid.num_nodes):
         

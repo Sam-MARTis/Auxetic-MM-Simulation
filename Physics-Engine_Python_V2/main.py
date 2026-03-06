@@ -58,7 +58,8 @@ def do_animation(solid: Solid, dxf_edges: list[Edge]):
     clock = pygame.time.Clock()
     delta_time = 0
     i = 0
-    time.sleep(3)
+    stop_auto_sim = False
+    # time.sleep(10)
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -78,6 +79,31 @@ def do_animation(solid: Solid, dxf_edges: list[Edge]):
                     i+=1
                     print("Deleted edge")
                     print(f"Remaining edges: {len(solid.edges)}")
+                # If left and right arrow key case:
+                left_right = False
+                if event.key == pygame.K_LEFT:
+                    solid.t -= DT
+                    left_right = True
+                    t_hist.pop()
+                    e_hist.pop()
+                    
+                    
+                if event.key == pygame.K_RIGHT:
+                    solid.t += DT
+                    left_right = True
+                    t_hist.append(0)
+                    e_hist.append(0)
+                    
+                if left_right:
+                    delta_time = DT
+                    _s = time.perf_counter() if PROFILE_PERFORMANCE else 0
+                    energy = solid.step(dt=delta_time, substeps=SUBSTEPS, report_energy=True)
+                    _step_ms = (time.perf_counter() - _s) * 1e3 if PROFILE_PERFORMANCE else 0
+                    t_hist[-1] = solid.t
+                    e_hist[-1] = energy
+                    print(f"t={solid.t:.4f}  E={energy:.6e}")
+                    
+                
 
                 if event.key == pygame.K_1:
                     del_edge_key_clicked = True
@@ -116,10 +142,14 @@ def do_animation(solid: Solid, dxf_edges: list[Edge]):
             solid.node_positions[2*i] = world_x
             solid.node_positions[2*i+1] = world_y
 
-        if(solid.t < MAX_T):
+        if(solid.t > MAX_T):
+            stop_auto_sim = True
+
+        if not stop_auto_sim:
             delta_time = DT
             _s = time.perf_counter() if PROFILE_PERFORMANCE else 0
             energy = solid.step(dt=delta_time, substeps=SUBSTEPS, report_energy=True)
+            solid.t += delta_time
             _step_ms = (time.perf_counter() - _s) * 1e3 if PROFILE_PERFORMANCE else 0
             t_hist.append(solid.t)
             e_hist.append(energy)
