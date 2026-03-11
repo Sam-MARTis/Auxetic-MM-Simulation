@@ -85,7 +85,7 @@ if __name__ == "__main__":
     cut_size = 1
     edge_gap = 0.04
     side_gap = 0.1
-    θ_in_degrees = 60
+    θ_in_degrees = 65
     θ_in_radians = np.radians(θ_in_degrees)
 
     
@@ -115,3 +115,4 @@ if __name__ == "__main__":
     msp_pattern.add_line((0, unit_cell.dy*n), (0, 0))
 
     doc_pattern.saveas(f"pattern_{n}x{n}.dxf")
+    print(f"Pattern saved as pattern_{n}x{n}.dxf")

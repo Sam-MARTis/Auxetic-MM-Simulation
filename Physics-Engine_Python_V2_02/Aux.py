@@ -299,3 +299,7 @@ def get_constraint_indices_and_constraint_functions(nodes:list[Node], bounds: Tu
             constraint_functions.append(lambda t, _y=y0: _y)
             constraint_indices.append(2*node.id + 1)
     return constraint_indices, constraint_functions
+
+
+
+def compute_energy_gradient

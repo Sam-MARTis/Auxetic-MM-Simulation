@@ -210,50 +210,19 @@ class Solid:
             edge = self.edges[i]
             self.node_edges_connection[2*i] = edge.node_a.id
             self.node_edges_connection[2*i+1] = edge.node_b.id
-            # self.K_arr[edge.node_a.id, edge.node_b.id] -= edge.k
-            # self.K_arr[edge.node_a.id, edge.node_a.id] += edge.k
-            # self.K_arr[edge.node_b.id, edge.node_a.id] -= edge.k
-            # self.K_arr[edge.node_b.id, edge.node_b.id] += edge.k
             self.edges_properties[i] = edge.k
             self.edges_extension_natural[i] = edge.l0
             self.edges_extension[i] = 0
+        connectivity__matrix = [[] for i in range(self.num_nodes)]
+        for i in range(self.num_edges):
+            edge = self.edges[i]
+            connectivity__matrix[edge.node_a.id].append((i, edge.node_b.id))
+            connectivity__matrix[edge.node_b.id].append((i, edge.node_a.id))
             
-            # # edge = self.edges[i]
-            # # a, b = edge.node_a.id, edge.node_b.id
-            # p1 = pos[:, edge.node_a.id]
-            # p2 = pos[:, edge.node_b.id]
-            # d_vec = p1 - p2
-            # d = np.linalg.norm(d_vec) 
-            # # # compute geometry
-            # # d_vec = edge.node_a.x - edge.node_b.x   # 2-vector
-            # # d = np.linalg.norm(d_vec)
-            # n = d_vec / d                             # unit vector
-
-            # # # 2x2 H matrix
-            # nn = np.outer(n, n)
-            # geometric = ((d - edge.l0) / d) * (np.eye(2) - nn)
-            # H = edge.k * (nn + geometric)
-
-            # da = [2*edge.node_a.id, 2*edge.node_a.id+1]
-            # db = [2*edge.node_b.id, 2*edge.node_b.id+1]
-
-            # # diagonal blocks
-            # self.K_arr[np.ix_(da, da)] += H
-            # self.K_arr[np.ix_(db, db)] += H
-
-            # # # off-diagonal blocks
-            # self.K_arr[np.ix_(da, db)] -= H
-            # self.K_arr[np.ix_(db, da)] -= H
-
-        self.L = np.zeros((2*self.num_nodes, 2*self.num_nodes), dtype=np.float64)
-        # print(f"Performing verification check of K_ij")
-        # for i in range(2*self.num_nodes):
-        #     if self.K_arr[i, i] != 0:
-        #         raise RuntimeError(f"K[{i}, {i}] = {self.K_arr[i, i]}")
-        # print(f"Finished verification check of K_ij")
-        
-     
-    
+        connectivity_matrix_optimized1 = []
+        for i in range(self.num_nodes):
+            connectivity_matrix_optimized1.append(tuple(connectivity__matrix[i]))
+        self.connectivity_matrix_optimized1 = tuple(connectivity_matrix_optimized1)
 
     def set_constraint(self, coordinate_indices_to_constrain: list[int], curve_functions: list[Callable[[float], float]]):
         self.coordinate_indices_to_constrain = coordinate_indices_to_constrain
