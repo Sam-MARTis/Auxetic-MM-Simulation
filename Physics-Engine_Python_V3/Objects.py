@@ -391,19 +391,43 @@ class Solid:
 
     @profile_function
     def remove_intersecting_edges(self, edges_external: list[Edge]):
-        remove_indices = [False] * len(self.edges)
-        for i, edge in enumerate(self.edges):
-            for external_edge in edges_external:
-                _, _, dist = nearest_points_on_line_segments(edge.node_a.position, edge.node_b.position, external_edge.node_a.position, external_edge.node_b.position)
-                if dist < EPSILON:
-                    # self.delete_edge(edge)
-                    remove_indices[i] = True
-                    break
+        if not self.edges or not edges_external:
+            return
 
-        for i in reversed(range(len(remove_indices))):
-            if remove_indices[i]:
+        # Shape: (N, 3) and (M, 3)
+        a0 = np.array([e.node_a.position for e in self.edges])
+        a1 = np.array([e.node_b.position for e in self.edges])
+        b0 = np.array([e.node_a.position for e in edges_external])
+        b1 = np.array([e.node_b.position for e in edges_external])
+
+        # Broadcast: (N, 1, 3) vs (1, M, 3) → (N, M, 3)
+        d1 = a1[:, None] - a0[:, None]        # (N, 1, 3)
+        d2 = b1[None] - b0[None]              # (1, M, 3)
+        r  = a0[:, None] - b0[None]           # (N, M, 3)
+
+        d11 = np.einsum('ijk,ijk->ij', d1, d1)  # (N, M)
+        d22 = np.einsum('ijk,ijk->ij', d2, d2)
+        d12 = np.einsum('ijk,ijk->ij', d1, d2)
+        rd1 = np.einsum('ijk,ijk->ij', r,  d1)
+        rd2 = np.einsum('ijk,ijk->ij', r,  d2)
+
+        denom = d11 * d22 - d12 * d12
+        parallel = np.abs(denom) < EPSILON
+
+        t = np.where(parallel, 0.0, (rd1 * d22 - rd2 * d12) / np.where(parallel, 1.0, denom))
+        u = np.where(parallel, 0.0, (rd1 * d12 - rd2 * d11) / np.where(parallel, 1.0, denom))
+
+        t = np.clip(t, 0.0, 1.0)
+        u = np.clip(u, 0.0, 1.0)
+
+        closest = (a0[:, None] + t[..., None] * d1) - (b0[None] + u[..., None] * d2)
+        dist_sq = np.einsum('ijk,ijk->ij', closest, closest)  # (N, M)
+
+        remove_mask = np.any(dist_sq < EPSILON ** 2, axis=1)  # (N,)
+
+        for i in reversed(range(len(self.edges))):
+            if remove_mask[i]:
                 self.delete_edge(self.edges[i])
-
     def initialize_edges_distance_based_02(self, distance_threshold:float) -> List[Edge]:
         pass
 
