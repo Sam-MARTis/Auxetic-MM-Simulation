@@ -7,40 +7,6 @@ import numba as nb
 
 
 
-def draw_energy_plot(plot_screen: pygame.Surface, t_hist: list, e_hist: list):
-    """Redraw the energy-vs-t plot on plot_screen."""
-    plot_screen.fill((15, 15, 30))
-    W, H = plot_screen.get_size()
-    iw = W - 2*PLOT_PAD   # inner width
-    ih = H - 2*PLOT_PAD   # inner height
-
-    # Axes
-    pygame.draw.line(plot_screen, (180,180,180), (PLOT_PAD, PLOT_PAD), (PLOT_PAD, PLOT_PAD+ih), 1)
-    pygame.draw.line(plot_screen, (180,180,180), (PLOT_PAD, PLOT_PAD+ih), (PLOT_PAD+iw, PLOT_PAD+ih), 1)
-
-    if len(t_hist) < 2:
-        return
-
-    t_min, t_max = t_hist[0],  max(t_hist[-1], t_hist[0]+1e-9)
-    e_min, e_max = min(e_hist), max(e_hist)
-    if e_max == e_min:
-        e_max = e_min + 1.0   # avoid degenerate range
-
-    def to_px(t, e):
-        x = PLOT_PAD + int((t - t_min) / (t_max - t_min) * iw)
-        y = PLOT_PAD + ih - int((e - e_min) / (e_max - e_min) * ih)
-        return x, y
-
-    pts = [to_px(t, e) for t, e in zip(t_hist, e_hist)]
-    if len(pts) >= 2:
-        pygame.draw.lines(plot_screen, (0, 220, 180), False, pts, 2)
-
-    font = pygame.font.SysFont(None, 18)
-    plot_screen.blit(font.render(f"t={t_hist[-1]:.3f}", True, (200,200,200)), (PLOT_PAD+iw-60, PLOT_PAD+ih+4))
-    plot_screen.blit(font.render(f"E={e_hist[-1]:.3e}", True, (200,200,200)), (2, PLOT_PAD))
-    plot_screen.blit(font.render("Energy vs t", True, (220,220,220)), (W//2-30, 4))
-
-
 def do_animation(solid: Solid, dxf_edges: list[Edge]):
     pygame.init()
     gravity = GRAVITY
@@ -59,8 +25,9 @@ def do_animation(solid: Solid, dxf_edges: list[Edge]):
     delta_time = 0
     i = 0
     stop_auto_sim = False
-    # time.sleep(10)
-    while running:
+    @profile_function
+    def anim_loop():
+        nonlocal running, hold, gravity, delta_time, i, node_selected_by_mouse, del_edge_key_clicked, clock, stop_auto_sim
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -96,9 +63,9 @@ def do_animation(solid: Solid, dxf_edges: list[Edge]):
                     
                 if left_right:
                     delta_time = DT
-                    _s = time.perf_counter() if PROFILE_PERFORMANCE else 0
+        
                     energy = solid.step(dt=delta_time, substeps=SUBSTEPS, report_energy=True)
-                    _step_ms = (time.perf_counter() - _s) * 1e3 if PROFILE_PERFORMANCE else 0
+        
                     t_hist[-1] = solid.t
                     e_hist[-1] = energy
                     print(f"t={solid.t:.4f}  E={energy:.6e}")
@@ -147,31 +114,30 @@ def do_animation(solid: Solid, dxf_edges: list[Edge]):
 
         if not stop_auto_sim:
             delta_time = DT
-            _s = time.perf_counter() if PROFILE_PERFORMANCE else 0
             energy = solid.step(dt=delta_time, substeps=SUBSTEPS, report_energy=True)
             solid.t += delta_time
-            _step_ms = (time.perf_counter() - _s) * 1e3 if PROFILE_PERFORMANCE else 0
+        
             t_hist.append(solid.t)
             e_hist.append(energy)
             print(f"t={solid.t:.4f}  E={energy:.6e}")
 
-        _s = time.perf_counter() if PROFILE_PERFORMANCE else 0
         screen.fill((0, 0, 0))
         render_solid_low_level(solid=solid, dxf_edges=dxf_edges, screen=screen)
-        _render_ms = (time.perf_counter() - _s) * 1e3 if PROFILE_PERFORMANCE else 0
+        
 
-        _s = time.perf_counter() if PROFILE_PERFORMANCE else 0
+        
         draw_energy_plot(plot_screen, t_hist, e_hist)
         screen.blit(plot_screen, (screen_size - PLOT_W - 5, 5))
-        _plot_ms = (time.perf_counter() - _s) * 1e3 if PROFILE_PERFORMANCE else 0
+        
 
-        _s = time.perf_counter() if PROFILE_PERFORMANCE else 0
+        
         pygame.display.flip()
-        _flip_ms = (time.perf_counter() - _s) * 1e3 if PROFILE_PERFORMANCE else 0
+    # time.sleep(10)
+    while running:
+        anim_loop()
+        
 
-        if PROFILE_PERFORMANCE:
-            print(f"  [render]  solid={_render_ms:.2f}ms  plot={_plot_ms:.2f}ms  flip={_flip_ms:.2f}ms  | step={_step_ms:.2f}ms")
-
+        
     pygame.quit()
 
 if __name__ == "__main__":
@@ -192,7 +158,7 @@ if __name__ == "__main__":
         node_b = Node(mass=NODE_MASS, position=Vector(b.x, b.y), velocity=Vector(0, 0))
         edge = Edge(k=LINK_STRENGTH, l0=(b - a).magnitude(), node_a=node_a, node_b=node_b, attach=True)
         dxf_edges.append(edge)
-        # print(node_b.position)
+        
     
     Node._count=0
     print(f"Node class count: {Node._count}")
@@ -208,12 +174,11 @@ if __name__ == "__main__":
     solid.initialize_edges_distance_based(distance_threshold=LINK_DISTANCE)
 
     solid.remove_intersecting_edges(dxf_edges)
-    solid.remove_intersecting_edges(dxf_edges)
     constraint_indices, constraint_functions = get_constraint_indices_and_constraint_functions(nodes=solid.nodes, bounds=bounds)
     solid.prime()
     solid.set_constraint(coordinate_indices_to_constrain=constraint_indices, curve_functions=constraint_functions)
-    # solid.step(dt=DT, substeps=SUBSTEPS)
+
     
-    do_animation(solid, dxf_edges=dxf_edges)
+    # do_animation(solid, dxf_edges=dxf_edges)
     
 

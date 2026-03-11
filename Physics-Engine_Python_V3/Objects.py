@@ -194,6 +194,7 @@ class Solid:
         self.edges: list[Edge] = []
         self.t = 0
     
+    @profile_function
     def prime(self):
         node_positions:np.ndarray = np.zeros(DIMS*self.num_nodes, dtype=np.float64)
 
@@ -225,13 +226,14 @@ class Solid:
         self.free_indices  = np.where(~self.constraint_node_mask)[0]
         self.fixed_indices = np.where( self.constraint_node_mask)[0]
 
-        
-    
+
+    @profile_function
     def evolve_constraint(self, t:float):
         for i in range(len(self.coordinate_indices_to_constrain)):
             idx = self.coordinate_indices_to_constrain[i]
             self.node_positions[idx] = self.curve_functions[i](t)
-          
+
+    @profile_function
     def cache_edges_extension(self):
         pos = self.node_positions.reshape(self.num_nodes, DIMS).T  # (DIMS, num_nodes)
 
@@ -255,7 +257,7 @@ class Solid:
                 )
             )
 
-
+    @profile_function
     def assemble_gradient_and_hessian(self):
         N   = self.num_nodes
         DOF = DIMS * N
@@ -307,6 +309,7 @@ class Solid:
         H = sp.csc_matrix((vals, (rows, cols)), shape=(DOF, DOF))
         return g, H
 
+    @profile_function
     def apply_constraints_on_hessian_and_gradient(self, g: np.ndarray, H: sp.csc_matrix):
 
         H = H.tolil() 
@@ -328,31 +331,18 @@ class Solid:
         
         return g, H
 
+    @profile_function
     def solve(self, tol, max_iter):
-        if PROFILE_PERFORMANCE:
-            _t = defaultdict(float)
-            _iters = 0
+
 
         for iteration in range(max_iter):
-            if PROFILE_PERFORMANCE:
-                _iters += 1
-                _s = time.perf_counter(); self.cache_edges_extension();                         _t['cache_edges']      += time.perf_counter() - _s
-                _s = time.perf_counter(); g, H = self.assemble_gradient_and_hessian();          _t['assemble_g_H']     += time.perf_counter() - _s
-                _s = time.perf_counter(); g, H = self.apply_constraints_on_hessian_and_gradient(g, H); _t['apply_constraints_on_hhessian_and_gradient'] += time.perf_counter() - _s
-                _s = time.perf_counter(); dx = spsolve(H, -g);                                  _t['linalg_solve']     += time.perf_counter() - _s
-                _s = time.perf_counter()
-                self.node_positions += 0.5*dx
-                for i, idx in enumerate(self.coordinate_indices_to_constrain):
-                    self.node_positions[idx] = self.curve_functions[i](self.t)
-                _t['position_update'] += time.perf_counter() - _s
-            else:
-                self.cache_edges_extension()
-                g, H = self.assemble_gradient_and_hessian()
-                g, H = self.apply_constraints_on_hessian_and_gradient(g, H)
-                dx = spsolve(H, -g)
-                self.node_positions += dx
-                for i, idx in enumerate(self.coordinate_indices_to_constrain):
-                    self.node_positions[idx] = self.curve_functions[i](self.t)
+            self.cache_edges_extension()
+            g, H = self.assemble_gradient_and_hessian()
+            g, H = self.apply_constraints_on_hessian_and_gradient(g, H)
+            dx = spsolve(H, -g)
+            self.node_positions += dx
+            for i, idx in enumerate(self.coordinate_indices_to_constrain):
+                self.node_positions[idx] = self.curve_functions[i](self.t)
 
             free_norm = np.linalg.norm(dx[self.free_indices])
             if free_norm < tol:
@@ -360,9 +350,6 @@ class Solid:
         else:
             print(f"Warning: did not converge in {max_iter} iterations (||dx||={free_norm:.3e})")
 
-        if PROFILE_PERFORMANCE:
-            self._profile = _t
-            self._profile_iters = _iters
 
     def add_edge(self, edge: Edge):
         self.edges.append(edge)
@@ -375,6 +362,7 @@ class Solid:
     def edge_already_exists_id(self, id_a: int, id_b: int) -> bool:
         return self.edge_already_exists(self.nodes[id_a], self.nodes[id_b])
     
+    @profile_function
     def initialize_edges_distance_based(self, distance_threshold:float) -> List[Edge]:
         for i in range(self.num_nodes):
             for j in range(i+1, self.num_nodes):
@@ -389,6 +377,7 @@ class Solid:
         self.num_edges = len(self.edges)
         return self.edges
 
+    @profile_function
     def remove_intersecting_edges(self, edges_external: list[Edge]):
         remove_indices = [False] * len(self.edges)
         for i, edge in enumerate(self.edges):
@@ -431,32 +420,10 @@ class Solid:
         
 
     def step(self, dt:float, substeps:int, report_energy:bool):
-        if PROFILE_PERFORMANCE:
-            _step_t = defaultdict(float)
-            _step_iters = 0
-
         for _ in range(substeps):
-            if PROFILE_PERFORMANCE:
-                _s = time.perf_counter(); self.evolve_constraint(self.t); _step_t['evolve_constraint'] += time.perf_counter() - _s
-                _s = time.perf_counter(); self.solve(tol=TOLERANCE_SOLVER, max_iter=MAX_ITER_SOLVER); _step_t['solve_total'] += time.perf_counter() - _s
-                for k, v in self._profile.items():
-                    _step_t[f'  {k}'] += v
-                _step_iters += self._profile_iters
-            else:
-                self.evolve_constraint(self.t)
-                self.solve(tol=TOLERANCE_SOLVER, max_iter=MAX_ITER_SOLVER)
-            # self.t += dt / substeps
 
-        if PROFILE_PERFORMANCE:
-            total = sum(v for k, v in _step_t.items() if not k.startswith('  '))
-            print(f"\n{'─'*52}")
-            print(f" step profile  |  substeps={substeps}  NR iters={_step_iters}")
-            print(f"{'─'*52}")
-            for k, v in _step_t.items():
-                pct = 100*v/total if total > 0 else 0
-                print(f"  {k:<28s}  {v*1e3:7.2f} ms  {pct:5.1f}%")
-            print(f"  {'TOTAL':<28s}  {total*1e3:7.2f} ms")
-            print(f"{'─'*52}")
+            self.evolve_constraint(self.t)
+            self.solve(tol=TOLERANCE_SOLVER, max_iter=MAX_ITER_SOLVER)
 
         if report_energy:
             self.compute_energy_from_extension_cache()

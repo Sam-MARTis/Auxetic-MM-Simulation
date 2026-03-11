@@ -4,8 +4,9 @@ from constants import *
 import numpy as np
 import pygame
 import ezdxf as dxf
-
+import time 
 np.random.seed(42)
+
 
 def initialize_nodes(node_count) -> list[Node]:
     nodes: list[Node] = []
@@ -26,6 +27,8 @@ def initialize_nodes_uniform(bounds: Tuple[float, float, float, float], node_cou
         for y in y_values:
             nodes.append(Node(mass=NODE_MASS, position=Vector(x, y), velocity=Vector(0, 0)))
     return nodes
+
+@profile_function
 def initialize_nodes_uniform_with_noise(bounds: Tuple[float, float, float, float], node_count_x: int, node_count_y: int, get_boundary_nodes:bool = False) -> Tuple[list[Node], list[Node]]:
     nodes: list[Node] = []
     boundary_nodes:list[Node] = []
@@ -62,6 +65,38 @@ def initialize_edges_random(count, nodes: List[Node]) -> List[Edge]:
         edges.append(edge)
     return edges
 
+
+
+def draw_energy_plot(plot_screen: pygame.Surface, t_hist: list, e_hist: list):
+    """Redraw the energy-vs-t plot on plot_screen."""
+    plot_screen.fill((15, 15, 30))
+    W, H = plot_screen.get_size()
+    iw = W - 2*PLOT_PAD   
+    ih = H - 2*PLOT_PAD   
+    pygame.draw.line(plot_screen, (180,180,180), (PLOT_PAD, PLOT_PAD), (PLOT_PAD, PLOT_PAD+ih), 1)
+    pygame.draw.line(plot_screen, (180,180,180), (PLOT_PAD, PLOT_PAD+ih), (PLOT_PAD+iw, PLOT_PAD+ih), 1)
+
+    if len(t_hist) < 2:
+        return
+
+    t_min, t_max = t_hist[0],  max(t_hist[-1], t_hist[0]+1e-9)
+    e_min, e_max = min(e_hist), max(e_hist)
+    if e_max == e_min:
+        e_max = e_min + 1.0   
+
+    def to_px(t, e):
+        x = PLOT_PAD + int((t - t_min) / (t_max - t_min) * iw)
+        y = PLOT_PAD + ih - int((e - e_min) / (e_max - e_min) * ih)
+        return x, y
+
+    pts = [to_px(t, e) for t, e in zip(t_hist, e_hist)]
+    if len(pts) >= 2:
+        pygame.draw.lines(plot_screen, (0, 220, 180), False, pts, 2)
+
+    font = pygame.font.SysFont(None, 18)
+    plot_screen.blit(font.render(f"t={t_hist[-1]:.3f}", True, (200,200,200)), (PLOT_PAD+iw-60, PLOT_PAD+ih+4))
+    plot_screen.blit(font.render(f"E={e_hist[-1]:.3e}", True, (200,200,200)), (2, PLOT_PAD))
+    plot_screen.blit(font.render("Energy vs t", True, (220,220,220)), (W//2-30, 4))
 
 
 def initialize_edges_distance_based(count, nodes: List[Node]) -> List[Edge]:
@@ -274,7 +309,7 @@ def get_bounds_and_lines_and_hinge_points(filename:str, min_distance:float, max_
         bounds = (bounds[0] * scaling, bounds[1] * scaling, bounds[2] * scaling, bounds[3] * scaling)
     return bounds, lines_vec, hinge_points
 
-
+@profile_function
 def get_constraint_indices_and_constraint_functions(nodes:list[Node], bounds: Tuple[float, float, float, float]) -> list[Callable[[float], float]]:
     constraint_functions = []
     constraint_indices = []
