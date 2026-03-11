@@ -9,6 +9,7 @@ from scipy.sparse.linalg import spsolve
 import warnings
 import time
 from collections import defaultdict
+from scipy.spatial import cKDTree
 
 class Helper:
     @staticmethod
@@ -191,17 +192,19 @@ class Solid:
         self.nodes = nodes
         self.nodes.sort(key=lambda node: node.id)
         self.num_nodes = len(nodes)
-        self.edges: list[Edge] = []
-        self.t = 0
-    
-    @profile_function
-    def prime(self):
+        
         node_positions:np.ndarray = np.zeros(DIMS*self.num_nodes, dtype=np.float64)
 
         for i in range(self.num_nodes):
             node_positions[2*i] = self.nodes[i].position.x
             node_positions[2*i+1] = self.nodes[i].position.y
         self.node_positions = node_positions
+        
+        self.edges: list[Edge] = []
+        self.t = 0
+    
+    @profile_function
+    def prime(self):
 
         self.node_edges_connection = np.ones(2*self.num_edges, dtype=np.int32)* (-1)
         self.edges_properties = np.zeros(self.num_edges, dtype=np.float64)
@@ -363,17 +366,26 @@ class Solid:
         return self.edge_already_exists(self.nodes[id_a], self.nodes[id_b])
     
     @profile_function
-    def initialize_edges_distance_based(self, distance_threshold:float) -> List[Edge]:
-        for i in range(self.num_nodes):
-            for j in range(i+1, self.num_nodes):
-                node_a = self.nodes[i]
-                node_b = self.nodes[j]
-                distance_sq = Helper.find_dist_sq_between_nodes(node_a, node_b)
-                if distance_sq < distance_threshold ** 2:
-                    distance = np.sqrt(distance_sq)
-                    
-                    edge = Edge(k=LINK_STRENGTH*LINK_DISTANCE/distance, l0=distance, node_a=node_a, node_b=node_b, attach=True)
-                    self.add_edge(edge)
+    def initialize_edges_distance_based(self, distance_threshold):
+
+        coords = np.array([[n.position.x, n.position.y] for n in self.nodes])
+        tree = cKDTree(coords)
+        pairs = tree.query_pairs(distance_threshold)
+        for i, j in pairs:
+            node_a = self.nodes[i]
+            node_b = self.nodes[j]
+
+            distance = np.linalg.norm(coords[i] - coords[j])
+
+            edge = Edge(
+                k=LINK_STRENGTH * LINK_DISTANCE / distance,
+                l0=distance,
+                node_a=node_a,
+                node_b=node_b,
+                attach=True
+            )
+            self.add_edge(edge)
+
         self.num_edges = len(self.edges)
         return self.edges
 
@@ -391,6 +403,9 @@ class Solid:
         for i in reversed(range(len(remove_indices))):
             if remove_indices[i]:
                 self.delete_edge(self.edges[i])
+
+    def initialize_edges_distance_based_02(self, distance_threshold:float) -> List[Edge]:
+        pass
 
     def delete_edge(self, edge: Edge):
         edge.delete_edge()
