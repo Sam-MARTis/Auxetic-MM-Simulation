@@ -7,7 +7,7 @@ import numba as nb
 
 
 
-def do_animation(solid: Solid, dxf_edges: list[Edge]):
+def do_animation(solid: Solid, dxf_edges:list[np.ndarray]):
     pygame.init()
     gravity = GRAVITY
     hold = True
@@ -46,7 +46,6 @@ def do_animation(solid: Solid, dxf_edges: list[Edge]):
                     i+=1
                     print("Deleted edge")
                     print(f"Remaining edges: {len(solid.edges)}")
-                # If left and right arrow key case:
                 left_right = False
                 if event.key == pygame.K_LEFT:
                     solid.t -= DT
@@ -64,7 +63,7 @@ def do_animation(solid: Solid, dxf_edges: list[Edge]):
                 if left_right:
                     delta_time = DT
         
-                    energy = solid.step(dt=delta_time, substeps=SUBSTEPS, report_energy=True)
+                    energy = solid.step(substeps=SUBSTEPS, report_energy=True)
         
                     t_hist[-1] = solid.t
                     e_hist[-1] = energy
@@ -77,7 +76,7 @@ def do_animation(solid: Solid, dxf_edges: list[Edge]):
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_1:
                     del_edge_key_clicked = False
-            # Mouseclick once
+            
             if event.type == pygame.MOUSEBUTTONDOWN:
                 
                 mouse_pos = pygame.mouse.get_pos()
@@ -114,7 +113,7 @@ def do_animation(solid: Solid, dxf_edges: list[Edge]):
 
         if not stop_auto_sim:
             delta_time = DT
-            energy = solid.step(dt=delta_time, substeps=SUBSTEPS, report_energy=True)
+            energy = solid.step(substeps=SUBSTEPS, report_energy=True)
             solid.t += delta_time
         
             t_hist.append(solid.t)
@@ -132,7 +131,6 @@ def do_animation(solid: Solid, dxf_edges: list[Edge]):
 
         
         pygame.display.flip()
-    # time.sleep(10)
     while running:
         anim_loop()
         
@@ -149,15 +147,20 @@ if __name__ == "__main__":
     n=2
     file_pattern_2cross2 = f"/home/odin/Academic/Research/Metamaterials/Auxetic Mechanical MM/Bistable/Computational Exploration/Modules/pattern_{n}x{n}.dxf"
     bounds, lines_vec, hinge_points = get_bounds_and_lines_and_hinge_points(filename=file_pattern_2cross2, min_distance=min_distance, max_distance=max_distance, center=center, size=size)
-    dxf_edges:list[Edge] = []
+    dxf_edges = []
     for line in lines_vec:
         a = line[0]
         b = line[1]
         # print(f"Line from {a} to {b}")
-        node_a = Node(mass=NODE_MASS, position=Vector(a.x, a.y), velocity=Vector(0, 0))
-        node_b = Node(mass=NODE_MASS, position=Vector(b.x, b.y), velocity=Vector(0, 0))
-        edge = Edge(k=LINK_STRENGTH, l0=(b - a).magnitude(), node_a=node_a, node_b=node_b, attach=True)
-        dxf_edges.append(edge)
+        # node_a = Node(mass=NODE_MASS, position=Vector(a.x, a.y), velocity=Vector(0, 0))
+        # node_b = Node(mass=NODE_MASS, position=Vector(b.x, b.y), velocity=Vector(0, 0))
+        # for edge in edges_external:
+        #     node_a = edge.node_a
+        #     node_b = edge.node_b
+        #     external_edge_positions.append([np.array([node_a.position.x, node_a.position.y]), np.array([node_b.position.x, node_b.position.y])])
+        dxf_edges.append([np.array([a.x, a.y]), np.array([b.x, b.y])])
+        # edge = Edge(k=LINK_STRENGTH, l0=(b - a).magnitude(), node_a=node_a, node_b=node_b, attach=True)
+        # dxf_edges.append(edge)
         
     
     Node._count=0
@@ -170,15 +173,14 @@ if __name__ == "__main__":
     print(f"Node count: {len(nodes)}")
     print(f"Class node count: {Node._count}")
     solid = Solid(nodes=nodes)
-    
-    solid.initialize_edges_distance_based(distance_threshold=LINK_DISTANCE)
 
-    solid.remove_intersecting_edges(dxf_edges)
+    solid.initialize_edges_distance_based(distance_threshold=LINK_DISTANCE, edges_external=dxf_edges)
+
+    
     constraint_indices, constraint_functions = get_constraint_indices_and_constraint_functions(nodes=solid.nodes, bounds=bounds)
-    solid.prime()
     solid.set_constraint(coordinate_indices_to_constrain=constraint_indices, curve_functions=constraint_functions)
 
     
-    # do_animation(solid, dxf_edges=dxf_edges)
+    do_animation(solid, dxf_edges=dxf_edges)
     
 

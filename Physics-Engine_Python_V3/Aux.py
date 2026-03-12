@@ -1,4 +1,4 @@
-from Objects import Vector, Node, Edge, Helper, Solid, world_to_screen
+from Objects import Vector, Node, Helper, Solid, world_to_screen
 from typing import Callable, List, Tuple
 from constants import *
 import numpy as np
@@ -52,19 +52,6 @@ def edge_already_exists(node_a: Node, node_b: Node) -> bool:
     node_b_edges = [edge.id for edge in node_b.edges]
     return any(edge in node_b_edges for edge in node_a_edges)
 
-def initialize_edges_random(count, nodes: List[Node]) -> List[Edge]:
-    edges: List[Edge] = []
-    for i in range(count):
-        node_a = nodes[np.random.randint(len(nodes))]
-        node_b = nodes[np.random.randint(len(nodes))]
-        if node_a == node_b:
-            continue
-        if edge_already_exists(node_a, node_b):
-            continue
-        edge = Edge(k=100.0, l0=0.8, node_a=node_a, node_b=node_b, attach=True)
-        edges.append(edge)
-    return edges
-
 
 
 def draw_energy_plot(plot_screen: pygame.Surface, t_hist: list, e_hist: list):
@@ -99,62 +86,6 @@ def draw_energy_plot(plot_screen: pygame.Surface, t_hist: list, e_hist: list):
     plot_screen.blit(font.render("Energy vs t", True, (220,220,220)), (W//2-30, 4))
 
 
-def initialize_edges_distance_based(count, nodes: List[Node]) -> List[Edge]:
-    edges: List[Edge] = []
-    num_nodes = count
-    for i in range(num_nodes):
-        for j in range(i+1, num_nodes):
-            node_a = nodes[i]
-            node_b = nodes[j]
-            distance_sq = Helper.find_dist_sq_between_nodes(node_a, node_b)
-            if distance_sq < LINK_DISTANCE ** 2:
-                edge = Edge(k=LINK_STRENGTH, l0=(distance_sq**0.5)*1.1, node_a=node_a, node_b=node_b, attach=True)
-                edges.append(edge)
-    return edges
-
-def update_edges_coordinate_properties(edges: List[Edge]):
-    for edge in edges:
-        edge.update_line_properties()
-
-def is_intersecting(edge_a: Edge, edge_b: Edge) -> bool:
-    dm = edge_a.m - edge_b.m
-    x_meet = (edge_b.c - edge_a.c) / dm if dm != 0 else float('inf')
-    y_meet = edge_a.m * x_meet + edge_a.c
-    hit = True
-    hit_a = x_meet <( max(edge_a.node_a.position.x, edge_a.node_b.position.x)-EPSILON) and (x_meet > min(edge_a.node_a.position.x, edge_a.node_b.position.x)+EPSILON)
-    hit_b = x_meet <( max(edge_b.node_a.position.x, edge_b.node_b.position.x)-EPSILON) and (x_meet > min(edge_b.node_a.position.x, edge_b.node_b.position.x)+EPSILON)
-    hit = hit_a and hit_b
-    # print(hit)
-    return hit
-
-
-
-
-def all_edges_intersection_check(edges: List[Edge]):
-    update_edges_coordinate_properties(edges)
-    num_edges = len(edges)
-    for i in range(num_edges):
-        e1 = edges[i]
-        for j in range(i + 1, num_edges):
-            e2 = edges[j]
-            if is_intersecting(e1, e2):
-                e1.is_intersecting = True
-                e2.is_intersecting = True
-                
-
-def delete_intersecting_edges(edges: List[Edge]):
-    update_edges_coordinate_properties(edges)
-    new_edges:List[Edge] = []
-    num_edges = len(edges)
-    for i in range(num_edges):
-        e1 = edges[i]
-        for j in range(i + 1, num_edges):
-            e2 = edges[j]
-            if is_intersecting(e1, e2):
-                new_edges.append(e1)
-                break
-    return new_edges
-
 
 def render(self, screen: pygame.Surface, radius: float, colour: tuple):
     screen_position = world_to_screen(self.position, WORLD_SIZE, MAGNIFICATION)
@@ -162,42 +93,31 @@ def render(self, screen: pygame.Surface, radius: float, colour: tuple):
     
     
     
-def render_solid(solid: Solid,  dxf_edges: list[Edge], screen: pygame.Surface):
-    for edge in solid.edges:
-        edge.render(screen=screen, colour=EDGE_COLOUR_SELECTED if edge.is_intersecting else EDGE_COLOUR, width=EDGE_WIDTH)
-        edge.is_intersecting = False
-    for node in solid.nodes:
-        node.render(screen=screen, radius=NODE_RADIUS, colour=NODE_COLOUR)
-    if RENDER_DXF:
-        for edge in dxf_edges:
-            edge.render(screen=screen, colour=EDGE_COLOUR_SELECTED, width=EDGE_WIDTH)
 
 def map_strain_to_pygame_colour(strain: float) -> tuple:
-    # Map the strain value to a colour gradient
     strain_scaled = 50000*strain
     r = max(min(int(125+strain_scaled), 255), 0)
     b = max(min(int(125-strain_scaled), 255), 0)
     g = 0
     return (r, g, b)
 
-def render_solid_low_level(solid:Solid, dxf_edges: list[Edge], screen: pygame.Surface):
+def render_solid_low_level(solid:Solid, dxf_edges: list[np.ndarray], screen: pygame.Surface):
     for i in range(solid.num_edges):
-        # edge = solid.edges[i]
+        
         node_1_id = solid.node_edges_connection[2*i]
         node_2_id = solid.node_edges_connection[2*i+1]
-        # print(f"Rendering ednode_edges_connectionge {i} between nodes {node_1_id} and {node_2_id}")
+        
         pos1 = solid.node_positions[2*node_1_id:2*node_1_id+2]
         pos2 = solid.node_positions[2*node_2_id:2*node_2_id+2]
         node1_pos = Vector(pos1[0], pos1[1])
         node2_pos = Vector(pos2[0], pos2[1])
         node1_screen_pos = world_to_screen(node1_pos, WORLD_SIZE, MAGNIFICATION)
         node2_screen_pos = world_to_screen(node2_pos, WORLD_SIZE, MAGNIFICATION)
-        # pygame.draw.line(screen, EDGE_COLOUR_SELECTED if edge.is_intersecting else EDGE_COLOUR, (int(node1_screen_pos.x), int(node1_screen_pos.y)), (int(node2_screen_pos.x), int(node2_screen_pos.y)), width=EDGE_WIDTH)
+
         l0 = solid.edges_extension_natural[i]
         colour = map_strain_to_pygame_colour((solid.edges_extension[i]-l0)/l0)
 
         pygame.draw.line(screen, colour, (int(node1_screen_pos.x), int(node1_screen_pos.y)), (int(node2_screen_pos.x), int(node2_screen_pos.y)), width=EDGE_WIDTH)
-        # edge.is_intersecting = False
     for i in range(solid.num_nodes):
         
         pos = solid.node_positions[2*i:2*i+2]
@@ -205,8 +125,12 @@ def render_solid_low_level(solid:Solid, dxf_edges: list[Edge], screen: pygame.Su
         screen_pos = world_to_screen(Vector(pos[0], pos[1]), WORLD_SIZE, MAGNIFICATION)
         pygame.draw.circle(screen, NODE_COLOUR if not constrained else NODE_COLOUR_SELECTED, (int(screen_pos.x), int(screen_pos.y)), NODE_RADIUS)
     if RENDER_DXF:
-        for edge in dxf_edges:
-            edge.render(screen=screen, colour=EDGE_COLOUR_SELECTED, width=EDGE_WIDTH)
+        for i in range(len(dxf_edges)):
+            a = dxf_edges[i][0]
+            b = dxf_edges[i][1]
+            a_screen = world_to_screen(Vector(a[0], a[1]), WORLD_SIZE, MAGNIFICATION)
+            b_screen = world_to_screen(Vector(b[0], b[1]), WORLD_SIZE, MAGNIFICATION)
+            pygame.draw.line(screen, EDGE_COLOUR_SELECTED, (int(a_screen.x), int(a_screen.y)), (int(b_screen.x), int(b_screen.y)), width=1)
 
 def nearest_points_on_line_segments(a0: Vector, a1: Vector, b0: Vector, b1: Vector):
     r = b0 - a0
@@ -243,7 +167,7 @@ def load_dxf_file(file_path: str):
     msp = doc.modelspace()
     return msp, doc
 
-# hinge_points = []
+
 def get_bounds_and_lines_and_hinge_points(filename:str, min_distance:float, max_distance:float, center:bool, size:float):
     msp, doc = load_dxf_file(filename)
     lines_vec:list[Tuple[Vector, Vector]] = []

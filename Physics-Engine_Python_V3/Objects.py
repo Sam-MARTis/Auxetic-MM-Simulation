@@ -61,102 +61,22 @@ class Node:
         self.position = position
         self.velocity = velocity
         self.mass = mass
-        self.edges: list[Edge] = []
         if mass==0:
             raise ValueError("Mass cannot be zero")
         self.mass_inv = 1.0 / mass
-    def render(self, screen: pygame.Surface, radius: float, colour: tuple):
-        screen_position = world_to_screen(self.position, WORLD_SIZE, MAGNIFICATION)
-        pygame.draw.circle(screen, colour, (int(screen_position.x), int(screen_position.y)), radius)
-    def step(self, dt: float):
-        self.position.x += self.velocity.x * dt
-        self.position.y += self.velocity.y * dt
-        if abs(self.position.x) > BOUNDARY_X_P:
-            self.position.x = max(min(self.position.x, BOUNDARY_X_P), BOUNDARY_X_N)
-            self.velocity.x = 0
-        if abs(self.position.y) > BOUNDARY_Y_P:
-            self.position.y = max(min(self.position.y, BOUNDARY_Y_P), BOUNDARY_Y_N)
-            self.velocity.y = 0
-    def apply_force(self, force:Vector, dt:float):
-        impulse =  force * (dt * self.mass_inv)
-        self.velocity.x += impulse.x
-        self.velocity.y += impulse.y
-        self.velocity.x -= self.velocity.x * dt*VISCOCITY
-        self.velocity.y -= self.velocity.y * dt*VISCOCITY
-    def attach_edge(self, edge: 'Edge'):
-        self.edges.append(edge)
-        return self
+ 
 
-class Edge:
-    _count = 0
-    def __init__(self, k: float, l0: float, node_a: Node, node_b: Node, attach:bool):
-        self.k = k
-        self.l0 = l0
-        self.node_a = node_a
-        self.node_b = node_b
-        self.id = Edge._count
-        Edge._count += 1
-        if attach:
-            self.node_a.attach_edge(self)
-            self.node_b.attach_edge(self)
-        self.m = 0
-        self.c = 0
-        self.is_intersecting = False
-        self.active = attach
-        self.l0_inv = max(1.0 / l0 , 50)
+def orientation(p:np.ndarray, q:np.ndarray, r):
+    val = (q[1]-p[1])*(r[0]-q[0]) - (q[0]-p[0])*(r[1]-q[1])
+    if abs(val) < EPSILON: return 0
+    return 1 if val > 0 else -1
 
-    def activate_edge(self, nodea, nodeb):
-        self.node_a.attach_edge(self)
-        self.node_b.attach_edge(self)
-        self.active = True
-    def update_line_properties(self):
-        dx = self.node_a.position.x - self.node_b.position.x
-        self.m = (self.node_a.position.y - self.node_b.position.y) / dx if dx != 0 else float('inf')
-        self.c = self.node_a.position.y - self.m * self.node_a.position.x
-    def update_l0(self, l0):
-        self.l0 = l0
-        self.l0_inv = max(1.0 / l0 , 50)
-    def step(self, dt:float):
-        if self.active:
-            r_vec = (self.node_a.position - self.node_b.position)
-            l = r_vec.magnitude()
-            dl = (l - self.l0)
-            
-            force_magnitude = -self.k * dl * np.abs(dl)
-            force_direction = r_vec / l if l != 0 else ValueError("Zero length vector in edge step")
-            self.node_a.apply_force(force=force_direction * force_magnitude, dt=dt)
-            self.node_b.apply_force(force= force_direction * force_magnitude * -1, dt=dt)
-        else:
-            return
-    def render(self, screen: pygame.Surface, colour: tuple, width: int):
-        if self.active:
-            pygame.draw.line(surface=screen, color=colour, start_pos=world_to_screen(self.node_a.position, WORLD_SIZE, MAGNIFICATION).make_pygame_vector(), end_pos=world_to_screen(self.node_b.position, WORLD_SIZE, MAGNIFICATION).make_pygame_vector(), width=width)
-    def delete_edge(self):
-        self.node_a.edges.remove(self)
-        self.node_b.edges.remove(self)
-        self.node_a = None
-        self.node_b = None
-        self.active = False
-    def compute_forces(self, pos_a:Vector, pos_b:Vector):
-        r_vec = pos_a - pos_b
-        l = r_vec.magnitude()
-        dl = (l - self.l0)
-
-        force_magnitude = -self.k * dl
-        force_direction = r_vec / l if l != 0 else ValueError("Zero length vector in edge step")
-        return force_direction * force_magnitude
-
-
-def is_intersecting(edge_a: Edge, edge_b: Edge) -> bool:
-    dm = edge_a.m - edge_b.m
-    x_meet = (edge_b.c - edge_a.c) / dm if dm != 0 else float('inf')
-    y_meet = edge_a.m * x_meet + edge_a.c
-    hit = True
-    hit_a = x_meet <( max(edge_a.node_a.position.x, edge_a.node_b.position.x)-EPSILON) and (x_meet > min(edge_a.node_a.position.x, edge_a.node_b.position.x)+EPSILON)
-    hit_b = x_meet <( max(edge_b.node_a.position.x, edge_b.node_b.position.x)-EPSILON) and (x_meet > min(edge_b.node_a.position.x, edge_b.node_b.position.x)+EPSILON)
-    hit = hit_a and hit_b
-    # print(hit)
-    return hit
+def segments_intersect_2d_fast(p1, p2, p3, p4):
+    o1 = orientation(p1, p2, p3)
+    o2 = orientation(p1, p2, p4)
+    o3 = orientation(p3, p4, p1)
+    o4 = orientation(p3, p4, p2)
+    return o1 != o2 and o3 != o4
 
 
 def nearest_points_on_line_segments(a0: Vector, a1: Vector, b0: Vector, b1: Vector):
@@ -202,22 +122,9 @@ class Solid:
         
         self.edges: list[Edge] = []
         self.t = 0
+        
     
-    @profile_function
-    def prime(self):
 
-        self.node_edges_connection = np.ones(2*self.num_edges, dtype=np.int32)* (-1)
-        self.edges_properties = np.zeros(self.num_edges, dtype=np.float64)
-        self.edges_extension_natural = np.zeros(self.num_edges, dtype=np.float64)
-        self.edges_extension = np.zeros(self.num_edges, dtype=np.float64)
-        for i in range(self.num_edges):
-            edge = self.edges[i]
-            self.node_edges_connection[2*i] = edge.node_a.id
-            self.node_edges_connection[2*i+1] = edge.node_b.id
-            self.edges_properties[i] = edge.k
-            self.edges_extension_natural[i] = edge.l0
-            self.edges_extension[i] = 0
-  
 
     def set_constraint(self, coordinate_indices_to_constrain: list[int], curve_functions: list[Callable[[float], float]]):
         self.coordinate_indices_to_constrain = coordinate_indices_to_constrain
@@ -353,117 +260,57 @@ class Solid:
         else:
             print(f"Warning: did not converge in {max_iter} iterations (||dx||={free_norm:.3e})")
 
-
-    def add_edge(self, edge: Edge):
-        self.edges.append(edge)
-        
-    def edge_already_exists(self, node_a: Node, node_b: Node) -> bool:
-        node_a_edges = [edge.id for edge in node_a.edges]
-        node_b_edges = [edge.id for edge in node_b.edges]
-        return any(edge in node_b_edges for edge in node_a_edges)
-    
-    def edge_already_exists_id(self, id_a: int, id_b: int) -> bool:
-        return self.edge_already_exists(self.nodes[id_a], self.nodes[id_b])
-    
     @profile_function
-    def initialize_edges_distance_based(self, distance_threshold):
+    def initialize_edges_distance_based(self, distance_threshold, edges_external):
 
-        coords = np.array([[n.position.x, n.position.y] for n in self.nodes])
+        coords = np.reshape(self.node_positions, (self.num_nodes, 2))
+        
         tree = cKDTree(coords)
         pairs = tree.query_pairs(distance_threshold)
+        
+        edges = np.zeros((len(pairs)*2), dtype=int)
+        num_external_edges = len(edges_external)
+        # external_edge_positions = []
+        filtered_pairs = []
+        # for edge in edges_external:
+        #     node_a = edge.node_a
+        #     node_b = edge.node_b
+        #     external_edge_positions.append([np.array([node_a.position.x, node_a.position.y]), np.array([node_b.position.x, node_b.position.y])])
         for i, j in pairs:
-            node_a = self.nodes[i]
-            node_b = self.nodes[j]
+            node_a_pos = coords[i]
+            node_b_pos = coords[j]
+            for k in range(num_external_edges):
+                ext_node_a_pos = edges_external[k][0]
+                ext_node_b_pos = edges_external[k][1]
+                if segments_intersect_2d_fast(node_a_pos, node_b_pos, ext_node_a_pos, ext_node_b_pos):
+                    break
+            else:
+                filtered_pairs.append((i, j))
+  
+        filtered_pairs = np.array(filtered_pairs, dtype=np.int32)
 
-            distance = np.linalg.norm(coords[i] - coords[j])
+        node_1_pos = coords[filtered_pairs[:, 0]]
+        node_2_pos = coords[filtered_pairs[:, 1]]
+        distances = np.linalg.norm(node_1_pos - node_2_pos, axis=1)
+        self.edges_properties = LINK_STRENGTH * LINK_DISTANCE / distances
+        self.edges_extension_natural = distances
+        self.node_edges_connection = filtered_pairs.flatten().astype(np.int32)
+        self.num_edges = len(self.node_edges_connection) // 2
+        self.edges_extension = np.zeros(self.num_edges, dtype=np.float64)
+    
+        return self.node_edges_connection
 
-            edge = Edge(
-                k=LINK_STRENGTH * LINK_DISTANCE / distance,
-                l0=distance,
-                node_a=node_a,
-                node_b=node_b,
-                attach=True
-            )
-            self.add_edge(edge)
 
-        self.num_edges = len(self.edges)
-        return self.edges
 
-    @profile_function
-    def remove_intersecting_edges(self, edges_external: list[Edge]):
-        if not self.edges or not edges_external:
-            return
-
-        # Shape: (N, 3) and (M, 3)
-        a0 = np.array([e.node_a.position for e in self.edges])
-        a1 = np.array([e.node_b.position for e in self.edges])
-        b0 = np.array([e.node_a.position for e in edges_external])
-        b1 = np.array([e.node_b.position for e in edges_external])
-
-        # Broadcast: (N, 1, 3) vs (1, M, 3) → (N, M, 3)
-        d1 = a1[:, None] - a0[:, None]        # (N, 1, 3)
-        d2 = b1[None] - b0[None]              # (1, M, 3)
-        r  = a0[:, None] - b0[None]           # (N, M, 3)
-
-        d11 = np.einsum('ijk,ijk->ij', d1, d1)  # (N, M)
-        d22 = np.einsum('ijk,ijk->ij', d2, d2)
-        d12 = np.einsum('ijk,ijk->ij', d1, d2)
-        rd1 = np.einsum('ijk,ijk->ij', r,  d1)
-        rd2 = np.einsum('ijk,ijk->ij', r,  d2)
-
-        denom = d11 * d22 - d12 * d12
-        parallel = np.abs(denom) < EPSILON
-
-        t = np.where(parallel, 0.0, (rd1 * d22 - rd2 * d12) / np.where(parallel, 1.0, denom))
-        u = np.where(parallel, 0.0, (rd1 * d12 - rd2 * d11) / np.where(parallel, 1.0, denom))
-
-        t = np.clip(t, 0.0, 1.0)
-        u = np.clip(u, 0.0, 1.0)
-
-        closest = (a0[:, None] + t[..., None] * d1) - (b0[None] + u[..., None] * d2)
-        dist_sq = np.einsum('ijk,ijk->ij', closest, closest)  # (N, M)
-
-        remove_mask = np.any(dist_sq < EPSILON ** 2, axis=1)  # (N,)
-
-        for i in reversed(range(len(self.edges))):
-            if remove_mask[i]:
-                self.delete_edge(self.edges[i])
-    def initialize_edges_distance_based_02(self, distance_threshold:float) -> List[Edge]:
-        pass
-
-    def delete_edge(self, edge: Edge):
-        edge.delete_edge()
-        self.edges.remove(edge)
-        self.num_edges -= 1
-
-    def step_nodes(self, dt: float):
-        for node in self.nodes:
-            node.step(dt)
-    def apply_edge_forces(self, dt: float):
-        for edge in self.edges:
-            edge.step(dt)
-
-    def apply_gravity(self, dt: float, gravity: float):
-        for node in self.nodes:
-            node.apply_force(Vector(0, -gravity * node.mass), dt)
-    def apply_gravity_low_level(self, dt: float, gravity: float):
-        for i in range(self.num_nodes):
-            self.node_velocities[2*i+1] -= gravity * dt
     def compute_energy_from_extension_cache(self):
         self.energy = 0.0
-        for i in range(self.num_edges):
-            k  = self.edges_properties[i]
-            d  = self.edges_extension[i]   
-            l0 = self.edges_extension_natural[i]
-            self.energy += 0.5 * k * (d - l0) ** 2
+        self.energy = 0.5*np.sum(self.edges_properties * (self.edges_extension - self.edges_extension_natural) ** 2)
         
 
-    def step(self, dt:float, substeps:int, report_energy:bool):
+    def step(self, substeps:int, report_energy:bool):
         for _ in range(substeps):
-
             self.evolve_constraint(self.t)
             self.solve(tol=TOLERANCE_SOLVER, max_iter=MAX_ITER_SOLVER)
-
         if report_energy:
             self.compute_energy_from_extension_cache()
             return self.energy
