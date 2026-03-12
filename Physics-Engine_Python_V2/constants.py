@@ -1,12 +1,12 @@
 import numpy as np
 
-PROFILE_PERFORMANCE = False
+PROFILE_PERFORMANCE = True
 
 EPSILON = 1e-6
 EPSILON_BIG = 1e-4
 TOLERANCE_SOLVER = 1e-1
 MAX_ITER_SOLVER = 20
-DT = 1e-1
+DT = 1e-0
 PARAMETER_MULTIPLIER = 3e-2
 MAX_T = 26
 
@@ -25,7 +25,7 @@ NODE_RADIUS = 1
 NODE_COLOUR = (255, 255, 255)
 NODE_COLOUR_SELECTED = (255, 200, 0)
 NODE_MASS = 1
-NODE_COUNT = 3000
+NODE_COUNT = 8000
 DENSITY_FACTOR = 3.5
 STARTING_VEL = 0.5
 
@@ -56,3 +56,20 @@ LINK_STRENGTH = 5000*SCALING
 screen_size = WORLD_SIZE * (MAGNIFICATION)
 RENDER_DXF = True
 NOISE = WORLD_SIZE*2e-4*0
+
+
+
+
+
+import time
+
+def profile_function(func):
+    if PROFILE_PERFORMANCE:
+        def wrapper(*args, **kwargs):
+            start_time = time.perf_counter()
+            result = func(*args, **kwargs)
+            end_time = time.perf_counter()
+            print(f"{func.__name__} took {(end_time - start_time) * 1e3:.2f} ms")
+            return result
+        return wrapper
+    return func
