@@ -130,7 +130,7 @@ def render_solid_low_level(solid:Solid, dxf_edges: list[np.ndarray], screen: pyg
             b = dxf_edges[i][1]
             a_screen = world_to_screen(Vector(a[0], a[1]), WORLD_SIZE, MAGNIFICATION)
             b_screen = world_to_screen(Vector(b[0], b[1]), WORLD_SIZE, MAGNIFICATION)
-            pygame.draw.line(screen, EDGE_COLOUR_SELECTED, (int(a_screen.x), int(a_screen.y)), (int(b_screen.x), int(b_screen.y)), width=1)
+            pygame.draw.line(screen, EDGE_COLOUR_SELECTED, (int(a_screen.x), int(a_screen.y)), (int(b_screen.x), int(b_screen.y)), width=DXF_EDGE_WIDTH)
 
 def nearest_points_on_line_segments(a0: Vector, a1: Vector, b0: Vector, b1: Vector):
     r = b0 - a0

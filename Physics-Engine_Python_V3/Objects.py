@@ -49,7 +49,17 @@ class Vector:
 
 def world_to_screen(position: Vector, world_size:float, magnification:float) -> Vector:
     return Vector((position.x+world_size/2)*magnification , (-(position.y)+world_size/2)*magnification + PLOT_H/2)
-
+def world_to_screen_02(position: np.ndarray, world_size:float, magnification:float) -> np.ndarray:
+    x = (position[0] + world_size / 2) * magnification
+    y = (-(position[1]) + world_size / 2) * magnification + PLOT_H / 2
+    return np.array([x, y])
+def world_to_screen_03(positions:list[tuple[float, float]], world_size:float, magnification:float) -> list[tuple[float, float]]:
+    screen_positions = []
+    for pos in positions:
+        x = (pos[0] + world_size / 2) * magnification
+        y = (-(pos[1]) + world_size / 2) * magnification + PLOT_H / 2
+        screen_positions.append((x, y))
+    return screen_positions
 
 class Node:
     _count = 0
@@ -120,7 +130,6 @@ class Solid:
             node_positions[2*i+1] = self.nodes[i].position.y
         self.node_positions = node_positions
         
-        self.edges: list[Edge] = []
         self.t = 0
         
     
@@ -250,7 +259,7 @@ class Solid:
             g, H = self.assemble_gradient_and_hessian()
             g, H = self.apply_constraints_on_hessian_and_gradient(g, H)
             dx = spsolve(H, -g)
-            self.node_positions += dx
+            self.node_positions += dx*RELAXATION
             for i, idx in enumerate(self.coordinate_indices_to_constrain):
                 self.node_positions[idx] = self.curve_functions[i](self.t)
 

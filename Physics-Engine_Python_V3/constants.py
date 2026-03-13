@@ -1,21 +1,22 @@
 import numpy as np
 
-PROFILE_PERFORMANCE = True
+PROFILE_PERFORMANCE = False
 
 EPSILON = 1e-6
 EPSILON_BIG = 1e-4
 TOLERANCE_SOLVER = 1e-1
-MAX_ITER_SOLVER = 20
+MAX_ITER_SOLVER = 80
+RELAXATION = 1.0
 DT = 1e-0
 PARAMETER_MULTIPLIER = 3e-2
-MAX_T = 26
+MAX_T = 30
 
 DIMS = 2
 
 
 
 PLOT_W, PLOT_H = 500, 300
-PLOT_PAD = 40   # pixels of margin inside the plot window
+PLOT_PAD = 40   
 
 
 
@@ -24,10 +25,14 @@ MAGNIFICATION = 100
 NODE_RADIUS = 1
 NODE_COLOUR = (255, 255, 255)
 NODE_COLOUR_SELECTED = (255, 200, 0)
+TRACKING_COLOUR = (100, 255, 0)
 NODE_MASS = 1
 NODE_COUNT = 8000
 DENSITY_FACTOR = 3.5
 STARTING_VEL = 0.5
+
+DXF_EDGE_WIDTH = 1
+TRACKING_EDGE_WIDTH = 2
 
 SCALING = 1
 VISCOCITY = 10*SCALING
@@ -46,7 +51,7 @@ BOUNDARY_Y_N = -WORLD_SIZE/2.1
 
 adjacent_bond_size = SHAPE_SIZE/(np.sqrt(NODE_COUNT)-1)
 # For distance based attachment of links
-LINK_DISTANCE =  adjacent_bond_size*np.sqrt(2.1)
+LINK_DISTANCE =  adjacent_bond_size*np.sqrt(2.2)
 
 EDGE_COLOUR = (0, 200, 200)
 EDGE_COLOUR_SELECTED = (200, 100, 0)

@@ -9,43 +9,24 @@ import numba as nb
 
 def do_animation(solid: Solid, dxf_edges:list[np.ndarray]):
     pygame.init()
-    gravity = GRAVITY
-    hold = True
     screen = pygame.display.set_mode((screen_size, screen_size))
     pygame.display.set_caption("Spring Network")
     plot_screen = pygame.Surface((PLOT_W, PLOT_H))
 
     t_hist: list[float] = []
     e_hist: list[float] = []
-    
-    node_selected_by_mouse = None
-    del_edge_key_clicked = False
     running = True
     clock = pygame.time.Clock()
-    delta_time = 0
     i = 0
     stop_auto_sim = False
     @profile_function
     def anim_loop():
-        nonlocal running, hold, gravity, delta_time, i, node_selected_by_mouse, del_edge_key_clicked, clock, stop_auto_sim
+        nonlocal running, i, clock, stop_auto_sim
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN:
-                # Arrow keys
-                if event.key == pygame.K_UP:
-                    gravity += 5
-                if event.key == pygame.K_DOWN:
-                    gravity -= 5
-                if event.key == pygame.K_r:
-                    hold = False
-                        
-                if event.key == pygame.K_1:
-                                
-                    solid.delete_edge(solid.edges[i])
-                    i+=1
-                    print("Deleted edge")
-                    print(f"Remaining edges: {len(solid.edges)}")
+    
                 left_right = False
                 if event.key == pygame.K_LEFT:
                     solid.t -= DT
@@ -61,60 +42,21 @@ def do_animation(solid: Solid, dxf_edges:list[np.ndarray]):
                     e_hist.append(0)
                     
                 if left_right:
-                    delta_time = DT
-        
+                    # DT = DT
                     energy = solid.step(substeps=SUBSTEPS, report_energy=True)
-        
                     t_hist[-1] = solid.t
                     e_hist[-1] = energy
                     print(f"t={solid.t:.4f}  E={energy:.6e}")
-                    
                 
-
-                if event.key == pygame.K_1:
-                    del_edge_key_clicked = True
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_1:
-                    del_edge_key_clicked = False
-            
-            if event.type == pygame.MOUSEBUTTONDOWN:
                 
-                mouse_pos = pygame.mouse.get_pos()
-                for i in range(len(solid.nodes)):
-                    node_pos = Vector(solid.node_positions[2*i], solid.node_positions[2*i+1])
-                    node_screen_pos = world_to_screen(node_pos, WORLD_SIZE, MAGNIFICATION)
-                    dx = mouse_pos[0] - node_screen_pos.x
-                    dy = mouse_pos[1] - node_screen_pos.y
-                    if dx**2 + dy**2 < 2*NODE_RADIUS**2:
-                        node_selected_by_mouse = i
-                        break
-                print("MOUSEDOWN")
-                if node_selected_by_mouse:
-                    print(f"Node selected: {node_selected_by_mouse}")
-            if event.type == pygame.MOUSEBUTTONUP:
-                if node_selected_by_mouse:
-                    print(f"Node released: {node_selected_by_mouse}")
-                node_selected_by_mouse = None
-
-            if del_edge_key_clicked:
-                solid.delete_edge(solid.edges[0])
-                # i+=1
-                print("Deleted edge")
-                print(f"Remaining edges: {len(solid.edges)}")
-        if node_selected_by_mouse:
-            mouse_pos = pygame.mouse.get_pos()
-            world_x = mouse_pos[0] / MAGNIFICATION - WORLD_SIZE / 2
-            world_y = -(mouse_pos[1] / MAGNIFICATION - WORLD_SIZE / 2)
-            solid.node_positions[2*i] = world_x
-            solid.node_positions[2*i+1] = world_y
 
         if(solid.t > MAX_T):
             stop_auto_sim = True
 
         if not stop_auto_sim:
-            delta_time = DT
+
             energy = solid.step(substeps=SUBSTEPS, report_energy=True)
-            solid.t += delta_time
+            solid.t += DT
         
             t_hist.append(solid.t)
             e_hist.append(energy)
@@ -137,6 +79,53 @@ def do_animation(solid: Solid, dxf_edges:list[np.ndarray]):
 
         
     pygame.quit()
+    
+def perform_sim(solid:Solid, t_min:float, t_max:float, tracking_points: np.ndarray, render: bool, dxf_edges:list[np.ndarray]):
+
+
+    solid.t = t_min
+    t_hist = []
+    e_hist = []
+    running = True
+    node_positions = np.reshape(solid.node_positions, (-1, 2))
+    tracking_points_positions = [[(a[0], a[1])] for a in node_positions[tracking_points]]
+    if render:
+        #Set up he rendering stuff. Pygame init and all that.
+        pygame.init()
+        screen = pygame.display.set_mode((screen_size, screen_size))
+        pygame.display.set_caption("Spring Network")
+        plot_screen = pygame.Surface((PLOT_W, PLOT_H))
+    while(solid.t<t_max):
+        energy = solid.step(substeps=SUBSTEPS, report_energy=True)
+        t_hist.append(solid.t)
+        e_hist.append(energy)
+        tracked_positions = node_positions[tracking_points]
+        # tracking_points_positions.append(tracked_positions)
+        for i in range(len(tracking_points)):
+            tracking_points_positions[i].append((tracked_positions[i][0], tracked_positions[i][1]))
+        
+        if render:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+            
+                    
+            # mapped_pos_points = world_to_screen_02(tracked_positions, world_size=WORLD_SIZE, magnification=MAGNIFICATION)
+            # tracking_points_rendering_pos.append((mapped_pos_points[0], mapped_pos_points[1]))
+            screen.fill((0, 0, 0))
+            render_solid_low_level(solid=solid, dxf_edges=dxf_edges, screen=screen)
+            draw_energy_plot(plot_screen=plot_screen, t_hist=t_hist, e_hist= e_hist)
+            for i in range(len(tracking_points)):
+                render_tracking_points_pos = world_to_screen_03(tracking_points_positions[i], world_size=WORLD_SIZE, magnification=MAGNIFICATION)
+                pygame.draw.lines(surface=screen, color=TRACKING_COLOUR, points=render_tracking_points_pos, closed=False, width=TRACKING_EDGE_WIDTH)
+            screen.blit(plot_screen, (screen_size - PLOT_W - 5, 5))
+            pygame.display.flip()
+            if not running:
+                pygame.quit()
+                break
+        solid.t+= DT
+        
+
 
 if __name__ == "__main__":
     nb.set_num_threads(17)
@@ -151,16 +140,7 @@ if __name__ == "__main__":
     for line in lines_vec:
         a = line[0]
         b = line[1]
-        # print(f"Line from {a} to {b}")
-        # node_a = Node(mass=NODE_MASS, position=Vector(a.x, a.y), velocity=Vector(0, 0))
-        # node_b = Node(mass=NODE_MASS, position=Vector(b.x, b.y), velocity=Vector(0, 0))
-        # for edge in edges_external:
-        #     node_a = edge.node_a
-        #     node_b = edge.node_b
-        #     external_edge_positions.append([np.array([node_a.position.x, node_a.position.y]), np.array([node_b.position.x, node_b.position.y])])
         dxf_edges.append([np.array([a.x, a.y]), np.array([b.x, b.y])])
-        # edge = Edge(k=LINK_STRENGTH, l0=(b - a).magnitude(), node_a=node_a, node_b=node_b, attach=True)
-        # dxf_edges.append(edge)
         
     
     Node._count=0
@@ -181,6 +161,9 @@ if __name__ == "__main__":
     solid.set_constraint(coordinate_indices_to_constrain=constraint_indices, curve_functions=constraint_functions)
 
     
-    do_animation(solid, dxf_edges=dxf_edges)
     
+    # do_animation(solid, dxf_edges=dxf_edges)
+    tracking_points = np.array([np.random.randint(0, solid.num_nodes) for _ in range(500)], dtype=int)
+    perform_sim(solid=solid, t_min=0, t_max=MAX_T, tracking_points=tracking_points, render=True, dxf_edges=dxf_edges)
+
 
