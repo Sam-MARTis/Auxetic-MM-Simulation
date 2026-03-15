@@ -136,7 +136,7 @@ if verbose:
     print("Charge optimization completed.")
 
 
-def write_charges_to_csv(charges, filename="optimized_charges.csv"):
+def write_charges_to_csv(charges: list[float], filename="optimized_charges.csv"):
     with open(filename, mode='w', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(["Charge"])

@@ -1,6 +1,7 @@
 import pygame
 import warnings
 import csv
+import subprocess
 import numpy as np
 import scipy.sparse as sp
 from scipy.spatial import cKDTree
@@ -370,3 +371,25 @@ class Solid:
             self.compute_strain_energy_from_extension_cache()
         if report_energy:
             return self.energy
+        
+    def optimize_charges(self, worker_file:str, position_storage_file:str, optimized_charge_storage_file:str, verbose:bool):
+        subprocess.run(["python", worker_file, position_storage_file, optimized_charge_storage_file, str(verbose)], check=True)
+        with open(optimized_charge_storage_file, mode='r') as file:
+            #             Charge
+            # 0.12361509150398144
+            # -0.4453967388332859
+            # -1.2084913415454135
+            # 0.35135028263123924
+            # -0.6788568714239562
+            # 0.9884685125697185
+            # 0.733618112261491
+            # -0.7055346504028998
+            # 0.9031651207564099
+            # 0.3452391928584101
+            reader = csv.reader(file)
+            next(reader)
+            optimized_charges = []
+            for row in reader:
+                optimized_charges.append(float(row[0]))
+
+        self.charges = np.array(optimized_charges, dtype=np.float64)

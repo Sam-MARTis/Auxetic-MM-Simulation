@@ -13,6 +13,10 @@ MAX_T = 28
 
 DIMS = 2
 
+CHARGE_OPTIMIZATION_FILE = "charge_optimize.py"
+DISTANCE_DATA_STORAGE_FILE = "charge_distance_data.csv"
+OPTIMIZED_CHARGE_STORAGE_FILE = "optimized_charges.csv" 
+OPTIMIZATION_VERBOSE = True
 
 
 PLOT_W, PLOT_H = 500, 300

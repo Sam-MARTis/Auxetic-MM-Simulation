@@ -5,7 +5,7 @@ from Constants import *
 from Aux import *
 import numba as nb
 
-
+np.random.seed(42) 
 
 def do_animation(solid: Solid, dxf_edges:list[np.ndarray]):
     pygame.init()
@@ -120,7 +120,7 @@ def perform_sim(solid:Solid, t_min:float, t_max:float, tracking_points: np.ndarr
 
 
 if __name__ == "__main__":
-    nb.set_num_threads(17)
+    # nb.set_num_threads(17)
     min_distance = 1e-6
     max_distance = 5e-2
     center = True
@@ -155,10 +155,13 @@ if __name__ == "__main__":
     
     
     # do_animation(solid, dxf_edges=dxf_edges)
-    tracking_points = np.array([np.random.randint(0, solid.num_nodes) for _ in range(500)], dtype=int)
+    tracking_points = np.array([np.random.randint(0, solid.num_nodes) for _ in range(50)], dtype=int)
     solid.assign_charged_indices(tracking_points)
     # solid.log_charged_nodes_positions()
     solid.log_state()
     perform_sim(solid=solid, t_min=0, t_max=MAX_T, tracking_points=tracking_points, render=True, dxf_edges=dxf_edges)
-    solid.write_data_to_csv(filename="simulation_data.csv")
+    solid.write_data_to_csv(filename=DISTANCE_DATA_STORAGE_FILE)
+    solid.optimize_charges(worker_file=CHARGE_OPTIMIZATION_FILE, position_storage_file=DISTANCE_DATA_STORAGE_FILE, optimized_charge_storage_file=OPTIMIZED_CHARGE_STORAGE_FILE, verbose=OPTIMIZATION_VERBOSE)
+    
+
 
