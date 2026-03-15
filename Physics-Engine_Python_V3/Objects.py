@@ -1,15 +1,12 @@
-from typing import List, Callable
 import pygame
-import numpy as np
-from constants import *
-from multiprocessing import Pool, cpu_count
-import numba as nb
-import scipy.sparse as sp
-from scipy.sparse.linalg import spsolve
 import warnings
-import time
-from collections import defaultdict
+import csv
+import numpy as np
+import scipy.sparse as sp
 from scipy.spatial import cKDTree
+from scipy.sparse.linalg import spsolve
+from typing import List, Callable
+from Constants import *
 
 class Helper:
     @staticmethod
@@ -138,8 +135,10 @@ class Solid:
             node_positions[2*i+1] = self.nodes[i].position.y
         self.node_positions = node_positions
         
+        self.energy = 0.0
         self.t = 0
         self.t_log = []
+        self.energy_log = []
         self.charged_nodes_positions_log = []
         
     
@@ -329,10 +328,18 @@ class Solid:
         self.charged_indices = charged_indices
         self.num_charges = len(charged_indices)
 
-    def log_charged_nodes_positions(self):
+    def log_time(self):
         self.t_log.append(self.t)
+    def log_energy(self):
+        self.energy_log.append(self.energy)
+    def log_charged_nodes_positions(self):
         node_positions = self.node_positions.reshape(self.num_nodes, DIMS)
         self.charged_nodes_positions_log.append(node_positions[self.charged_indices].copy())
+
+    def log_state(self):
+        self.log_time()
+        self.log_energy()
+        self.log_charged_nodes_positions()
 
     def render_charged_points_trajectory(self, screen):
     
@@ -340,11 +347,20 @@ class Solid:
         for trajectory in trajectories:
             screen_positions = world_to_screen_04(trajectory, world_size=WORLD_SIZE, magnification=MAGNIFICATION)
             pygame.draw.lines(surface=screen, color=TRACKING_COLOUR, points=screen_positions, closed=False, width=TRACKING_EDGE_WIDTH)
-        
+    
+    def write_data_to_csv(self, filename):
+        headings = ['time', 'strain energy'] + [f'charge_{i}_x' for i in range(self.num_charges)] + [f'charge_{i}_y' for i in range(self.num_charges)]
+        with open(filename, mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(headings)
+            for t, energy, positions in zip(self.t_log, self.energy_log, self.charged_nodes_positions_log):
+                row = [t, energy] + [coord for pos in positions for coord in pos]
+                writer.writerow(row)
+
     def step(self, substeps:int, report_energy:bool):
         for _ in range(substeps):
             self.evolve_constraint(self.t)
             self.solve(tol=TOLERANCE_SOLVER, max_iter=MAX_ITER_SOLVER)
-        if report_energy:
             self.compute_strain_energy_from_extension_cache()
+        if report_energy:
             return self.energy

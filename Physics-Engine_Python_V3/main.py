@@ -1,7 +1,7 @@
 import pygame
 import time
 from Objects import *
-from constants import *
+from Constants import *
 from Aux import *
 import numba as nb
 
@@ -87,8 +87,8 @@ def perform_sim(solid:Solid, t_min:float, t_max:float, tracking_points: np.ndarr
     t_hist = []
     e_hist = []
     running = True
-    node_positions = np.reshape(solid.node_positions, (-1, 2))
-    # tracking_points_positions = [[(a[0], a[1])] for a in node_positions[tracking_points]]
+    
+    
     if render:
         #Set up he rendering stuff. Pygame init and all that.
         pygame.init()
@@ -96,28 +96,19 @@ def perform_sim(solid:Solid, t_min:float, t_max:float, tracking_points: np.ndarr
         pygame.display.set_caption("Spring Network")
         plot_screen = pygame.Surface((PLOT_W, PLOT_H))
     while(solid.t<t_max):
-        energy = solid.step(substeps=SUBSTEPS, report_energy=True)
-        t_hist.append(solid.t)
-        e_hist.append(energy)
-        # tracked_positions = node_positions[tracking_points]
-        # tracking_points_positions.append(tracked_positions)
-        # for i in range(len(tracking_points)):
-        #     tracking_points_positions[i].append((tracked_positions[i][0], tracked_positions[i][1]))
-        solid.log_charged_nodes_positions()
+        solid.step(substeps=SUBSTEPS, report_energy=True)
+        solid.log_state()
         if render:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
             
                     
-            # mapped_pos_points = world_to_screen_02(tracked_positions, world_size=WORLD_SIZE, magnification=MAGNIFICATION)
-            # tracking_points_rendering_pos.append((mapped_pos_points[0], mapped_pos_points[1]))
+        
             screen.fill((0, 0, 0))
             render_solid_low_level(solid=solid, dxf_edges=dxf_edges, screen=screen)
-            draw_energy_plot(plot_screen=plot_screen, t_hist=t_hist, e_hist= e_hist)
-            # for i in range(len(tracking_points)):
-            #     render_tracking_points_pos = world_to_screen_03(tracking_points_positions[i], world_size=WORLD_SIZE, magnification=MAGNIFICATION)
-            #     pygame.draw.lines(surface=screen, color=TRACKING_COLOUR, points=render_tracking_points_pos, closed=False, width=TRACKING_EDGE_WIDTH)
+            draw_energy_plot(plot_screen=plot_screen, t_hist=solid.t_log, e_hist=solid.energy_log)
+
             solid.render_charged_points_trajectory(screen)
             screen.blit(plot_screen, (screen_size - PLOT_W - 5, 5))
             pygame.display.flip()
@@ -166,7 +157,8 @@ if __name__ == "__main__":
     # do_animation(solid, dxf_edges=dxf_edges)
     tracking_points = np.array([np.random.randint(0, solid.num_nodes) for _ in range(500)], dtype=int)
     solid.assign_charged_indices(tracking_points)
-    solid.log_charged_nodes_positions()
+    # solid.log_charged_nodes_positions()
+    solid.log_state()
     perform_sim(solid=solid, t_min=0, t_max=MAX_T, tracking_points=tracking_points, render=True, dxf_edges=dxf_edges)
 
 

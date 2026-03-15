@@ -1,6 +1,6 @@
 from Objects import Vector, Node, Helper, Solid, world_to_screen
 from typing import Callable, List, Tuple
-from constants import *
+from Constants import *
 import numpy as np
 import pygame
 import ezdxf as dxf
