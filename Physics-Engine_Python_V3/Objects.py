@@ -61,6 +61,14 @@ def world_to_screen_03(positions:list[tuple[float, float]], world_size:float, ma
         screen_positions.append((x, y))
     return screen_positions
 
+def world_to_screen_04(positions_list: np.ndarray[np.ndarray[float, float]], world_size:float, magnification:float) -> np.ndarray:
+    mapped_positions = []
+    for position in positions_list:
+        x = (position[0] + world_size / 2) * magnification
+        y = (-(position[1]) + world_size / 2) * magnification + PLOT_H / 2
+        mapped_positions.append((x, y))
+    return mapped_positions
+
 class Node:
     _count = 0
     
@@ -131,6 +139,8 @@ class Solid:
         self.node_positions = node_positions
         
         self.t = 0
+        self.t_log = []
+        self.charged_nodes_positions_log = []
         
     
 
@@ -311,15 +321,30 @@ class Solid:
 
 
 
-    def compute_energy_from_extension_cache(self):
+    def compute_strain_energy_from_extension_cache(self):
         self.energy = 0.0
         self.energy = 0.5*np.sum(self.edges_properties * (self.edges_extension - self.edges_extension_natural) ** 2)
-        
+    
+    def assign_charged_indices(self, charged_indices:list[int]):
+        self.charged_indices = charged_indices
+        self.num_charges = len(charged_indices)
 
+    def log_charged_nodes_positions(self):
+        self.t_log.append(self.t)
+        node_positions = self.node_positions.reshape(self.num_nodes, DIMS)
+        self.charged_nodes_positions_log.append(node_positions[self.charged_indices].copy())
+
+    def render_charged_points_trajectory(self, screen):
+    
+        trajectories = np.array(self.charged_nodes_positions_log).transpose(1, 0, 2)
+        for trajectory in trajectories:
+            screen_positions = world_to_screen_04(trajectory, world_size=WORLD_SIZE, magnification=MAGNIFICATION)
+            pygame.draw.lines(surface=screen, color=TRACKING_COLOUR, points=screen_positions, closed=False, width=TRACKING_EDGE_WIDTH)
+        
     def step(self, substeps:int, report_energy:bool):
         for _ in range(substeps):
             self.evolve_constraint(self.t)
             self.solve(tol=TOLERANCE_SOLVER, max_iter=MAX_ITER_SOLVER)
         if report_energy:
-            self.compute_energy_from_extension_cache()
+            self.compute_strain_energy_from_extension_cache()
             return self.energy

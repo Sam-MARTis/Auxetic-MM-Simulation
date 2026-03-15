@@ -62,7 +62,8 @@ def draw_energy_plot(plot_screen: pygame.Surface, t_hist: list, e_hist: list):
     ih = H - 2*PLOT_PAD   
     pygame.draw.line(plot_screen, (180,180,180), (PLOT_PAD, PLOT_PAD), (PLOT_PAD, PLOT_PAD+ih), 1)
     pygame.draw.line(plot_screen, (180,180,180), (PLOT_PAD, PLOT_PAD+ih), (PLOT_PAD+iw, PLOT_PAD+ih), 1)
-
+    
+    
     if len(t_hist) < 2:
         return
 
