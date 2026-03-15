@@ -48,9 +48,9 @@ maxima_indices, _ = find_peaks(energy_log_filtered)
 
 
 α = int((max_idx)*1.1)
-β = int(maxima_indices[0]*0.7)
+β = t_log[int(maxima_indices[0]*0.7)]
 σ = 0.5*np.abs(α-β)
-a = np.max(energy_log_filtered) * 0.5
+a = np.max(energy_log_filtered) * 0.001
 
 def gaussian(t, μ, σ, a):
     return a * np.exp(-((t - μ) / σ) ** 2)

@@ -185,9 +185,61 @@ class Solid:
                     for i in idx
                 )
             )
+    def assemble_electrostatic_gradient_and_hessian(self):
+        N   = self.num_nodes
+        DOF = DIMS * N
+        g   = np.zeros(DOF, dtype=np.float64)
 
+        ci  = self.charged_indices                        # (m,)
+        pos = self.node_positions.reshape(N, DIMS).T      # (2, N)
+        Q   = self.charges                                # (m,) charge magnitudes
+
+        # all pairs of charged nodes
+        idx_i, idx_j = np.triu_indices(len(ci), k=1)     # upper triangle, no self
+        n1 = ci[idx_i]                                    # global node indices
+        n2 = ci[idx_j]
+
+        dx  = pos[0, n1] - pos[0, n2]
+        dy  = pos[1, n1] - pos[1, n2]
+        d   = np.sqrt(dx**2 + dy**2)
+
+        live = d > EPSILON
+        n1, n2, dx, dy, d = n1[live], n2[live], dx[live], dy[live], d[live]
+        q1q2 = Q[idx_i[live]] * Q[idx_j[live]]
+
+        inv  = 1.0 / d
+        inv2 = inv * inv
+        inv3 = inv2 * inv
+        ex   = dx * inv
+        ey   = dy * inv
+
+        # Gradient: -Q1Q2/d^2 * e_hat
+        gx = -q1q2 * inv2 * ex
+        gy = -q1q2 * inv2 * ey
+        np.add.at(g, 2*n1,   gx);  np.add.at(g, 2*n1+1, gy)
+        np.add.at(g, 2*n2,  -gx);  np.add.at(g, 2*n2+1,-gy)
+
+        # Hessian blocks: Q1Q2/d^3 * (I - 3*e*e^T)
+        scale = q1q2 * inv3
+        c00 =  scale * (1.0 - 3.0 * ex*ex)
+        c01 =  scale * (     -3.0 * ex*ey)
+        c11 =  scale * (1.0 - 3.0 * ey*ey)
+
+        r1x, r1y = 2*n1,   2*n1+1
+        r2x, r2y = 2*n2,   2*n2+1
+        rows = np.concatenate([r1x,r1x,r1y,r1y, r2x,r2x,r2y,r2y,
+                            r1x,r1x,r1y,r1y, r2x,r2x,r2y,r2y])
+        cols = np.concatenate([r1x,r1y,r1x,r1y, r2x,r2y,r2x,r2y,
+                            r2x,r2y,r2x,r2y, r1x,r1y,r1x,r1y])
+        vals = np.concatenate([ c00, c01, c01, c11,
+                                c00, c01, c01, c11,
+                            -c00,-c01,-c01,-c11,
+                            -c00,-c01,-c01,-c11])
+
+        H = sp.csc_matrix((vals, (rows, cols)), shape=(DOF, DOF))
+        return g, H
     @profile_function
-    def assemble_gradient_and_hessian(self):
+    def assemble_spring_gradient_and_hessian(self):
         N   = self.num_nodes
         DOF = DIMS * N
         g   = np.zeros(DOF, dtype=np.float64)
@@ -238,6 +290,13 @@ class Solid:
         H = sp.csc_matrix((vals, (rows, cols)), shape=(DOF, DOF))
         return g, H
 
+    def assemble_gradient_and_hessian(self):
+        g_spring, H_spring = self.assemble_spring_gradient_and_hessian()
+        g_charge,  H_charge  = self.assemble_electrostatic_gradient_and_hessian()
+        g_total = g_spring + g_charge
+        H_total = H_spring + H_charge
+        return g_total, H_total
+    
     @profile_function
     def apply_constraints_on_hessian_and_gradient(self, g: np.ndarray, H: sp.csc_matrix):
 
@@ -261,7 +320,7 @@ class Solid:
         return g, H
 
     @profile_function
-    def solve(self, tol, max_iter):
+    def solve(self, tol, max_iter, relaxation):
 
 
         for iteration in range(max_iter):
@@ -269,7 +328,7 @@ class Solid:
             g, H = self.assemble_gradient_and_hessian()
             g, H = self.apply_constraints_on_hessian_and_gradient(g, H)
             dx = spsolve(H, -g)
-            self.node_positions += dx*RELAXATION
+            self.node_positions += dx*relaxation
             for i, idx in enumerate(self.coordinate_indices_to_constrain):
                 self.node_positions[idx] = self.curve_functions[i](self.t)
 
@@ -387,10 +446,10 @@ class Solid:
                 writer.writerow(row)
     
     
-    def step(self, substeps:int, report_energy:bool):
+    def step(self, substeps:int, report_energy:bool, relaxation:float):
         for _ in range(substeps):
             self.evolve_constraint(self.t)
-            self.solve(tol=TOLERANCE_SOLVER, max_iter=MAX_ITER_SOLVER)
+            self.solve(tol=TOLERANCE_SOLVER, max_iter=MAX_ITER_SOLVER, relaxation=relaxation)
             self.compute_strain_energy_from_extension_cache()
             self.add_charge_energy()
         if report_energy:
@@ -416,4 +475,4 @@ class Solid:
             for row in reader:
                 optimized_charges.append(float(row[0]))
 
-        self.charges = np.array(optimized_charges, dtype=np.float64)
+        self.charges = np.array(optimized_charges, dtype=np.float64)* CHARGE_CONSTANT

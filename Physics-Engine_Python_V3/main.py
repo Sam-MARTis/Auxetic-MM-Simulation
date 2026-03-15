@@ -80,7 +80,7 @@ def do_animation(solid: Solid, dxf_edges:list[np.ndarray]):
         
     pygame.quit()
     
-def perform_sim(solid:Solid, t_min:float, t_max:float, tracking_points: np.ndarray, render: bool, dxf_edges:list[np.ndarray]):
+def perform_sim(solid:Solid, t_min:float, t_max:float, tracking_points: np.ndarray, render: bool, dxf_edges:list[np.ndarray], relaxation: float):
 
 
     solid.t = t_min
@@ -96,7 +96,7 @@ def perform_sim(solid:Solid, t_min:float, t_max:float, tracking_points: np.ndarr
         pygame.display.set_caption("Spring Network")
         plot_screen = pygame.Surface((PLOT_W, PLOT_H))
     while(solid.t<t_max):
-        solid.step(substeps=SUBSTEPS, report_energy=True)
+        solid.step(substeps=SUBSTEPS, report_energy=True, relaxation=relaxation)
         solid.log_state()
         if render:
             for event in pygame.event.get():
@@ -137,7 +137,7 @@ if __name__ == "__main__":
     
     Node._count=0
     print(f"Node class count: {Node._count}")
-    nodes, boundary_nodes = initialize_nodes_uniform_with_noise(bounds=bounds, node_count_x=int(np.sqrt(NODE_COUNT)), node_count_y=int(np.sqrt(NODE_COUNT)), get_boundary_nodes=True)
+    nodes, boundary_nodes, charged_indices = initialize_nodes_uniform_with_noise(bounds=bounds, node_count_x=int(np.sqrt(NODE_COUNT)), node_count_y=int(np.sqrt(NODE_COUNT)), get_boundary_nodes=True)
     print(f"Nodes without hinge points len: {len(nodes)} vs Class node count: {Node._count}")
     hinge_point_nodes = [Node(mass=NODE_MASS, position=hp, velocity=Vector(0, 0)) for hp in hinge_points]
     print(f"hinge points len: {len(hinge_point_nodes)} vs Class node count: {Node._count}")
@@ -155,15 +155,15 @@ if __name__ == "__main__":
     
     
     # do_animation(solid, dxf_edges=dxf_edges)
-    tracking_points = np.array([np.random.randint(0, solid.num_nodes) for _ in range(50)], dtype=int)
-    solid.assign_charged_indices(tracking_points)
+    # tracking_points = np.array([np.random.randint(0, solid.num_nodes) for _ in range(50)], dtype=int)
+    solid.assign_charged_indices(charged_indices)
     # solid.log_charged_nodes_positions()
     solid.log_state()
     save_solid_to_file(solid, OBJECT_SAVE_FILE)
-    perform_sim(solid=solid, t_min=0, t_max=MAX_T, tracking_points=tracking_points, render=True, dxf_edges=dxf_edges)
+    perform_sim(solid=solid, t_min=0, t_max=MAX_T, tracking_points=charged_indices, render=True, dxf_edges=dxf_edges, relaxation=RELAXATION)
     solid.write_data_to_csv(filename=DISTANCE_DATA_STORAGE_FILE)
     solid = load_solid_from_file(OBJECT_SAVE_FILE)
     solid.optimize_charges(worker_file=CHARGE_OPTIMIZATION_FILE, position_storage_file=DISTANCE_DATA_STORAGE_FILE, optimized_charge_storage_file=OPTIMIZED_CHARGE_STORAGE_FILE, verbose=OPTIMIZATION_VERBOSE)
-    perform_sim(solid=solid, t_min=0, t_max=MAX_T, tracking_points=tracking_points, render=True, dxf_edges=dxf_edges)
+    perform_sim(solid=solid, t_min=0, t_max=MAX_T, tracking_points=charged_indices, render=True, dxf_edges=dxf_edges, relaxation = RELAXATION2)
 
 

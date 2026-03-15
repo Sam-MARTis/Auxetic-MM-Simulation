@@ -46,24 +46,40 @@ def initialize_nodes_uniform(bounds: Tuple[float, float, float, float], node_cou
     return nodes
 
 @profile_function
-def initialize_nodes_uniform_with_noise(bounds: Tuple[float, float, float, float], node_count_x: int, node_count_y: int, get_boundary_nodes:bool = False) -> Tuple[list[Node], list[Node]]:
+def initialize_nodes_uniform_with_noise(bounds: Tuple[float, float, float, float], node_count_x: int, node_count_y: int, get_boundary_nodes:bool = False) -> Tuple[list[Node], list[Node], np.ndarray]:
     nodes: list[Node] = []
     boundary_nodes:list[Node] = []
     x_min, x_max, y_min, y_max = bounds
     x_values = np.linspace(x_min+EPSILON_BIG, x_max - EPSILON_BIG, node_count_x)
     y_values = np.linspace(y_min+EPSILON_BIG, y_max - EPSILON_BIG, node_count_y)
-    for i in range(1, len(x_values)-1):
-        for j in range(1, len(y_values)-1):
-            x_values[i] += np.random.normal(0, NOISE)
-            y_values[j] += np.random.normal(0, NOISE)
 
-    for x in x_values:
-        for y in y_values:
+    def _symmetric_uniform_indices(count: int, spacing: int) -> set[int]:
+        spacing = max(1, spacing)
+        valid_offsets = [o for o in range(spacing) if ((count - 1) - 2 * o) % spacing == 0]
+        if valid_offsets:
+            center = 0.5 * (count - 1)
+            offset = min(valid_offsets, key=lambda o: abs(center - o))
+            return set(range(offset, count, spacing))
+        base = set(range(0, count, spacing))
+        return base | {count - 1 - i for i in base}
+
+    charge_spacing_x = int(NUM_NON_CHARGED_PER_CHARGED)
+    charge_spacing_y = int(NUM_NON_CHARGED_PER_CHARGED)
+    charged_x = _symmetric_uniform_indices(node_count_x, charge_spacing_x)
+    charged_y = _symmetric_uniform_indices(node_count_y, charge_spacing_y)
+
+    charged_indices = []
+    for idx_x, x in enumerate(x_values):
+        for idx_y, y in enumerate(y_values):
+                
             node = Node(mass=NODE_MASS, position=Vector(x, y), velocity=Vector(0, 0))
+            if idx_x in charged_x and idx_y in charged_y:
+                node_idx = node.id
+                charged_indices.append(node_idx)
             nodes.append(node)
             if(x <= x_min + EPSILON_BIG or x >= x_max - EPSILON_BIG or y <= y_min + EPSILON_BIG or y >= y_max - EPSILON_BIG):
                 boundary_nodes.append(node)
-    return nodes, boundary_nodes
+    return nodes, boundary_nodes, np.array(charged_indices, dtype=int)
 def edge_already_exists(node_a: Node, node_b: Node) -> bool:
     node_a_edges = [edge.id for edge in node_a.edges]
     node_b_edges = [edge.id for edge in node_b.edges]
