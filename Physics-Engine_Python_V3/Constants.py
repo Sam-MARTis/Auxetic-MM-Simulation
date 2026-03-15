@@ -18,6 +18,8 @@ DISTANCE_DATA_STORAGE_FILE = "charge_distance_data.csv"
 OPTIMIZED_CHARGE_STORAGE_FILE = "optimized_charges.csv" 
 OPTIMIZATION_VERBOSE = True
 
+OBJECT_SAVE_FILE = "solid_state.pkl"
+
 
 PLOT_W, PLOT_H = 500, 300
 PLOT_PAD = 40   

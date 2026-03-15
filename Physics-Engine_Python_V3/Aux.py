@@ -1,12 +1,29 @@
 from Objects import Vector, Node, Helper, Solid, world_to_screen
 from typing import Callable, List, Tuple
+from functools import partial
 from Constants import *
 import numpy as np
 import pygame
 import ezdxf as dxf
 import time 
+import pickle
 np.random.seed(42)
 
+
+def _linear_constraint(t: float, x0: float, direction: float) -> float:
+    return x0 + direction * t * PARAMETER_MULTIPLIER
+
+
+def _constant_constraint(t: float, y0: float) -> float:
+    return y0
+
+def save_solid_to_file(solid:Solid, filename:str):
+    with open(filename, 'wb') as f:
+        pickle.dump(solid, f)
+def load_solid_from_file(filename:str) -> Solid:
+    with open(filename, 'rb') as f:
+        solid = pickle.load(f)
+    return solid
 
 def initialize_nodes(node_count) -> list[Node]:
     nodes: list[Node] = []
@@ -250,19 +267,19 @@ def get_constraint_indices_and_constraint_functions(nodes:list[Node], bounds: Tu
         if left:
             x0 = node.position.x
             y0 = node.position.y
-            constraint_functions.append(lambda t, _x=x0: _x - t*PARAMETER_MULTIPLIER)
+            constraint_functions.append(partial(_linear_constraint, x0=x0, direction=-1.0))
             constraint_indices.append(2*node.id)
             # constraint_functions.append(lambda t, _y=y0: _y)
             # constraint_indices.append(2*node.id + 1)
         elif right:
             x0 = node.position.x
             y0 = node.position.y
-            constraint_functions.append(lambda t, _x=x0: _x + t*PARAMETER_MULTIPLIER)
+            constraint_functions.append(partial(_linear_constraint, x0=x0, direction=1.0))
             constraint_indices.append(2*node.id)
             # constraint_functions.append(lambda t, _y=y0: _y)
             # constraint_indices.append(2*node.id + 1)
         elif down:
             y0 = node.position.y
-            constraint_functions.append(lambda t, _y=y0: _y)
+            constraint_functions.append(partial(_constant_constraint, y0=y0))
             constraint_indices.append(2*node.id + 1)
     return constraint_indices, constraint_functions
