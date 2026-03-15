@@ -160,5 +160,5 @@ if __name__ == "__main__":
     # solid.log_charged_nodes_positions()
     solid.log_state()
     perform_sim(solid=solid, t_min=0, t_max=MAX_T, tracking_points=tracking_points, render=True, dxf_edges=dxf_edges)
-
+    solid.write_data_to_csv(filename="simulation_data.csv")
 

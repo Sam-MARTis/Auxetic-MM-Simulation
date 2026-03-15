@@ -350,13 +350,19 @@ class Solid:
     
     def write_data_to_csv(self, filename):
         headings = ['time', 'strain energy'] + [f'charge_{i}_x' for i in range(self.num_charges)] + [f'charge_{i}_y' for i in range(self.num_charges)]
+        assert len(self.t_log) == len(self.energy_log) == len(self.charged_nodes_positions_log), "Logs must have the same length"
+        num_logs = len(self.t_log)
         with open(filename, mode='w', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(headings)
-            for t, energy, positions in zip(self.t_log, self.energy_log, self.charged_nodes_positions_log):
-                row = [t, energy] + [coord for pos in positions for coord in pos]
+            for i in range(num_logs):
+                row = [self.t_log[i], self.energy_log[i]]
+                charged_positions = self.charged_nodes_positions_log[i]
+                for pos in charged_positions:
+                    row.extend(pos)
                 writer.writerow(row)
-
+    
+    
     def step(self, substeps:int, report_energy:bool):
         for _ in range(substeps):
             self.evolve_constraint(self.t)
