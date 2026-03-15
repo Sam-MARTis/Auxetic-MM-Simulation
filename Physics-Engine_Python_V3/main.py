@@ -162,6 +162,6 @@ if __name__ == "__main__":
     perform_sim(solid=solid, t_min=0, t_max=MAX_T, tracking_points=tracking_points, render=True, dxf_edges=dxf_edges)
     solid.write_data_to_csv(filename=DISTANCE_DATA_STORAGE_FILE)
     solid.optimize_charges(worker_file=CHARGE_OPTIMIZATION_FILE, position_storage_file=DISTANCE_DATA_STORAGE_FILE, optimized_charge_storage_file=OPTIMIZED_CHARGE_STORAGE_FILE, verbose=OPTIMIZATION_VERBOSE)
-    
+    # perform_sim(solid=solid, t_min=0, t_max=MAX_T, tracking_points=tracking_points, render=True, dxf_edges=dxf_edges)
 
 

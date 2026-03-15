@@ -324,10 +324,33 @@ class Solid:
     def compute_strain_energy_from_extension_cache(self):
         self.energy = 0.0
         self.energy = 0.5*np.sum(self.edges_properties * (self.edges_extension - self.edges_extension_natural) ** 2)
+    def compute_A(self, pos:np.ndarray):
+
+        diff = pos[:, None, :] - pos[None, :, :]
+        dist = np.linalg.norm(diff, axis=2)
+
+        with np.errstate(divide='ignore', invalid='ignore'):
+            A = np.where(dist > 0, 1.0 / dist, 0.0)
+        np.fill_diagonal(A, 0.0)
+        return A
     
-    def assign_charged_indices(self, charged_indices:list[int]):
+    def add_charge_energy(self):
+        node_positions = self.node_positions.reshape(self.num_nodes, DIMS)
+        charged_positions = node_positions[self.charged_indices]
+        A = self.compute_A(charged_positions)
+        q = self.charges
+        charge_energy = 0.5 * q @ A @ q
+        self.energy += charge_energy
+        print(f"Charge energy: {charge_energy:.5g}")
+        # return charge_energy
+        
+
+
+    def assign_charged_indices(self, charged_indices:np.ndarray):
         self.charged_indices = charged_indices
         self.num_charges = len(charged_indices)
+        self.charges = np.zeros(self.num_charges, dtype=np.float64)
+        
 
     def log_time(self):
         self.t_log.append(self.t)
@@ -369,6 +392,7 @@ class Solid:
             self.evolve_constraint(self.t)
             self.solve(tol=TOLERANCE_SOLVER, max_iter=MAX_ITER_SOLVER)
             self.compute_strain_energy_from_extension_cache()
+            self.add_charge_energy()
         if report_energy:
             return self.energy
         
