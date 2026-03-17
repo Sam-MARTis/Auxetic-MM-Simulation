@@ -3,7 +3,7 @@ import time
 from Objects import *
 from Constants import *
 from Aux import *
-import numba as nb
+
 
 np.random.seed(42) 
 
@@ -160,10 +160,10 @@ if __name__ == "__main__":
     # solid.log_charged_nodes_positions()
     solid.log_state()
     save_solid_to_file(solid, OBJECT_SAVE_FILE)
-    perform_sim(solid=solid, t_min=0, t_max=MAX_T, tracking_points=charged_indices, render=True, dxf_edges=dxf_edges, relaxation=RELAXATION)
-    solid.write_data_to_csv(filename=DISTANCE_DATA_STORAGE_FILE)
-    solid = load_solid_from_file(OBJECT_SAVE_FILE)
-    solid.optimize_charges(worker_file=CHARGE_OPTIMIZATION_FILE, position_storage_file=DISTANCE_DATA_STORAGE_FILE, optimized_charge_storage_file=OPTIMIZED_CHARGE_STORAGE_FILE, verbose=OPTIMIZATION_VERBOSE)
-    perform_sim(solid=solid, t_min=0, t_max=MAX_T, tracking_points=charged_indices, render=True, dxf_edges=dxf_edges, relaxation = RELAXATION2)
+    perform_sim(solid=solid, t_min=0, t_max=MAX_T, tracking_points=charged_indices, render=False, dxf_edges=dxf_edges, relaxation=RELAXATION)
+    # solid.write_data_to_csv(filename=DISTANCE_DATA_STORAGE_FILE)
+    # solid = load_solid_from_file(OBJECT_SAVE_FILE)
+    # solid.optimize_charges(worker_file=CHARGE_OPTIMIZATION_FILE, position_storage_file=DISTANCE_DATA_STORAGE_FILE, optimized_charge_storage_file=OPTIMIZED_CHARGE_STORAGE_FILE, verbose=OPTIMIZATION_VERBOSE)
+    # perform_sim(solid=solid, t_min=0, t_max=MAX_T, tracking_points=charged_indices, render=True, dxf_edges=dxf_edges, relaxation = RELAXATION2)
 
 

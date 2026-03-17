@@ -83,7 +83,7 @@ if __name__ == "__main__":
     msp_pattern = doc_pattern.modelspace()
 
     cut_size = 1
-    edge_gap = 0.04
+    edge_gap = 0.001
     side_gap = 0.1
     θ_in_degrees = 65
     θ_in_radians = np.radians(θ_in_degrees)

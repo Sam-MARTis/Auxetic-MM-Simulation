@@ -19,9 +19,10 @@ def do_animation(solid: Solid, dxf_edges:list[np.ndarray]):
     clock = pygame.time.Clock()
     i = 0
     stop_auto_sim = False
+    saved=False
     @profile_function
     def anim_loop():
-        nonlocal running, i, clock, stop_auto_sim
+        nonlocal running, i, clock, stop_auto_sim, saved
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -52,6 +53,10 @@ def do_animation(solid: Solid, dxf_edges:list[np.ndarray]):
 
         if(solid.t > MAX_T):
             stop_auto_sim = True
+            if not saved:
+                if SAVE_IMAGE:
+                    pygame.image.save(screen, SAVE_IMAGE_NAME)
+                saved = True
 
         if not stop_auto_sim:
 
@@ -62,13 +67,13 @@ def do_animation(solid: Solid, dxf_edges:list[np.ndarray]):
             e_hist.append(energy)
             print(f"t={solid.t:.4f}  E={energy:.6e}")
 
-        screen.fill((0, 0, 0))
+        screen.fill(BACKGROUND_COLOUR)
         render_solid_low_level(solid=solid, dxf_edges=dxf_edges, screen=screen)
         
 
-        
-        draw_energy_plot(plot_screen, t_hist, e_hist)
-        screen.blit(plot_screen, (screen_size - PLOT_W - 5, 5))
+        if DRAW_ENERGY_PLOT:
+            draw_energy_plot(plot_screen, t_hist, e_hist)
+            screen.blit(plot_screen, (screen_size - PLOT_W - 5, 5))
         
 
         
@@ -83,7 +88,6 @@ def do_animation(solid: Solid, dxf_edges:list[np.ndarray]):
 
 
 if __name__ == "__main__":
-    nb.set_num_threads(17)
     min_distance = 1e-6
     max_distance = 5e-2
     center = True
