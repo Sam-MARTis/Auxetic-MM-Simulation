@@ -242,7 +242,7 @@ def get_constraint_indices_and_constraint_functions(nodes:list[Node], bounds: Tu
         right = node.position.x > bounds[1] - 2*EPSILON_BIG
         down = node.position.y < bounds[2] + 2*EPSILON_BIG
         NONBOUNDED_MIDDLE_SIZE_LEFT_RIGHT = 0.1
-        BOUNDED_MIDDLE_SIZE_TOP_BOTTOM = 0.03
+        BOUNDED_MIDDLE_SIZE_TOP_BOTTOM = 0.9
 
         middle_x = np.abs(node.position.y - (bounds[2] + bounds[3]) / 2) < NONBOUNDED_MIDDLE_SIZE_LEFT_RIGHT*(bounds[3]-bounds[2])
         middle_y = np.abs(node.position.x - (bounds[0] + bounds[1]) / 2) < BOUNDED_MIDDLE_SIZE_TOP_BOTTOM*(bounds[1]-bounds[0])
@@ -263,8 +263,8 @@ def get_constraint_indices_and_constraint_functions(nodes:list[Node], bounds: Tu
             # constraint_functions.append(lambda t, _y=y0: _y)
             # constraint_indices.append(2*node.id + 1)
         elif down:
-            if not middle_y:
-                continue
+            # if not middle_y:
+            #     continue
             y0 = node.position.y
             constraint_functions.append(lambda t, _y=y0: _y)
             constraint_indices.append(2*node.id + 1)
