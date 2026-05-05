@@ -65,7 +65,7 @@ def do_animation(solid: Solid, dxf_edges:list[np.ndarray], relaxation: float, G:
         t_hist.append(time_value)
         e_hist.append(energy_value)
     
-    @profile_function
+    # @profile_function
     def anim_loop():
         nonlocal running, paused, current_energy, clock, switch_state, G, last_action
         
@@ -233,7 +233,7 @@ if __name__ == "__main__":
     center = True
     size = WORLD_SIZE/2
     n=1
-    file_pattern_2cross2 = f"./dxf_files/pattern_{n}x{n}_edge-gap_0.03.dxf"
+    file_pattern_2cross2 = f"./dxf_files/pattern_{n}x{n}_edge-gap_0.033.dxf"
     bounds, lines_vec, hinge_points = get_bounds_and_lines_and_hinge_points(filename=file_pattern_2cross2, min_distance=min_distance, max_distance=max_distance, center=center, size=size)
     dxf_edges = []
     for line in lines_vec:
@@ -271,7 +271,7 @@ if __name__ == "__main__":
     solid.log_state()
     save_solid_to_file(solid, OBJECT_SAVE_FILE)
     # perform_sim(solid=solid, t_min=0, t_max=MAX_T, tracking_points=charged_indices, render=False, dxf_edges=dxf_edges, relaxation=RELAXATION)
-    G0 = np.zeros(4*5)
+    G0 = np.zeros(4*10)
     
     do_animation(solid, dxf_edges=dxf_edges, relaxation=RELAXATION, G=G0)
 
