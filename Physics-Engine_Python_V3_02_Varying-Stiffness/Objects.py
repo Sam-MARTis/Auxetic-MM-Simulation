@@ -370,7 +370,8 @@ class Solid:
         node_1_pos = coords[filtered_pairs[:, 0]]
         node_2_pos = coords[filtered_pairs[:, 1]]
         distances = np.linalg.norm(node_1_pos - node_2_pos, axis=1)
-        self.edges_properties = LINK_STRENGTH * LINK_DISTANCE / distances
+        self.edges_properties = (LINK_STRENGTH * LINK_DISTANCE / distances) * np.ones(len(filtered_pairs), dtype=np.float64)
+        self.edges_properties_original = self.edges_properties.copy()
         self.edges_extension_natural = distances
         self.node_edges_connection = filtered_pairs.flatten().astype(np.int32)
         self.num_edges = len(self.node_edges_connection) // 2
@@ -380,9 +381,11 @@ class Solid:
 
 
 
-    def compute_strain_energy_from_extension_cache(self):
+    def compute_and_cache_strain_energy_from_extension_cache(self):
         self.energy = 0.0
         self.energy = 0.5*np.sum(self.edges_properties * (self.edges_extension - self.edges_extension_natural) ** 2)
+        return self.energy
+
     def compute_A(self, pos:np.ndarray):
 
         diff = pos[:, None, :] - pos[None, :, :]
@@ -450,7 +453,7 @@ class Solid:
         for _ in range(substeps):
             self.evolve_constraint(self.t)
             self.solve(tol=TOLERANCE_SOLVER, max_iter=MAX_ITER_SOLVER, relaxation=relaxation)
-            self.compute_strain_energy_from_extension_cache()
+            self.compute_and_cache_strain_energy_from_extension_cache()
             # self.add_charge_energy()
         if report_energy:
             return self.energy
@@ -476,3 +479,73 @@ class Solid:
                 optimized_charges.append(float(row[0]))
 
         self.charges = np.array(optimized_charges, dtype=np.float64)* CHARGE_CONSTANT
+    def compute_edge_properties_from_field(self, node_positions:np.ndarray, G:np.ndarray, λx:float, λy:float, α0:float):
+        inv_λx = 1.0/λx
+        inv_λy = 1.0/λy
+        num_coefficients = G.shape[1]
+        properties = np.zeros(self.num_edges, dtype=np.float64)
+        for i in range(self.num_edges):
+            node_a_id = self.node_edges_connection[2*i]
+            node_b_id = self.node_edges_connection[2*i+1]
+            node_a_pos = node_positions[2*node_a_id:2*node_a_id+2]
+            node_b_pos = node_positions[2*node_b_id:2*node_b_id+2]
+            edge_centroid = (node_a_pos + node_b_pos) / 2
+            K1 = np.sum(G[0][j]*np.sin((j+1)*np.pi*edge_centroid[0]*inv_λx) for j in range(num_coefficients))
+            K2 = np.sum(G[1][j]*np.cos((j+1)*np.pi*edge_centroid[1]*inv_λx) for j in range(num_coefficients))
+            K3 = np.sum(G[2][j]*np.sin((j+1)*np.pi*edge_centroid[0]*inv_λy) for j in range(num_coefficients))
+            K4 = np.sum(G[3][j]*np.cos((j+1)*np.pi*edge_centroid[1]*inv_λy) for j in range(num_coefficients))
+            properties[i] = self.edges_properties_original[i] * (1 + α0*(K1 + K2 + K3 + K4))
+        return properties
+    def update_edge_properties(self, G:np.ndarray, λx:float, λy:float, α0:float):
+        # inv_λx = 1.0/λx
+        # inv_λy = 1.0/λy
+        # num_coefficients = G.shape[1]
+        # for i in range(self.num_edges):
+        #     node_a_id = self.node_edges_connection[2*i]
+        #     node_b_id = self.node_edges_connection[2*i+1]
+        #     node_a_pos = self.node_positions[2*node_a_id:2*node_a_id+2]
+        #     node_b_pos = self.node_positions[2*node_b_id:2*node_b_id+2]
+        #     edge_centroid = (node_a_pos + node_b_pos) / 2
+        #     K1 = np.sum(G[0][j]*np.sin((j+1)*np.pi*edge_centroid[0]*inv_λx) for j in range(num_coefficients))
+        #     K2 = np.sum(G[1][j]*np.cos((j+1)*np.pi*edge_centroid[1]*inv_λx) for j in range(num_coefficients))
+        #     K3 = np.sum(G[2][j]*np.sin((j+1)*np.pi*edge_centroid[0]*inv_λy) for j in range(num_coefficients))
+        #     K4 = np.sum(G[3][j]*np.cos((j+1)*np.pi*edge_centroid[1]*inv_λy) for j in range(num_coefficients))
+        #     self.edges_properties[i] = self.edges_properties_original[i] * (1 + α0*(K1 + K2 + K3 + K4))
+        properties = self.compute_edge_properties_from_field(G, λx, λy, α0)
+        self.edges_properties[:] = properties[:]
+
+
+    def perturb_back_check(self, perturbation_dt:float, relaxation:float):
+        t_star = self.t - perturbation_dt
+        current_energy = self.energy
+        current_nodes_positions = self.node_positions.copy()
+        current_extension = self.edges_extension.copy()
+        self.evolve_constraint(t_star)
+        self.solve(tol=TOLERANCE_SOLVER, max_iter=MAX_ITER_SOLVER, relaxation=relaxation)
+        self.compute_and_cache_strain_energy_from_extension_cache()
+        new_energy = self.energy
+        new_nodes_positions = self.node_positions.copy()
+        new_edges_extension = self.edges_extension.copy()   
+        self.node_positions[:] = current_nodes_positions[:]
+        self.edges_extension[:] = current_extension[:]
+        self.energy = current_energy
+        return new_energy, new_nodes_positions, new_edges_extension
+    def obtain_size_at_time(self, t:float):
+        pass
+    def optimize_field_rewind(self, perturbation_dt:float, relaxation:float, G:np.ndarray):
+        starting_time = self.t
+        current_energy = self.energy
+        current_nodes_positions = self.node_positions.copy()
+        current_extension = self.edges_extension.copy()
+        for _ in range(10):
+            new_energy, new_nodes_positions, new_edges_extension = self.perturb_back_check(perturbation_dt, relaxation)
+            if new_energy < current_energy:
+                current_energy = new_energy
+                self.node_positions[:] = new_nodes_positions[:]
+                self.edges_extension[:] = new_edges_extension[:]
+                self.energy = new_energy
+            else:
+                def objective(G, a1, a2, a3, a4, xn, x0, xnew):
+                    K_star_new_point = self.compute_edge_properties_from_field(new_nodes_positions, G, λx=starting_time, λy=starting_time, α0=ALPHA_0)
+                    
+        

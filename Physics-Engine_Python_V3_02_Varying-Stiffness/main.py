@@ -207,6 +207,7 @@ if __name__ == "__main__":
     print(f"Node count: {len(nodes)}")
     print(f"Class node count: {Node._count}")
     solid = Solid(nodes=nodes)
+    print(f"Bounds are: {bounds}")
 
     solid.initialize_edges_distance_based(distance_threshold=LINK_DISTANCE, edges_external=dxf_edges)
 
@@ -227,7 +228,7 @@ if __name__ == "__main__":
     # perform_sim(solid=solid, t_min=0, t_max=MAX_T, tracking_points=charged_indices, render=False, dxf_edges=dxf_edges, relaxation=RELAXATION)
     do_animation(solid, dxf_edges=dxf_edges, relaxation=RELAXATION)
 
-    
+
     # solid.write_data_to_csv(filename=DISTANCE_DATA_STORAGE_FILE)
     # solid = load_solid_from_file(OBJECT_SAVE_FILE)
     # solid.optimize_charges(worker_file=CHARGE_OPTIMIZATION_FILE, position_storage_file=DISTANCE_DATA_STORAGE_FILE, optimized_charge_storage_file=OPTIMIZED_CHARGE_STORAGE_FILE, verbose=OPTIMIZATION_VERBOSE)
