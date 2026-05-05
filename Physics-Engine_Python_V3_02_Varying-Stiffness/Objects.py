@@ -405,31 +405,31 @@ class Solid:
         
 
 
-    def assign_charged_indices(self, charged_indices:np.ndarray):
-        self.charged_indices = charged_indices
-        self.num_charges = len(charged_indices)
-        self.charges = np.zeros(self.num_charges, dtype=np.float64)
+    # def assign_charged_indices(self, charged_indices:np.ndarray):
+    #     self.charged_indices = charged_indices
+    #     self.num_charges = len(charged_indices)
+    #     self.charges = np.zeros(self.num_charges, dtype=np.float64)
         
 
     def log_time(self):
         self.t_log.append(self.t)
     def log_energy(self):
         self.energy_log.append(self.energy)
-    def log_charged_nodes_positions(self):
-        node_positions = self.node_positions.reshape(self.num_nodes, DIMS)
-        self.charged_nodes_positions_log.append(node_positions[self.charged_indices].copy())
+    # def log_charged_nodes_positions(self):
+    #     node_positions = self.node_positions.reshape(self.num_nodes, DIMS)
+    #     self.charged_nodes_positions_log.append(node_positions[self.charged_indices].copy())
 
     def log_state(self):
         self.log_time()
         self.log_energy()
-        self.log_charged_nodes_positions()
+        # self.log_charged_nodes_positions()
 
-    def render_charged_points_trajectory(self, screen):
+    # def render_charged_points_trajectory(self, screen):
     
-        trajectories = np.array(self.charged_nodes_positions_log).transpose(1, 0, 2)
-        for trajectory in trajectories:
-            screen_positions = world_to_screen_04(trajectory, world_size=WORLD_SIZE, magnification=MAGNIFICATION)
-            pygame.draw.lines(surface=screen, color=TRACKING_COLOUR, points=screen_positions, closed=False, width=TRACKING_EDGE_WIDTH)
+    #     trajectories = np.array(self.charged_nodes_positions_log).transpose(1, 0, 2)
+    #     for trajectory in trajectories:
+    #         screen_positions = world_to_screen_04(trajectory, world_size=WORLD_SIZE, magnification=MAGNIFICATION)
+    #         pygame.draw.lines(surface=screen, color=TRACKING_COLOUR, points=screen_positions, closed=False, width=TRACKING_EDGE_WIDTH)
     
     def write_data_to_csv(self, filename):
         headings = ['time', 'strain energy'] + [f'charge_{i}_x' for i in range(self.num_charges)] + [f'charge_{i}_y' for i in range(self.num_charges)]
