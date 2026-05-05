@@ -8,6 +8,7 @@ from scipy.spatial import cKDTree
 from scipy.sparse.linalg import spsolve
 from typing import List, Callable
 from Constants import *
+from scipy.optimize import minimize
 
 class Helper:
     @staticmethod
@@ -124,8 +125,9 @@ def nearest_points_on_line_segments(a0: Vector, a1: Vector, b0: Vector, b1: Vect
     return A, B, (B - A).magnitude()
 
 class Solid:
-    def __init__(self, nodes: List[Node]):
+    def __init__(self, nodes: List[Node], bounds: tuple[float, float, float, float]):
         self.nodes = nodes
+        self.bounds = bounds
         self.nodes.sort(key=lambda node: node.id)
         self.num_nodes = len(nodes)
         
@@ -289,6 +291,35 @@ class Solid:
 
         H = sp.csc_matrix((vals, (rows, cols)), shape=(DOF, DOF))
         return g, H
+    def assemble_gradient(self, node_positions: np.ndarray, edges_extension: np.ndarray, edges_properties: np.ndarray):
+        N   = self.num_nodes
+        DOF = DIMS * N
+        g   = np.zeros(DOF, dtype=np.float64)
+
+        nec  = self.node_edges_connection         
+        n1   = nec[0::2]                           
+        n2   = nec[1::2]                          
+        k    = edges_properties               
+        d    = edges_extension                
+        l0   = self.edges_extension_natural        
+
+        pos  = node_positions.reshape(N, DIMS).T
+
+        live = d != 0.0
+        n1, n2, k, d, l0 = n1[live], n2[live], k[live], d[live], l0[live]
+
+        dx = pos[0, n1] - pos[0, n2]              
+        dy = pos[1, n1] - pos[1, n2]              
+
+        inv   = 1.0 / d                           
+        alpha = k * (1.0 - l0 * inv)              
+                          
+
+        fx = alpha * dx
+        fy = alpha * dy
+        np.add.at(g, 2*n1,   fx);  np.add.at(g, 2*n1+1, fy)
+        np.add.at(g, 2*n2,  -fx);  np.add.at(g, 2*n2+1,-fy)
+        return g
 
     def assemble_gradient_and_hessian(self):
         g_spring, H_spring = self.assemble_spring_gradient_and_hessian()
@@ -323,7 +354,9 @@ class Solid:
     def solve(self, tol, max_iter, relaxation):
 
 
+        
         for iteration in range(max_iter):
+            
             self.cache_edges_extension()
             g, H = self.assemble_spring_gradient_and_hessian()
             g, H = self.apply_constraints_on_hessian_and_gradient(g, H)
@@ -450,10 +483,11 @@ class Solid:
     
     
     def step(self, substeps:int, report_energy:bool, relaxation:float):
+        self.evolve_constraint(self.t)
         for _ in range(substeps):
-            self.evolve_constraint(self.t)
             self.solve(tol=TOLERANCE_SOLVER, max_iter=MAX_ITER_SOLVER, relaxation=relaxation)
             self.compute_and_cache_strain_energy_from_extension_cache()
+
             # self.add_charge_energy()
         if report_energy:
             return self.energy
@@ -479,10 +513,12 @@ class Solid:
                 optimized_charges.append(float(row[0]))
 
         self.charges = np.array(optimized_charges, dtype=np.float64)* CHARGE_CONSTANT
+    @profile_function
     def compute_edge_properties_from_field(self, node_positions:np.ndarray, G:np.ndarray, λx:float, λy:float, α0:float):
         inv_λx = 1.0/λx
         inv_λy = 1.0/λy
-        num_coefficients = G.shape[1]
+        num_coefficients = int(len(G)/4)
+
         properties = np.zeros(self.num_edges, dtype=np.float64)
         for i in range(self.num_edges):
             node_a_id = self.node_edges_connection[2*i]
@@ -490,10 +526,10 @@ class Solid:
             node_a_pos = node_positions[2*node_a_id:2*node_a_id+2]
             node_b_pos = node_positions[2*node_b_id:2*node_b_id+2]
             edge_centroid = (node_a_pos + node_b_pos) / 2
-            K1 = np.sum(G[0][j]*np.sin((j+1)*np.pi*edge_centroid[0]*inv_λx) for j in range(num_coefficients))
-            K2 = np.sum(G[1][j]*np.cos((j+1)*np.pi*edge_centroid[1]*inv_λx) for j in range(num_coefficients))
-            K3 = np.sum(G[2][j]*np.sin((j+1)*np.pi*edge_centroid[0]*inv_λy) for j in range(num_coefficients))
-            K4 = np.sum(G[3][j]*np.cos((j+1)*np.pi*edge_centroid[1]*inv_λy) for j in range(num_coefficients))
+            K1 = np.sum(G[j]*np.sin((j+1)*np.pi*edge_centroid[0]*inv_λx) for j in range(num_coefficients))
+            K2 = np.sum(G[j + num_coefficients]*np.cos((j+1)*np.pi*edge_centroid[1]*inv_λx) for j in range(num_coefficients))
+            K3 = np.sum(G[j + 2*num_coefficients]*np.sin((j+1)*np.pi*edge_centroid[0]*inv_λy) for j in range(num_coefficients))
+            K4 = np.sum(G[j + 3*num_coefficients]*np.cos((j+1)*np.pi*edge_centroid[1]*inv_λy) for j in range(num_coefficients))
             properties[i] = self.edges_properties_original[i] * (1 + α0*(K1 + K2 + K3 + K4))
         return properties
     def update_edge_properties(self, G:np.ndarray, λx:float, λy:float, α0:float):
@@ -511,16 +547,16 @@ class Solid:
         #     K3 = np.sum(G[2][j]*np.sin((j+1)*np.pi*edge_centroid[0]*inv_λy) for j in range(num_coefficients))
         #     K4 = np.sum(G[3][j]*np.cos((j+1)*np.pi*edge_centroid[1]*inv_λy) for j in range(num_coefficients))
         #     self.edges_properties[i] = self.edges_properties_original[i] * (1 + α0*(K1 + K2 + K3 + K4))
-        properties = self.compute_edge_properties_from_field(G, λx, λy, α0)
+        properties = self.compute_edge_properties_from_field(G=G, node_positions=self.node_positions, λx=λx, λy=λy, α0=α0)
         self.edges_properties[:] = properties[:]
 
 
-    def perturb_back_check(self, perturbation_dt:float, relaxation:float):
-        t_star = self.t - perturbation_dt
+    def perturb_back_check(self, perturbation_dt:float, relaxation:float, t):
+        t_star = t - perturbation_dt
         current_energy = self.energy
         current_nodes_positions = self.node_positions.copy()
         current_extension = self.edges_extension.copy()
-        self.evolve_constraint(t_star)
+        self.evolve_constraint(self.t - perturbation_dt)
         self.solve(tol=TOLERANCE_SOLVER, max_iter=MAX_ITER_SOLVER, relaxation=relaxation)
         self.compute_and_cache_strain_energy_from_extension_cache()
         new_energy = self.energy
@@ -531,21 +567,59 @@ class Solid:
         self.energy = current_energy
         return new_energy, new_nodes_positions, new_edges_extension
     def obtain_size_at_time(self, t:float):
-        pass
-    def optimize_field_rewind(self, perturbation_dt:float, relaxation:float, G:np.ndarray):
-        starting_time = self.t
+        return np.abs(self.bounds[0] - self.bounds[1]) + 2*PARAMETER_MULTIPLIER*t
+    
+    def optimize_field_rewind(self, perturbation_dt:float, relaxation:float, G:np.ndarray, t:float):
+        time = self.t
         current_energy = self.energy
         current_nodes_positions = self.node_positions.copy()
         current_extension = self.edges_extension.copy()
-        for _ in range(10):
-            new_energy, new_nodes_positions, new_edges_extension = self.perturb_back_check(perturbation_dt, relaxation)
-            if new_energy < current_energy:
-                current_energy = new_energy
-                self.node_positions[:] = new_nodes_positions[:]
-                self.edges_extension[:] = new_edges_extension[:]
-                self.energy = new_energy
-            else:
-                def objective(G, a1, a2, a3, a4, xn, x0, xnew):
-                    K_star_new_point = self.compute_edge_properties_from_field(new_nodes_positions, G, λx=starting_time, λy=starting_time, α0=ALPHA_0)
+        # K_current = self.compute_edge_properties_from_field(current_nodes_positions, G, λx=self.obtain_size_at_time(time), λy=self.obtain_size_at_time(time), α0=ALPHA_0)
+    
+        new_energy, new_nodes_positions, new_edges_extension = self.perturb_back_check(perturbation_dt=perturbation_dt, relaxation=relaxation, t=t)
+        if new_energy < current_energy:
+            current_energy = new_energy
+            self.node_positions[:] = new_nodes_positions[:]
+            self.edges_extension[:] = new_edges_extension[:]
+            self.energy = new_energy
+            print(f"Energy lowered by perturbation: {current_energy:.5g} -> {new_energy:.5g}. Stepping back")
+            return True
+        else:
+            print(f"Perturbation did not lower energy: {current_energy:.5g} -> {new_energy:.5g}. Keeping current state")
+
+            λx_new_point = self.obtain_size_at_time(time - perturbation_dt)
+            λy_new_point = self.obtain_size_at_time(time - perturbation_dt)
+            λx_old_point = self.obtain_size_at_time(time)
+            λy_old_point = self.obtain_size_at_time(time)
+            prev_G = G.copy()
+            @profile_function
+            def objective(G, prev_G, a1, a2, a3, a4):
+                K_star_new_point = self.compute_edge_properties_from_field(new_nodes_positions, G, λx=λx_new_point, λy=λy_new_point, α0=ALPHA_0)
+                g_star_new_point = self.assemble_gradient(node_positions=new_nodes_positions, edges_extension=new_edges_extension, edges_properties=K_star_new_point)
+                K_star_old_point = self.compute_edge_properties_from_field(current_nodes_positions, G, λx=λx_old_point, λy=λy_old_point, α0=ALPHA_0)
+                g_star_old_point = self.assemble_gradient(node_positions=current_nodes_positions, edges_extension=current_extension, edges_properties=K_star_old_point)
+                diff_G = G - prev_G
+                obj_val = a1*np.linalg.norm(g_star_new_point)**2 - a2*np.dot(g_star_old_point, new_nodes_positions - current_nodes_positions) + a3 *np.linalg.norm(diff_G)**2 + a4*np.linalg.norm(G)**2
+                return obj_val
+            a1, a2, a3, a4 = 1.0, 0.2, 0.1, 0.1
+            objective_value_before = objective(G, prev_G, a1, a2, a3, a4)
+            print(f"Objective value before optimization: {objective_value_before:.5g}")
+            # print("Preparing to optimize field corefficients")
+            # res  = minimize(objective, G, args=(prev_G, a1, a2, a3, a4), method='L-BFGS-B')
+            # print(f"Field optimization success: {res.success}, message: {res.message}, final objective value: {res.fun:.5g}")
+            # G = res.x
+            # K = self.compute_edge_properties_from_field(current_nodes_positions, G, λx=self.obtain_size_at_time(time), λy=self.obtain_size_at_time(time), α0=ALPHA_0)
+            # self.edges_properties[:] = K[:]
+            # self.evolve_constraint(time - perturbation_dt)
+            # self.solve(tol=TOLERANCE_SOLVER, max_iter=MAX_ITER_SOLVER, relaxation=relaxation)
+            # self.compute_and_cache_strain_energy_from_extension_cache()
+            # if self.energy < current_energy:
+            #     print(f"Success")
+            # else:
+            #     print(f"Failed to improve energy after optimization step")
+            return False
                     
-        
+
+
+
+

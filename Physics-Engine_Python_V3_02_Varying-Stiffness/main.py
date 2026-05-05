@@ -29,7 +29,7 @@ class Button:
     def update_hover(self, pos: tuple):
         self.hover = self.rect.collidepoint(pos) 
 
-def do_animation(solid: Solid, dxf_edges:list[np.ndarray], relaxation: float):
+def do_animation(solid: Solid, dxf_edges:list[np.ndarray], relaxation: float, G: np.ndarray):
     pygame.init()
     screen = pygame.display.set_mode((screen_size, screen_size))
     pygame.display.set_caption("Spring Network")
@@ -45,6 +45,8 @@ def do_animation(solid: Solid, dxf_edges:list[np.ndarray], relaxation: float):
     resume_btn = Button(button_x + 80, button_y, button_width, button_height, "Resume", color=(100, 150, 100))
     restart_btn = Button(button_x + 160, button_y, button_width, button_height, "Restart", color=(150, 100, 100))
     rewind_btn = Button(button_x + 240, button_y, button_width, button_height, "Rewind", color=(100, 100, 100))
+    perturb_btn = Button(button_x + 320, button_y, button_width, button_height, "Perturb", color=(150, 100, 150))
+    optimize_btn = Button(button_x + 400, button_y, button_width, button_height, "Optimize", color=(100, 150, 150))
 
     t_hist: list[float] = []
     e_hist: list[float] = []
@@ -53,16 +55,27 @@ def do_animation(solid: Solid, dxf_edges:list[np.ndarray], relaxation: float):
     paused = False
     current_energy = 0.0
     switch_state = False
+    last_action = ""  # Track last action for display
+
+    def replace_latest_history_point(time_value: float, energy_value: float):
+        if t_hist:
+            t_hist.pop()
+        if e_hist:
+            e_hist.pop()
+        t_hist.append(time_value)
+        e_hist.append(energy_value)
     
     @profile_function
     def anim_loop():
-        nonlocal running, paused, current_energy, clock, switch_state
+        nonlocal running, paused, current_energy, clock, switch_state, G, last_action
         
         mouse_pos = pygame.mouse.get_pos()
         pause_btn.update_hover(mouse_pos)
         resume_btn.update_hover(mouse_pos)
         restart_btn.update_hover(mouse_pos)
         rewind_btn.update_hover(mouse_pos)
+        perturb_btn.update_hover(mouse_pos)
+        optimize_btn.update_hover(mouse_pos)
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -71,17 +84,42 @@ def do_animation(solid: Solid, dxf_edges:list[np.ndarray], relaxation: float):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if pause_btn.is_clicked(mouse_pos):
                     paused = True
+                    last_action = "Paused"
                 elif resume_btn.is_clicked(mouse_pos):
                     paused = False
+                    last_action = "Resumed"
                 elif restart_btn.is_clicked(mouse_pos):
                     solid.t = 0
                     t_hist.clear()
                     e_hist.clear()
                     current_energy = 0.0
                     paused = False
+                    last_action = "Restarted"
                 elif rewind_btn.is_clicked(mouse_pos):
                     paused = True
+                    # G = np.zeros_like(G)
+                    # solid.optimize_field_rewind(perturbation_dt=3*DT, relaxation=RELAXATION, G=G)
                     switch_state = not switch_state
+                    last_action = "Rewound"
+                elif perturb_btn.is_clicked(mouse_pos):
+                    paused = True
+                    new_energy, new_nodes_positions, new_edges_extension = solid.perturb_back_check(perturbation_dt=DT, relaxation=RELAXATION, t=solid.t)
+                    print(f"Perturb: old_energy={solid.energy:.6e}  new_energy={new_energy:.6e}")
+                    # solid.node_positions[:] = new_nodes_positions[:]
+                    # solid.edges_extension[:] = new_edges_extension[:]
+                    # solid.energy = new_energy
+                    # current_energy = new_energy
+                    last_action = f"Perturbed (E={new_energy:.6e})"
+                    print(f"Perturb: new_energy={new_energy:.6e}")
+                elif optimize_btn.is_clicked(mouse_pos):
+                    paused = True
+                    moved = solid.optimize_field_rewind(perturbation_dt=DT, relaxation=RELAXATION, G=G, t=solid.t)
+                    if moved:
+                        solid.t -= DT
+                        current_energy = solid.energy
+                        replace_latest_history_point(solid.t, current_energy)
+                        last_action = f"Optimized (E={current_energy:.6e})"
+                        print(f"Optimize: new_energy={current_energy:.6e}")
             
             if event.type == pygame.KEYDOWN:
                 left_right = False
@@ -118,6 +156,7 @@ def do_animation(solid: Solid, dxf_edges:list[np.ndarray], relaxation: float):
 
         screen.fill((0, 0, 0))
         render_solid_low_level(solid=solid, dxf_edges=dxf_edges, screen=screen)
+        # print(f"Rendering energy plot with points")
 
         draw_energy_plot(plot_screen, t_hist, e_hist)
         screen.blit(plot_screen, (screen_size - PLOT_W - 5, 5))
@@ -126,6 +165,8 @@ def do_animation(solid: Solid, dxf_edges:list[np.ndarray], relaxation: float):
         resume_btn.draw(screen, font_small)
         restart_btn.draw(screen, font_small)
         rewind_btn.draw(screen, font_small)
+        perturb_btn.draw(screen, font_small)
+        optimize_btn.draw(screen, font_small)
         
         status_text = f"t = {solid.t:.4f}"
         energy_text = f"E = {current_energy:.6e}"
@@ -134,6 +175,10 @@ def do_animation(solid: Solid, dxf_edges:list[np.ndarray], relaxation: float):
         
         screen.blit(status_surface, (20, 50))
         screen.blit(energy_surface, (20, 90))
+        
+        if last_action:
+            action_surface = font_small.render(f"Last: {last_action}", True, (255, 200, 100))
+            screen.blit(action_surface, (20, 130))
         
         if paused:
             pause_text = font_large.render("PAUSED", True, (255, 100, 100))
@@ -206,7 +251,7 @@ if __name__ == "__main__":
     nodes.extend(hinge_point_nodes)
     print(f"Node count: {len(nodes)}")
     print(f"Class node count: {Node._count}")
-    solid = Solid(nodes=nodes)
+    solid = Solid(nodes=nodes, bounds=bounds)
     print(f"Bounds are: {bounds}")
 
     solid.initialize_edges_distance_based(distance_threshold=LINK_DISTANCE, edges_external=dxf_edges)
@@ -226,7 +271,9 @@ if __name__ == "__main__":
     solid.log_state()
     save_solid_to_file(solid, OBJECT_SAVE_FILE)
     # perform_sim(solid=solid, t_min=0, t_max=MAX_T, tracking_points=charged_indices, render=False, dxf_edges=dxf_edges, relaxation=RELAXATION)
-    do_animation(solid, dxf_edges=dxf_edges, relaxation=RELAXATION)
+    G0 = np.zeros(4*5)
+    
+    do_animation(solid, dxf_edges=dxf_edges, relaxation=RELAXATION, G=G0)
 
 
     # solid.write_data_to_csv(filename=DISTANCE_DATA_STORAGE_FILE)
