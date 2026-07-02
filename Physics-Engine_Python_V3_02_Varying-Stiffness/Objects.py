@@ -532,6 +532,10 @@ class Solid:
         centroids = (node_a_pos + node_b_pos) * 0.5  # (num_edges, 2)
         cx = centroids[:, 0]  # (num_edges,)
         cy = centroids[:, 1]
+        max_cx = np.max(np.abs(cx))
+        max_cy = np.max(np.abs(cy))
+        min_cx = np.min(np.abs(cx))
+        min_cy = np.min(np.abs(cy))
         
         # Precompute basis function frequencies
         freqs = np.arange(1, num_coefficients + 1, dtype=np.float64) * np.pi  # (num_coefficients,)
@@ -615,6 +619,8 @@ class Solid:
             λx_old_point = self.obtain_size_at_time(time)
             λy_old_point = self.obtain_size_at_time(time)
             prev_G = G.copy()
+            dx = new_nodes_positions - current_nodes_positions
+            p = dx/(np.linalg.norm(dx) + 1e-8)
             @profile_function
             def objective(G, prev_G, a1, a2, a3, a4):
                 K_star_new_point = self.compute_edge_properties_from_field(new_nodes_positions, G, λx=λx_new_point, λy=λy_new_point, α0=ALPHA_0)
@@ -624,13 +630,30 @@ class Solid:
                 diff_G = G - prev_G
                 obj_val = a1*np.linalg.norm(g_star_new_point)**2 - a2*np.dot(g_star_old_point, new_nodes_positions - current_nodes_positions) + a3 *np.linalg.norm(diff_G)**2 + a4*np.linalg.norm(G)**2
                 return obj_val
-            a1, a2, a3, a4 = 0.01, -3000, 0.0, 10.9
+            # def objective(G, prev_G, a1, a2, a3):    
+            #     K_star_old_point = self.compute_edge_properties_from_field(current_nodes_positions, G, λx=λx_old_point, λy=λy_old_point, α0=ALPHA_0)
+            #     g_star_old_point = self.assemble_gradient(node_positions=current_nodes_positions, edges_extension=current_extension, edges_properties=K_star_old_point)
+            #     g_star_old_point_normalized = g_star_old_point / (np.linalg.norm(g_star_old_point) + 1e-8)
+
+            #     k1 = g_star_old_point_normalized + p
+            #     obj = a1*np.dot(k1, k1) + a2*np.linalg.norm(G)**2 + a3*np.linalg.norm(g_star_old_point)**2
+                # diff_G = G - prev_G
+                # dx = current_nodes_positions - new_nodes_positions
+                # obj_val = 0
+                return obj
+            a1, a2, a3, a4 = 100, 0.01, 0.1, 10000.9
             objective_value_before = objective(G, prev_G, a1, a2, a3, a4)
             print(f"Objective value before optimization: {objective_value_before:.5g}")
             print("Preparing to optimize field corefficients")
             res  = minimize(objective, G, args=(prev_G, a1, a2, a3, a4), method='L-BFGS-B')
             print(f"Field optimization success: {res.success}, message: {res.message}, final objective value: {res.fun:.5g}")
             G = res.x
+
+            g_star_old_point = self.assemble_gradient(node_positions=current_nodes_positions, edges_extension=current_extension, edges_properties=self.compute_edge_properties_from_field(current_nodes_positions, prev_G, λx=λx_old_point, λy=λy_old_point, α0=ALPHA_0))
+            g_star_old_point_normalized = g_star_old_point / (np.linalg.norm(g_star_old_point) + 1e-8)
+            k1 = g_star_old_point_normalized + p
+            print(f"k1 norm: {np.linalg.norm(k1):.5g}, g_star_old_point norm: {np.linalg.norm(g_star_old_point):.5g}, G norm: {np.linalg.norm(G):.5g}")
+
             print(f"Updated G coefficients: {G}")
             K = self.compute_edge_properties_from_field(current_nodes_positions, G, λx=self.obtain_size_at_time(time), λy=self.obtain_size_at_time(time), α0=ALPHA_0)
             self.edges_properties[:] = K[:]

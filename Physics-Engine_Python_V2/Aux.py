@@ -247,8 +247,8 @@ def get_constraint_indices_and_constraint_functions(nodes:list[Node], bounds: Tu
         middle_x = np.abs(node.position.y - (bounds[2] + bounds[3]) / 2) < NONBOUNDED_MIDDLE_SIZE_LEFT_RIGHT*(bounds[3]-bounds[2])
         middle_y = np.abs(node.position.x - (bounds[0] + bounds[1]) / 2) < BOUNDED_MIDDLE_SIZE_TOP_BOTTOM*(bounds[1]-bounds[0])
         if left:
-            if middle_x:
-                continue
+            # if middle_x:
+            #     continue
             x0 = node.position.x
             y0 = node.position.y
             constraint_functions.append(lambda t, _x=x0: _x - t*PARAMETER_MULTIPLIER)

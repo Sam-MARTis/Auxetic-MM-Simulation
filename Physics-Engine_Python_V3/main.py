@@ -43,7 +43,7 @@ def do_animation(solid: Solid, dxf_edges:list[np.ndarray]):
                     
                 if left_right:
                     # DT = DT
-                    energy = solid.step(substeps=SUBSTEPS, report_energy=True)
+                    energy = solid.step(substeps=SUBSTEPS, report_energy=True, relaxation=RELAXATION)
                     t_hist[-1] = solid.t
                     e_hist[-1] = energy
                     print(f"t={solid.t:.4f}  E={energy:.6e}")
@@ -55,7 +55,7 @@ def do_animation(solid: Solid, dxf_edges:list[np.ndarray]):
 
         if not stop_auto_sim:
 
-            energy = solid.step(substeps=SUBSTEPS, report_energy=True)
+            energy = solid.step(substeps=SUBSTEPS, report_energy=True, relaxation=RELAXATION)
             solid.t += DT
         
             t_hist.append(solid.t)
@@ -126,7 +126,7 @@ if __name__ == "__main__":
     center = True
     size = WORLD_SIZE/2
     n=2
-    file_pattern_2cross2 = f"/home/odin/Academic/Research/Metamaterials/Auxetic Mechanical MM/Bistable/Computational Exploration/Modules/pattern_{n}x{n}.dxf"
+    file_pattern_2cross2 = f"./dxf_files/pattern_{n}x{n}.dxf"
     bounds, lines_vec, hinge_points = get_bounds_and_lines_and_hinge_points(filename=file_pattern_2cross2, min_distance=min_distance, max_distance=max_distance, center=center, size=size)
     dxf_edges = []
     for line in lines_vec:
@@ -156,11 +156,16 @@ if __name__ == "__main__":
     
     # do_animation(solid, dxf_edges=dxf_edges)
     # tracking_points = np.array([np.random.randint(0, solid.num_nodes) for _ in range(50)], dtype=int)
-    solid.assign_charged_indices(charged_indices)
-    # solid.log_charged_nodes_positions()
-    solid.log_state()
-    save_solid_to_file(solid, OBJECT_SAVE_FILE)
+
+
+    # solid.assign_charged_indices(charged_indices)
+    # # solid.log_charged_nodes_positions()
+    # solid.log_state()
+    # save_solid_to_file(solid, OBJECT_SAVE_FILE)
     perform_sim(solid=solid, t_min=0, t_max=MAX_T, tracking_points=charged_indices, render=False, dxf_edges=dxf_edges, relaxation=RELAXATION)
+
+
+
     # solid.write_data_to_csv(filename=DISTANCE_DATA_STORAGE_FILE)
     # solid = load_solid_from_file(OBJECT_SAVE_FILE)
     # solid.optimize_charges(worker_file=CHARGE_OPTIMIZATION_FILE, position_storage_file=DISTANCE_DATA_STORAGE_FILE, optimized_charge_storage_file=OPTIMIZED_CHARGE_STORAGE_FILE, verbose=OPTIMIZATION_VERBOSE)

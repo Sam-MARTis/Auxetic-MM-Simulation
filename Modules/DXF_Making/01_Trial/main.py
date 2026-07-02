@@ -83,7 +83,7 @@ if __name__ == "__main__":
     msp_pattern = doc_pattern.modelspace()
 
     cut_size = 1
-    edge_gap = 0.001
+    edge_gap = 0.04
     side_gap = 0.1
     θ_in_degrees = 65
     θ_in_radians = np.radians(θ_in_degrees)
@@ -99,7 +99,7 @@ if __name__ == "__main__":
     pattern_unit_cell = Unit_Cell(doc_pattern, msp_pattern, "UnitCell", cut_size, θ_in_radians, edge_gap, side_gap)
     
     # Generate pattern array
-    n = 2  # number of repetitions in each direction
+    n = 1  # number of repetitions in each direction
     for i in range(n):
         for j in range(n):
             x = (i + is_odd(i+j)) * unit_cell.dx
@@ -114,5 +114,5 @@ if __name__ == "__main__":
     msp_pattern.add_line((unit_cell.dx*n, unit_cell.dy*n), (0, unit_cell.dy*n))
     msp_pattern.add_line((0, unit_cell.dy*n), (0, 0))
 
-    doc_pattern.saveas(f"pattern_{n}x{n}.dxf")
-    print(f"Pattern saved as pattern_{n}x{n}.dxf")
+    doc_pattern.saveas(f"/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/Physics-Engine_Python_V3_02_Varying-Stiffness/dxf_files/pattern_{n}x{n}_edge-gap_{edge_gap}.dxf")
+    print(f"Pattern saved as pattern_{n}x{n}_edge-gap_{edge_gap}.dxf")

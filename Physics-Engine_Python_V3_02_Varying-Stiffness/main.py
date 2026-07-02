@@ -1,5 +1,9 @@
 import pygame
 import time
+import os
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 from Objects import *
 from Constants import *
 from Aux import *
@@ -29,7 +33,7 @@ class Button:
     def update_hover(self, pos: tuple):
         self.hover = self.rect.collidepoint(pos) 
 
-def do_animation(solid: Solid, dxf_edges:list[np.ndarray], relaxation: float, G: np.ndarray):
+def do_animation(solid: Solid, dxf_edges:list[np.ndarray], relaxation: float, G: np.ndarray, dxf_filename: str = None, edge_gap: float = None):
     pygame.init()
     screen = pygame.display.set_mode((screen_size, screen_size))
     pygame.display.set_caption("Spring Network")
@@ -56,6 +60,7 @@ def do_animation(solid: Solid, dxf_edges:list[np.ndarray], relaxation: float, G:
     current_energy = 0.0
     switch_state = False
     last_action = ""  # Track last action for display
+    saved_plot = False
 
     def replace_latest_history_point(time_value: float, energy_value: float):
         if t_hist:
@@ -67,7 +72,7 @@ def do_animation(solid: Solid, dxf_edges:list[np.ndarray], relaxation: float, G:
     
     # @profile_function
     def anim_loop():
-        nonlocal running, paused, current_energy, clock, switch_state, G, last_action
+        nonlocal running, paused, current_energy, clock, switch_state, G, last_action, saved_plot
         
         mouse_pos = pygame.mouse.get_pos()
         pause_btn.update_hover(mouse_pos)
@@ -117,9 +122,13 @@ def do_animation(solid: Solid, dxf_edges:list[np.ndarray], relaxation: float, G:
                     if moved:
                         solid.t -= DT
                         current_energy = solid.energy
-                        replace_latest_history_point(solid.t, current_energy)
-                        last_action = f"Optimized (E={current_energy:.6e})"
-                        print(f"Optimize: new_energy={current_energy:.6e}")
+                        t_hist.pop()
+                        e_hist.pop()
+                        t_hist[-1] = solid.t
+                        e_hist[-1] = current_energy
+                        # replace_latest_history_point(solid.t, current_energy)
+                        # last_action = f"Optimized (E={current_energy:.6e})"
+                        # print(f"Optimize: new_energy={current_energy:.6e}")
             
             if event.type == pygame.KEYDOWN:
                 left_right = False
@@ -154,6 +163,38 @@ def do_animation(solid: Solid, dxf_edges:list[np.ndarray], relaxation: float, G:
             current_energy = energy
             print(f"t={solid.t:.4f}  E={energy:.6e}")
 
+            
+            if solid.t >= MAX_T and (not saved_plot):
+                try:
+                    node_count = len(solid.nodes) if hasattr(solid, 'nodes') else None
+                    if dxf_filename:
+                        base = os.path.splitext(os.path.basename(dxf_filename))[0]
+                        save_dir = os.path.dirname(dxf_filename) or '.'
+                        save_path = os.path.join(save_dir, f"{base}.png")
+                    else:
+                        save_path = f"energy_diagram.png"
+
+                    plt.figure()
+                    plt.plot(t_hist, e_hist, '-o', markersize=3)
+                    plt.xlabel('t')
+                    plt.ylabel('Energy')
+                    title_parts = []
+                    if edge_gap is not None:
+                        title_parts.append(f"energy diagram for t/a = {edge_gap}")
+                    else:
+                        title_parts.append("energy diagram")
+                    if node_count is not None:
+                        title_parts.append(f"nodes = {node_count}")
+                    plt.title('  '.join(title_parts))
+                    plt.grid(True)
+                    plt.tight_layout()
+                    plt.savefig(save_path)
+                    plt.close()
+                    print(f"Saved energy diagram to {save_path}")
+                except Exception as e:
+                    print(f"Failed to save energy diagram: {e}")
+                saved_plot = True
+
         screen.fill((0, 0, 0))
         render_solid_low_level(solid=solid, dxf_edges=dxf_edges, screen=screen)
         # print(f"Rendering energy plot with points")
@@ -161,20 +202,20 @@ def do_animation(solid: Solid, dxf_edges:list[np.ndarray], relaxation: float, G:
         draw_energy_plot(plot_screen, t_hist, e_hist)
         screen.blit(plot_screen, (screen_size - PLOT_W - 5, 5))
         
-        pause_btn.draw(screen, font_small)
-        resume_btn.draw(screen, font_small)
-        restart_btn.draw(screen, font_small)
-        rewind_btn.draw(screen, font_small)
-        perturb_btn.draw(screen, font_small)
-        optimize_btn.draw(screen, font_small)
+        # pause_btn.draw(screen, font_small)
+        # resume_btn.draw(screen, font_small)
+        # restart_btn.draw(screen, font_small)
+        # rewind_btn.draw(screen, font_small)
+        # perturb_btn.draw(screen, font_small)
+        # optimize_btn.draw(screen, font_small)
         
         status_text = f"t = {solid.t:.4f}"
         energy_text = f"E = {current_energy:.6e}"
-        status_surface = font_large.render(status_text, True, (0, 255, 100))
-        energy_surface = font_large.render(energy_text, True, (0, 200, 255))
+        # status_surface = font_large.render(status_text, True, (0, 255, 100))
+        # energy_surface = font_large.render(energy_text, True, (0, 200, 255))
         
-        screen.blit(status_surface, (20, 50))
-        screen.blit(energy_surface, (20, 90))
+        # screen.blit(status_surface, (20, 50))
+        # screen.blit(energy_surface, (20, 90))
         
         if last_action:
             action_surface = font_small.render(f"Last: {last_action}", True, (255, 200, 100))
@@ -233,7 +274,8 @@ if __name__ == "__main__":
     center = True
     size = WORLD_SIZE/2
     n=1
-    file_pattern_2cross2 = f"./dxf_files/pattern_{n}x{n}_edge-gap_0.033.dxf"
+    edge_gap = 0.03
+    file_pattern_2cross2 = f"./dxf_files/pattern_{n}x{n}_edge-gap_{edge_gap}.dxf"
     bounds, lines_vec, hinge_points = get_bounds_and_lines_and_hinge_points(filename=file_pattern_2cross2, min_distance=min_distance, max_distance=max_distance, center=center, size=size)
     dxf_edges = []
     for line in lines_vec:
@@ -271,9 +313,9 @@ if __name__ == "__main__":
     solid.log_state()
     save_solid_to_file(solid, OBJECT_SAVE_FILE)
     # perform_sim(solid=solid, t_min=0, t_max=MAX_T, tracking_points=charged_indices, render=False, dxf_edges=dxf_edges, relaxation=RELAXATION)
-    G0 = np.zeros(4*10)
+    G0 = np.zeros(4*4)
     
-    do_animation(solid, dxf_edges=dxf_edges, relaxation=RELAXATION, G=G0)
+    do_animation(solid, dxf_edges=dxf_edges, relaxation=RELAXATION, G=G0, dxf_filename=file_pattern_2cross2, edge_gap=edge_gap)
 
 
     # solid.write_data_to_csv(filename=DISTANCE_DATA_STORAGE_FILE)
