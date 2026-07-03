@@ -14,8 +14,9 @@
 
 class Boundary
 {
+public:
     Boundary(const std::vector<Vec2D>& points);
     unsigned int numBoundaryPoints;
     std::vector<Vec2D> boundaryPoints;
-    bool isInsideBoundary(const Vec2D& point);
+    bool isInsideBoundary(const Vec2D& testPoint) const;
 };
