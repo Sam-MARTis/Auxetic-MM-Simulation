@@ -6,15 +6,23 @@ set(CMAKE_CXX_STANDARD 17)
 
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 
-add_executable(${PROJECT_NAME} ${SOURCES})
+add_executable(${PROJECT_NAME} ${SOURCES}
+        include/constants.hpp
+        include/mesh.hpp
+        include/renderer.hpp
+        include/solid.hpp
+        include/loader.hpp
+        include/utils.hpp
+        src/loader.cpp
+)
 
 # find_package(OpenGL REQUIRED)
 # find_package(glfw3 3.3 REQUIRED)
 target_compile_definitions(${PROJECT_NAME} PRIVATE
-    BASE_DIR="${CMAKE_SOURCE_DIR}/shaders/"
+        BASE_DIR="${CMAKE_SOURCE_DIR}/shaders/"
 )
 target_include_directories(${PROJECT_NAME} PRIVATE
-    include/   
+        include/
 )
 
 # find_package(glm REQUIRED)
