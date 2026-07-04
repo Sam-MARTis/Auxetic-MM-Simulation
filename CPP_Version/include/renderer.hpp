@@ -47,9 +47,11 @@ class Renderer
     sf::Texture particleTexture = sf::Texture(PARTICLE_TEXTURE);
     float tw, th;
     sf::RenderStates renderState;
+
+    void rebuildVertexArray();
     public:
     Renderer(const RendererSetupInformation& setupInfo);
-    void updateRenderInformation(const RendererUpdateInformatiom& updateInfo);
+    void updateRenderInformation(const RendererUpdateInformatiom& updateInfo, bool shouldRebuildVertices = true);
     Vec2D mapPhysicsToSpaceCoords(const Vec2D& physicsIn);
     Vec2D mapPhysicsToSpaceCoords(const double& physicsInX, const double& physicsInY);
     Vec2D mapPhysicsToSpaceCoords(const float& physicsInX, const float& physicsInY);
