@@ -19,7 +19,8 @@ add_executable(${PROJECT_NAME} ${SOURCES}
 # find_package(OpenGL REQUIRED)
 # find_package(glfw3 3.3 REQUIRED)
 target_compile_definitions(${PROJECT_NAME} PRIVATE
-        BASE_DIR="${CMAKE_SOURCE_DIR}/shaders/"
+        PARTICLE_TEXTURE="${CMAKE_SOURCE_DIR}/resources/textures/circle.png"
+
 )
 target_include_directories(${PROJECT_NAME} PRIVATE
         include/

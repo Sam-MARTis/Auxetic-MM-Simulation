@@ -1,6 +1,6 @@
 #pragma once
 
-#include "loader.hpp"
+
 
 
 
@@ -14,7 +14,7 @@ struct Vec2D
     {
         return {x + other.x, y + other.y};
     }
-    Vec2D operator+=(const Vec2D& other)
+    void operator+=(const Vec2D& other)
     {
         x += other.x;
         y += other.y;
@@ -23,7 +23,7 @@ struct Vec2D
     {
         return {x*multiplier, y*multiplier};
     }
-    Vec2D operator/(const double divisor)
+    Vec2D operator/(const double divisor) const
     {
         const double multiplier = 1./divisor;
         return {x*multiplier, y*multiplier};
@@ -32,11 +32,11 @@ struct Vec2D
     {
         return {x - other.x, y - other.y};
     }
-    double norm() const
+    [[nodiscard]] double norm() const
     {
         return std::sqrt(x*x + y*y);
     }
-    Vec2D normalized() const
+    [[nodiscard]] Vec2D normalized() const
     {
         const double magnitude = norm();
         const double multiplier = 1./(magnitude);
