@@ -3,6 +3,11 @@
 #include <vector>
 #include <tuple>
 #include <functional>
+
+#include "utils.hpp"
+#include "loader.hpp"
+
+
 class Mesh{
     private:
         struct ConstraintParameter{
@@ -36,16 +41,14 @@ class Mesh{
             std::vector<Constraint> constraints; // numConstraints
         };
         
-        struct NodeProperties{
-            double x;
-            double y;
-        };
+
         struct Nodes{
             unsigned int numNodes;
-            std::vector<NodeProperties> nodesPos; // N
+            std::vector<Vec2D> nodesPos; // N
             Constraints constraints;
         };
-        void initializeBoundaryNodes()
+        void insertNodesAtPositions(const std::vector<Vec2D> nodePos);
+        void initializeBoundaryNodes(const BoundaryMeshBuildInformation& buildInfo);
 
     public:
         Nodes nodes;    
