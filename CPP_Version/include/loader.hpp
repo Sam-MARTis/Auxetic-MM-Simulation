@@ -20,3 +20,12 @@ public:
     std::vector<Vec2D> boundaryPoints;
     bool isInsideBoundary(const Vec2D& testPoint) const;
 };
+
+struct BoundaryMeshBuildInformation
+{
+    double targetDensity;
+    Boundary boundary;
+    bool pointAtCorners = false;
+    BoundaryMeshBuildInformation();
+
+};

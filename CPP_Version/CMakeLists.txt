@@ -14,7 +14,6 @@ add_executable(${PROJECT_NAME} ${SOURCES}
         include/loader.hpp
         include/utils.hpp
         src/loader.cpp
-        src/test_boundary.cpp
 )
 
 # find_package(OpenGL REQUIRED)
