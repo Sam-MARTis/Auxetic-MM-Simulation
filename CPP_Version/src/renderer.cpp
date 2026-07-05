@@ -1,5 +1,8 @@
 
 #include "renderer.hpp"
+
+#include <iostream>
+
 #include "utils.hpp"
 
 void Renderer::rebuildVertexArray()
@@ -48,9 +51,10 @@ Renderer::Renderer(const RendererSetupInformation& setupInfo)
 
 void Renderer::updateRenderInformation(const RendererUpdateData& updateInfo)
 {
+
     const RendererSetupInformation& info = updateInfo.info;
-    RenderUpdateFlags flags = updateInfo.propertyUpdated;
-    if ((flags & RenderUpdateFlags::NODE_POSITIONS) != RenderUpdateFlags::NONE)
+    StateUpdateFlags flags = updateInfo.propertyUpdated;
+    if ((flags & StateUpdateFlags::NODE_POSITIONS) != StateUpdateFlags::NONE)
     {
         particlePositions.clear();
         particlePositions.insert(
@@ -60,37 +64,37 @@ void Renderer::updateRenderInformation(const RendererUpdateData& updateInfo)
         );
     }
 
-    if ((flags & RenderUpdateFlags::RENDER_SCALE) != RenderUpdateFlags::NONE)
+    if ((flags & StateUpdateFlags::RENDER_SCALE) != StateUpdateFlags::NONE)
     {
         renderScaleFromPhysics = info.renderScale;
     }
 
-    if ((flags & RenderUpdateFlags::RENDER_ORIGIN) != RenderUpdateFlags::NONE)
+    if ((flags & StateUpdateFlags::RENDER_ORIGIN) != StateUpdateFlags::NONE)
     {
         renderSpacePhysicsOrigin = info.renderOrigin;
     }
 
-    if ((flags & RenderUpdateFlags::PARTICLE_RENDER_RADIUS) != RenderUpdateFlags::NONE)
+    if ((flags & StateUpdateFlags::PARTICLE_RENDER_RADIUS) != StateUpdateFlags::NONE)
     {
         particleRadius = info.pRadius;
     }
 
-    if ((flags & RenderUpdateFlags::PARTICLE_RENDER_COLOUR) != RenderUpdateFlags::NONE)
+    if ((flags & StateUpdateFlags::PARTICLE_RENDER_COLOUR) != StateUpdateFlags::NONE)
     {
         particleColour = info.pColour;
     }
 
-    if ((flags & RenderUpdateFlags::EDGE_RENDER_THICKNESS) != RenderUpdateFlags::NONE)
+    if ((flags & StateUpdateFlags::EDGE_RENDER_THICKNESS) != StateUpdateFlags::NONE)
     {
         edgeThickness = info.edgeThickness;
     }
 
-    if ((flags & RenderUpdateFlags::EDGE_RENDER_COLOUR) != RenderUpdateFlags::NONE)
+    if ((flags & StateUpdateFlags::EDGE_RENDER_COLOUR) != StateUpdateFlags::NONE)
     {
         edgeColour = info.edgeColour;
     }
 
-    if ((flags & RenderUpdateFlags::SHOULD_REBUILD_VERTICES) != RenderUpdateFlags::NONE)
+    if ((flags & StateUpdateFlags::SHOULD_REBUILD_VERTICES) != StateUpdateFlags::NONE)
     {
         rebuildVertexArray();
     }
@@ -112,5 +116,6 @@ Vec2D Renderer::mapPhysicsToSpaceCoords(const float& physicsInX, const float& ph
 
 void Renderer::draw(sf::RenderWindow& window) const
 {
+    std::cout<<"Draw function called"<<std::endl;
     window.draw(particleVertices, renderState);
 }

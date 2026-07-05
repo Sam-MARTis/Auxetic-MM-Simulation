@@ -4,8 +4,6 @@
 
 struct SimulationData
 {
-    bool shouldTimeStep = false;
-    bool shouldRender = false;
     double dt;
     double relaxationFactor;
 };
@@ -19,9 +17,8 @@ struct MenuData
 
 class Menu
 {
-private:
-    MenuData& menuData;
 public:
+    MenuData& menuData;
     Menu(MenuData& menuDataInput);
     void processMenu(Renderer& renderer);
 };

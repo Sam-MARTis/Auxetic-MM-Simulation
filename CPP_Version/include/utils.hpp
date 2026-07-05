@@ -2,62 +2,6 @@
 
 #include <cmath>
 #include <stdint.h>
-enum class RenderUpdateFlags: uint32_t
-{
-    NONE = 0,
-    PARTICLE_RENDER_RADIUS = 1<<0,
-    PARTICLE_RENDER_COLOUR = 1<<1,
-    EDGE_RENDER_THICKNESS = 1<<2,
-    EDGE_RENDER_COLOUR = 1<<3,
-    RENDER_SCALE = 1<<4,
-    RENDER_ORIGIN = 1<<5,
-    NODE_POSITIONS = 1<<6,
-    SHOULD_REBUILD_VERTICES = 1<<7,
-};
-enum class physicsUpdateFlags: uint32_t
-{
-    TIME_STEP = 1<<15,
-    RELAXATION_FACTOR = 1<<16,
-    SHOULD_RENDER = 1<<17,
-    SHOULD_TIME_STEP = 1<<18,
-};
-
-constexpr RenderUpdateFlags operator|(RenderUpdateFlags lhs, RenderUpdateFlags rhs)
-{
-    return static_cast<RenderUpdateFlags>(
-        static_cast<uint32_t>(lhs) | static_cast<uint32_t>(rhs)
-    );
-}
-
-constexpr RenderUpdateFlags operator&(RenderUpdateFlags lhs, RenderUpdateFlags rhs)
-{
-    return static_cast<RenderUpdateFlags>(
-        static_cast<uint32_t>(lhs) & static_cast<uint32_t>(rhs)
-    );
-}
-
-constexpr RenderUpdateFlags& operator|=(RenderUpdateFlags& lhs, RenderUpdateFlags rhs)
-{
-    lhs = lhs | rhs;
-    return lhs;
-}
-
-inline bool any(RenderUpdateFlags flags)
-{
-    return flags != RenderUpdateFlags::NONE;
-}
-
-
-
-constexpr RenderUpdateFlags RebuildMask =
-    RenderUpdateFlags::PARTICLE_RENDER_RADIUS |
-    RenderUpdateFlags::PARTICLE_RENDER_COLOUR |
-    RenderUpdateFlags::EDGE_RENDER_THICKNESS |
-    RenderUpdateFlags::EDGE_RENDER_COLOUR |
-    RenderUpdateFlags::RENDER_SCALE |
-    RenderUpdateFlags::RENDER_ORIGIN |
-    RenderUpdateFlags::NODE_POSITIONS;
-
 
 
 inline double randValueMine(const double min, const double max)

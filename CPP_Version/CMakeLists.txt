@@ -22,6 +22,7 @@ add_executable(${PROJECT_NAME} ${SOURCES}
         ${IMGUI_SFML_DIR}/imgui-SFML.cpp
         include/menu.hpp
         src/menu.cpp
+        include/flag.hpp
 )
 
 # find_package(OpenGL REQUIRED)

@@ -3,6 +3,7 @@
 
 #include "utils.hpp"
 #include "constants.hpp"
+#include "flag.hpp"
 
 #ifndef PARTICLE_TEXTURE_PATH
 #define PARTICLE_TEXTURE_PATH "resources/textures/circle.png"
@@ -22,8 +23,9 @@ struct RendererSetupInformation
 
 struct RendererUpdateData
 {
-    RenderUpdateFlags propertyUpdated;
+    StateUpdateFlags propertyUpdated;
     RendererSetupInformation& info;
+    bool shouldRender;
 };
 
 class Renderer

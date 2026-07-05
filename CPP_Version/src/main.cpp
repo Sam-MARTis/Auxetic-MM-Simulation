@@ -24,12 +24,12 @@ int main()
     RendererSetupInformation setupInfo{.nodePositions = particlePositions};
     setupInfo.renderOrigin = Vec2D(DEFAULT_SCREEN_WIDTH/2.0, DEFAULT_SCREEN_HEIGHT/2.0);
     RendererUpdateData renderUpdateInfo{
-        .propertyUpdated = RenderUpdateFlags::NONE,
-        .info = setupInfo
+        .propertyUpdated = StateUpdateFlags::NONE,
+        .info = setupInfo,
+        .shouldRender = true,
+
     };
     SimulationData simInfo{
-    .shouldTimeStep = true,
-    .shouldRender = true,
     .dt = 0.1,
     .relaxationFactor = 1.0};
 
@@ -61,7 +61,14 @@ int main()
         }
         ImGui::SFML::Update(window, clock.restart());
         renderMenu.processMenu(testRenderer);
-        testRenderer.draw(window);
+        // if ((menuData.renderInfo.propertyUpdated & StateUpdateFlags::SHOULD_RENDER) != StateUpdateFlags::NONE)
+        if (renderMenu.menuData.renderInfo.shouldRender)
+        {
+            std::cout<<"Render Information Updated"<<std::endl;
+            testRenderer.draw(window);
+        }
+        // testRenderer.draw(window);
+        std::cout<< ((menuData.renderInfo.propertyUpdated & StateUpdateFlags::SHOULD_RENDER) != StateUpdateFlags::NONE)<<std::endl;
         ImGui::SFML::Render(window);
         window.display();
     }
