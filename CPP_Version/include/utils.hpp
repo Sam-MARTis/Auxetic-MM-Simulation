@@ -1,7 +1,8 @@
 #pragma once
 
 #include <cmath>
-enum renderUpdateFlags
+#include <stdint.h>
+enum class RenderUpdateFlags: uint32_t
 {
     NONE = 0,
     PARTICLE_RENDER_RADIUS = 1<<0,
@@ -13,13 +14,40 @@ enum renderUpdateFlags
     NODE_POSITIONS = 1<<6,
     SHOULD_REBUILD_VERTICES = 1<<7,
 };
-enum physicsUpdateFlags
+enum class physicsUpdateFlags: uint32_t
 {
     TIME_STEP = 1<<15,
     RELAXATION_FACTOR = 1<<16,
     SHOULD_RENDER = 1<<17,
     SHOULD_TIME_STEP = 1<<18,
 };
+
+inline RenderUpdateFlags operator|(RenderUpdateFlags lhs, RenderUpdateFlags rhs)
+{
+    return static_cast<RenderUpdateFlags>(
+        static_cast<uint32_t>(lhs) | static_cast<uint32_t>(rhs)
+    );
+}
+
+inline RenderUpdateFlags operator&(RenderUpdateFlags lhs, RenderUpdateFlags rhs)
+{
+    return static_cast<RenderUpdateFlags>(
+        static_cast<uint32_t>(lhs) & static_cast<uint32_t>(rhs)
+    );
+}
+
+inline RenderUpdateFlags& operator|=(RenderUpdateFlags& lhs, RenderUpdateFlags rhs)
+{
+    lhs = lhs | rhs;
+    return lhs;
+}
+
+inline bool any(RenderUpdateFlags flags)
+{
+    return flags != RenderUpdateFlags::NONE;
+}
+
+
 
 
 inline double randValueMine(const double min, const double max)
