@@ -22,21 +22,21 @@ enum class physicsUpdateFlags: uint32_t
     SHOULD_TIME_STEP = 1<<18,
 };
 
-inline RenderUpdateFlags operator|(RenderUpdateFlags lhs, RenderUpdateFlags rhs)
+constexpr RenderUpdateFlags operator|(RenderUpdateFlags lhs, RenderUpdateFlags rhs)
 {
     return static_cast<RenderUpdateFlags>(
         static_cast<uint32_t>(lhs) | static_cast<uint32_t>(rhs)
     );
 }
 
-inline RenderUpdateFlags operator&(RenderUpdateFlags lhs, RenderUpdateFlags rhs)
+constexpr RenderUpdateFlags operator&(RenderUpdateFlags lhs, RenderUpdateFlags rhs)
 {
     return static_cast<RenderUpdateFlags>(
         static_cast<uint32_t>(lhs) & static_cast<uint32_t>(rhs)
     );
 }
 
-inline RenderUpdateFlags& operator|=(RenderUpdateFlags& lhs, RenderUpdateFlags rhs)
+constexpr RenderUpdateFlags& operator|=(RenderUpdateFlags& lhs, RenderUpdateFlags rhs)
 {
     lhs = lhs | rhs;
     return lhs;
@@ -47,6 +47,16 @@ inline bool any(RenderUpdateFlags flags)
     return flags != RenderUpdateFlags::NONE;
 }
 
+
+
+constexpr RenderUpdateFlags RebuildMask =
+    RenderUpdateFlags::PARTICLE_RENDER_RADIUS |
+    RenderUpdateFlags::PARTICLE_RENDER_COLOUR |
+    RenderUpdateFlags::EDGE_RENDER_THICKNESS |
+    RenderUpdateFlags::EDGE_RENDER_COLOUR |
+    RenderUpdateFlags::RENDER_SCALE |
+    RenderUpdateFlags::RENDER_ORIGIN |
+    RenderUpdateFlags::NODE_POSITIONS;
 
 
 

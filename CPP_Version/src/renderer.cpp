@@ -49,8 +49,8 @@ Renderer::Renderer(const RendererSetupInformation& setupInfo)
 void Renderer::updateRenderInformation(const RendererUpdateData& updateInfo)
 {
     const RendererSetupInformation& info = updateInfo.info;
-
-    if (updateInfo.propertyUpdated & NODE_POSITIONS)
+    RenderUpdateFlags flags = updateInfo.propertyUpdated;
+    if ((flags & RenderUpdateFlags::NODE_POSITIONS) != RenderUpdateFlags::NONE)
     {
         particlePositions.clear();
         particlePositions.insert(
@@ -60,37 +60,37 @@ void Renderer::updateRenderInformation(const RendererUpdateData& updateInfo)
         );
     }
 
-    if (updateInfo.propertyUpdated & RENDER_SCALE)
+    if ((flags & RenderUpdateFlags::RENDER_SCALE) != RenderUpdateFlags::NONE)
     {
         renderScaleFromPhysics = info.renderScale;
     }
 
-    if (updateInfo.propertyUpdated & RENDER_ORIGIN)
+    if ((flags & RenderUpdateFlags::RENDER_ORIGIN) != RenderUpdateFlags::NONE)
     {
         renderSpacePhysicsOrigin = info.renderOrigin;
     }
 
-    if (updateInfo.propertyUpdated & PARTICLE_RENDER_RADIUS)
+    if ((flags & RenderUpdateFlags::PARTICLE_RENDER_RADIUS) != RenderUpdateFlags::NONE)
     {
         particleRadius = info.pRadius;
     }
 
-    if (updateInfo.propertyUpdated & PARTICLE_RENDER_COLOUR)
+    if ((flags & RenderUpdateFlags::PARTICLE_RENDER_COLOUR) != RenderUpdateFlags::NONE)
     {
         particleColour = info.pColour;
     }
 
-    if (updateInfo.propertyUpdated & EDGE_RENDER_THICKNESS)
+    if ((flags & RenderUpdateFlags::EDGE_RENDER_THICKNESS) != RenderUpdateFlags::NONE)
     {
         edgeThickness = info.edgeThickness;
     }
 
-    if (updateInfo.propertyUpdated & EDGE_RENDER_COLOUR)
+    if ((flags & RenderUpdateFlags::EDGE_RENDER_COLOUR) != RenderUpdateFlags::NONE)
     {
         edgeColour = info.edgeColour;
     }
 
-    if (updateInfo.propertyUpdated & SHOULD_REBUILD_VERTICES)
+    if ((flags & RenderUpdateFlags::SHOULD_REBUILD_VERTICES) != RenderUpdateFlags::NONE)
     {
         rebuildVertexArray();
     }

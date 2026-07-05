@@ -10,11 +10,11 @@
 
 struct RendererSetupInformation
 {
-    double pRadius = DEFAULT_PARTICLE_RENDER_RADIUS;
+    float pRadius = DEFAULT_PARTICLE_RENDER_RADIUS;
     sf::Color pColour = sf::Color::Blue;
-    double edgeThickness = DEFAULT_EDGE_RENDER_THICKNESS;
+    float edgeThickness = DEFAULT_EDGE_RENDER_THICKNESS;
     sf::Color edgeColour = sf::Color::Red;
-    double renderScale = DEFAULT_SCREEN_SCALE;
+    float renderScale = DEFAULT_SCREEN_SCALE;
     Vec2D renderOrigin;
     std::vector<Vec2D>& nodePositions;
 };
@@ -22,18 +22,18 @@ struct RendererSetupInformation
 
 struct RendererUpdateData
 {
-    renderUpdateFlags propertyUpdated;
+    RenderUpdateFlags propertyUpdated;
     RendererSetupInformation& info;
 };
 
 class Renderer
 {
-    double particleRadius;
-    double edgeThickness;
+    float particleRadius;
+    float edgeThickness;
     sf::Color particleColour = sf::Color::Blue;
     sf::Color edgeColour = sf::Color::Red;
     Vec2D renderSpacePhysicsOrigin;
-    double renderScaleFromPhysics;
+    float renderScaleFromPhysics;
     std::vector<Vec2D> particlePositions;
     sf::VertexArray particleVertices;
     unsigned int numParticles;
