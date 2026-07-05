@@ -10,13 +10,13 @@
 
 struct RendererSetupInformation
 {
-    const double pRadius = DEFAULT_PARTICLE_RENDER_RADIUS;
-    const sf::Color pColour = sf::Color::Blue;
-    const double edgeThickness = DEFAULT_EDGE_RENDER_THICKNESS;
-    const sf::Color edgeColour = sf::Color::Red;
-    const double renderScale;
-    const Vec2D renderOrigin;
-    const std::vector<Vec2D> nodePositions;
+    double pRadius = DEFAULT_PARTICLE_RENDER_RADIUS;
+    sf::Color pColour = sf::Color::Blue;
+    double edgeThickness = DEFAULT_EDGE_RENDER_THICKNESS;
+    sf::Color edgeColour = sf::Color::Red;
+    double renderScale = DEFAULT_SCREEN_SCALE;
+    Vec2D renderOrigin;
+    std::vector<Vec2D> nodePositions;
 };
 enum updatedRenderProperty
 {
@@ -57,5 +57,5 @@ class Renderer
     Vec2D mapPhysicsToSpaceCoords(const Vec2D& physicsIn) const;
     Vec2D mapPhysicsToSpaceCoords(const double& physicsInX, const double& physicsInY) const;
     Vec2D mapPhysicsToSpaceCoords(const float& physicsInX, const float& physicsInY) const;
-
+    void draw(sf::RenderWindow& window) const;
 };

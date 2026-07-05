@@ -28,6 +28,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 
 # find_package(glm REQUIRED)
 # find_package(assimp REQUIRED)
+find_package(SFML 3 COMPONENTS Graphics REQUIRED)
 
 # target_link_libraries(${PROJECT_NAME} PRIVATE
 #     OpenGL::GL
@@ -35,3 +36,12 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 #     glm::glm
 #     assimp::assimp
 # )
+target_link_libraries(${PROJECT_NAME} PRIVATE
+        SFML::Graphics
+        SFML::Window
+        SFML::System
+)
+
+find_package(OpenGL REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL::GL)
+

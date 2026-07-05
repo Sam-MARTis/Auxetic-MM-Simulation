@@ -1,0 +1,3 @@
+/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/build/CMakeFiles/runThis.dir
+/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/build/CMakeFiles/edit_cache.dir
+/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/build/CMakeFiles/rebuild_cache.dir

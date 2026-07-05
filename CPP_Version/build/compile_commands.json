@@ -1,0 +1,32 @@
+[
+{
+  "directory": "/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/build",
+  "command": "/usr/bin/c++ -DPARTICLE_TEXTURE_PATH=\\\"/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/resources/textures/circle.png\\\" -I/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include -std=gnu++17 -o CMakeFiles/runThis.dir/src/loader.cpp.o -c /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/loader.cpp",
+  "file": "/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/loader.cpp",
+  "output": "CMakeFiles/runThis.dir/src/loader.cpp.o"
+},
+{
+  "directory": "/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/build",
+  "command": "/usr/bin/c++ -DPARTICLE_TEXTURE_PATH=\\\"/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/resources/textures/circle.png\\\" -I/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include -std=gnu++17 -o CMakeFiles/runThis.dir/src/main.cpp.o -c /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/main.cpp",
+  "file": "/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/main.cpp",
+  "output": "CMakeFiles/runThis.dir/src/main.cpp.o"
+},
+{
+  "directory": "/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/build",
+  "command": "/usr/bin/c++ -DPARTICLE_TEXTURE_PATH=\\\"/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/resources/textures/circle.png\\\" -I/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include -std=gnu++17 -o CMakeFiles/runThis.dir/src/mesh.cpp.o -c /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/mesh.cpp",
+  "file": "/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/mesh.cpp",
+  "output": "CMakeFiles/runThis.dir/src/mesh.cpp.o"
+},
+{
+  "directory": "/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/build",
+  "command": "/usr/bin/c++ -DPARTICLE_TEXTURE_PATH=\\\"/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/resources/textures/circle.png\\\" -I/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include -std=gnu++17 -o CMakeFiles/runThis.dir/src/renderer.cpp.o -c /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/renderer.cpp",
+  "file": "/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/renderer.cpp",
+  "output": "CMakeFiles/runThis.dir/src/renderer.cpp.o"
+},
+{
+  "directory": "/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/build",
+  "command": "/usr/bin/c++ -DPARTICLE_TEXTURE_PATH=\\\"/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/resources/textures/circle.png\\\" -I/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include -std=gnu++17 -o CMakeFiles/runThis.dir/src/solid.cpp.o -c /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/solid.cpp",
+  "file": "/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/solid.cpp",
+  "output": "CMakeFiles/runThis.dir/src/solid.cpp.o"
+}
+]

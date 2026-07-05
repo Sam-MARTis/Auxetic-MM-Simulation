@@ -4,7 +4,7 @@
 
 void Renderer::rebuildVertexArray()
 {
-    const float r = static_cast<float>(particleRadius);
+    const float r = renderScaleFromPhysics*static_cast<float>(particleRadius);
     for (unsigned int i = 0; i < numParticles; i++)
     {
         const Vec2D screenPos = mapPhysicsToSpaceCoords(particlePositions[i]);
@@ -93,3 +93,7 @@ Vec2D Renderer::mapPhysicsToSpaceCoords(const float& physicsInX, const float& ph
     return  {renderSpacePhysicsOrigin.x + renderScaleFromPhysics*physicsInX, renderSpacePhysicsOrigin.y - renderScaleFromPhysics* physicsInY};
 }
 
+void Renderer::draw(sf::RenderWindow& window) const
+{
+    window.draw(particleVertices, renderState);
+}

@@ -1,9 +1,11 @@
 #pragma once
 
+#include <cmath>
 
-
-
-
+inline double randValueMine(const double min, const double max)
+{
+    return min + (max-min)*(1.0*rand()/(1.0*RAND_MAX));
+}
 
 struct Vec2D
 {
@@ -34,7 +36,7 @@ struct Vec2D
     }
     [[nodiscard]] double norm() const
     {
-        return std::sqrt(x*x + y*y);
+        return sqrt(x*x + y*y);
     }
     [[nodiscard]] Vec2D normalized() const
     {
@@ -54,5 +56,3 @@ inline double crossVec2D(const Vec2D& p1, const Vec2D& p2)
 {
     return p1.x*p2.y - p1.y*p2.x;
 }
-
-z
