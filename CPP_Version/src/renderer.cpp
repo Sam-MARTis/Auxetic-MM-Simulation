@@ -22,6 +22,7 @@ void Renderer::rebuildVertexArray()
     }
 }
 
+
 Renderer::Renderer(const RendererSetupInformation& setupInfo)
 {
     particleRadius = setupInfo.pRadius;
@@ -33,7 +34,7 @@ Renderer::Renderer(const RendererSetupInformation& setupInfo)
     renderSpacePhysicsOrigin = setupInfo.renderOrigin;
     numParticles = setupInfo.nodePositions.size();
     particleVertices = sf::VertexArray(sf::PrimitiveType::Triangles, 6*numParticles);
-    sf::Vector2u texSize = particleTexture.getSize();
+    const sf::Vector2u texSize = particleTexture.getSize();
     tw = static_cast<float>(texSize.x);
     th = static_cast<float>(texSize.y);
 
@@ -45,8 +46,9 @@ Renderer::Renderer(const RendererSetupInformation& setupInfo)
     rebuildVertexArray();
 }
 
-void Renderer::updateRenderInformation(const RendererUpdateInformatiom& updateInfo, bool shouldRebuildVertices)
+void Renderer::updateRenderInformation(const RendererUpdateInformation& updateInfo, bool shouldRebuildVertices)
 {
+    
     const RendererSetupInformation& info = updateInfo.info;
     switch (updateInfo.propertyUpdated)
     {
@@ -76,3 +78,18 @@ void Renderer::updateRenderInformation(const RendererUpdateInformatiom& updateIn
     }
     if (shouldRebuildVertices) rebuildVertexArray();
 }
+
+Vec2D Renderer::mapPhysicsToSpaceCoords(const Vec2D& physicsIn) const
+{
+    return {renderSpacePhysicsOrigin.x + renderScaleFromPhysics*physicsIn.x, renderSpacePhysicsOrigin.y - renderScaleFromPhysics* physicsIn.y};
+}
+
+Vec2D Renderer::mapPhysicsToSpaceCoords(const double& physicsInX, const double& physicsInY) const
+{
+    return  {renderSpacePhysicsOrigin.x + renderScaleFromPhysics*physicsInX, renderSpacePhysicsOrigin.y - renderScaleFromPhysics* physicsInY};
+}
+Vec2D Renderer::mapPhysicsToSpaceCoords(const float& physicsInX, const float& physicsInY) const
+{
+    return  {renderSpacePhysicsOrigin.x + renderScaleFromPhysics*physicsInX, renderSpacePhysicsOrigin.y - renderScaleFromPhysics* physicsInY};
+}
+
