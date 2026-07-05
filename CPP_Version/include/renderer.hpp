@@ -16,23 +16,14 @@ struct RendererSetupInformation
     sf::Color edgeColour = sf::Color::Red;
     double renderScale = DEFAULT_SCREEN_SCALE;
     Vec2D renderOrigin;
-    std::vector<Vec2D> nodePositions;
-};
-enum updatedRenderProperty
-{
-    PARTICLE_RENDER_RADIUS,
-    PARTICLE_RENDER_COLOUR,
-    EDGE_RENDER_THICKNESS,
-    EDGE_RENDER_COLOUR,
-    RENDER_SCALE,
-    RENDER_ORIGIN,
-    NODE_POSITIONS,
+    std::vector<Vec2D>& nodePositions;
 };
 
-struct RendererUpdateInformation
+
+struct RendererUpdateData
 {
-    updatedRenderProperty propertyUpdated;
-    RendererSetupInformation info;
+    renderUpdateFlags propertyUpdated;
+    RendererSetupInformation& info;
 };
 
 class Renderer
@@ -53,7 +44,7 @@ class Renderer
     void rebuildVertexArray();
     public:
     Renderer(const RendererSetupInformation& setupInfo);
-    void updateRenderInformation(const RendererUpdateInformation& updateInfo, bool shouldRebuildVertices = true);
+    void updateRenderInformation(const RendererUpdateData& updateInfo);
     Vec2D mapPhysicsToSpaceCoords(const Vec2D& physicsIn) const;
     Vec2D mapPhysicsToSpaceCoords(const double& physicsInX, const double& physicsInY) const;
     Vec2D mapPhysicsToSpaceCoords(const float& physicsInX, const float& physicsInY) const;

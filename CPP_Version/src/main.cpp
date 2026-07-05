@@ -3,6 +3,7 @@
 #include "renderer.hpp"
 #include "utils.hpp"
 
+#include "imgui-SFML.h"
 
 int main()
 {
@@ -17,9 +18,8 @@ int main()
         particle.y = randValueMine(-1.0, 1.0);
         particlePositions.push_back(particle);
     }
-    RendererSetupInformation setupInfo;
+    RendererSetupInformation setupInfo{.nodePositions = particlePositions};
     setupInfo.renderOrigin = Vec2D(DEFAULT_SCREEN_WIDTH/2.0, DEFAULT_SCREEN_HEIGHT/2.0);
-    setupInfo.nodePositions = particlePositions;
     Renderer testRenderer { setupInfo };
 
 

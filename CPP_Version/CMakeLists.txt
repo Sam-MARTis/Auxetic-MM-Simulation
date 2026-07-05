@@ -5,6 +5,10 @@ project(runThis)
 set(CMAKE_CXX_STANDARD 17)
 
 file(GLOB_RECURSE SOURCES "src/*.cpp")
+set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/external/imgui)
+set(IMGUI_SFML_DIR ${CMAKE_SOURCE_DIR}/external/imgui-sfml)
+
+file(GLOB IMGUI_SOURCES ${IMGUI_DIR}/*.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCES}
         include/constants.hpp
@@ -14,6 +18,10 @@ add_executable(${PROJECT_NAME} ${SOURCES}
         include/loader.hpp
         include/utils.hpp
         src/loader.cpp
+        ${IMGUI_SOURCES}
+        ${IMGUI_SFML_DIR}/imgui-SFML.cpp
+        include/menu.hpp
+        src/menu.cpp
 )
 
 # find_package(OpenGL REQUIRED)
@@ -24,6 +32,8 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 )
 target_include_directories(${PROJECT_NAME} PRIVATE
         include/
+        ${IMGUI_DIR}
+        ${IMGUI_SFML_DIR}
 )
 
 # find_package(glm REQUIRED)

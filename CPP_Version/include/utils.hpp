@@ -1,6 +1,26 @@
 #pragma once
 
 #include <cmath>
+enum renderUpdateFlags
+{
+    NONE = 0,
+    PARTICLE_RENDER_RADIUS = 1<<0,
+    PARTICLE_RENDER_COLOUR = 1<<1,
+    EDGE_RENDER_THICKNESS = 1<<2,
+    EDGE_RENDER_COLOUR = 1<<3,
+    RENDER_SCALE = 1<<4,
+    RENDER_ORIGIN = 1<<5,
+    NODE_POSITIONS = 1<<6,
+    SHOULD_REBUILD_VERTICES = 1<<7,
+};
+enum physicsUpdateFlags
+{
+    TIME_STEP = 1<<15,
+    RELAXATION_FACTOR = 1<<16,
+    SHOULD_RENDER = 1<<17,
+    SHOULD_TIME_STEP = 1<<18,
+};
+
 
 inline double randValueMine(const double min, const double max)
 {

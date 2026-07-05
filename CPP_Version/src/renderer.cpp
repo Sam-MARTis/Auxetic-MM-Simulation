@@ -1,6 +1,6 @@
 
 #include "renderer.hpp"
-
+#include "utils.hpp"
 
 void Renderer::rebuildVertexArray()
 {
@@ -46,37 +46,54 @@ Renderer::Renderer(const RendererSetupInformation& setupInfo)
     rebuildVertexArray();
 }
 
-void Renderer::updateRenderInformation(const RendererUpdateInformation& updateInfo, bool shouldRebuildVertices)
+void Renderer::updateRenderInformation(const RendererUpdateData& updateInfo)
 {
-    
     const RendererSetupInformation& info = updateInfo.info;
-    switch (updateInfo.propertyUpdated)
-    {
-        case NODE_POSITIONS:
-        particlePositions.clear();
-        particlePositions.insert(particlePositions.end(), info.nodePositions.begin(), info.nodePositions.end());
-        break;
-        case RENDER_SCALE:
-        renderScaleFromPhysics = info.renderScale;
-        break;
-        case RENDER_ORIGIN:
-        renderSpacePhysicsOrigin = info.renderOrigin;
-        break;
-        case PARTICLE_RENDER_RADIUS:
-        particleRadius = info.pRadius;
-        break;
-        case PARTICLE_RENDER_COLOUR:
-        particleColour = info.pColour;
-        break;
-        case  EDGE_RENDER_THICKNESS:
-        edgeThickness = info.edgeThickness;
-        break;
-        case EDGE_RENDER_COLOUR:
-        edgeColour = info.edgeColour;
-        break;
 
+    if (updateInfo.propertyUpdated & NODE_POSITIONS)
+    {
+        particlePositions.clear();
+        particlePositions.insert(
+            particlePositions.end(),
+            info.nodePositions.begin(),
+            info.nodePositions.end()
+        );
     }
-    if (shouldRebuildVertices) rebuildVertexArray();
+
+    if (updateInfo.propertyUpdated & RENDER_SCALE)
+    {
+        renderScaleFromPhysics = info.renderScale;
+    }
+
+    if (updateInfo.propertyUpdated & RENDER_ORIGIN)
+    {
+        renderSpacePhysicsOrigin = info.renderOrigin;
+    }
+
+    if (updateInfo.propertyUpdated & PARTICLE_RENDER_RADIUS)
+    {
+        particleRadius = info.pRadius;
+    }
+
+    if (updateInfo.propertyUpdated & PARTICLE_RENDER_COLOUR)
+    {
+        particleColour = info.pColour;
+    }
+
+    if (updateInfo.propertyUpdated & EDGE_RENDER_THICKNESS)
+    {
+        edgeThickness = info.edgeThickness;
+    }
+
+    if (updateInfo.propertyUpdated & EDGE_RENDER_COLOUR)
+    {
+        edgeColour = info.edgeColour;
+    }
+
+    if (updateInfo.propertyUpdated & SHOULD_REBUILD_VERTICES)
+    {
+        rebuildVertexArray();
+    }
 }
 
 Vec2D Renderer::mapPhysicsToSpaceCoords(const Vec2D& physicsIn) const
