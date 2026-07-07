@@ -22,7 +22,7 @@ void Mesh::insertNodesAtPositions(const std::vector<Vec2D> nodePos)
 void Mesh::initializeBoundaryNodes(const BoundaryMeshBuildInformation& buildInfo)
 {
     const unsigned int numBoundaryPoints = buildInfo.boundary.numBoundaryPoints;
-    const std::vector<Vec2D>& boundaryPoints = buildInfo.boundary.boundaryPoints;
+    const std::vector<Vec2D>& boundaryPoints = buildInfo.boundary.boundaryPointsPos;
     const bool shouldIncludeCorner = buildInfo.pointAtCorners;
     std::vector<Vec2D> pointsToInsert;
     for (unsigned int i = 0; i < numBoundaryPoints; i++)

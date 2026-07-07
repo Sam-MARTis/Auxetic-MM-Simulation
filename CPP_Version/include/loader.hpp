@@ -17,7 +17,7 @@ class Boundary
 public:
     Boundary(const std::vector<Vec2D>& points);
     unsigned int numBoundaryPoints;
-    std::vector<Vec2D> boundaryPoints;
+    std::vector<Vec2D> boundaryPointsPos;
     bool isInsideBoundary(const Vec2D& testPoint) const;
 };
 
@@ -26,6 +26,8 @@ struct BoundaryMeshBuildInformation
     double targetDensity;
     Boundary boundary;
     bool pointAtCorners = false;
-    BoundaryMeshBuildInformation();
+    // BoundaryMeshBuildInformation();
 
 };
+
+    

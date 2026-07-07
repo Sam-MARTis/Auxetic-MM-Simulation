@@ -47,14 +47,14 @@ class Mesh{
             std::vector<Vec2D> nodesPos; // N
             Constraints constraints;
         };
-        void insertNodesAtPositions(const std::vector<Vec2D> nodePos);
-        void initializeBoundaryNodes(const BoundaryMeshBuildInformation& buildInfo);
 
     public:
-        Nodes nodes;    
+        Nodes nodes;
         Edges edges;
+        void insertNodesAtPositions(const std::vector<Vec2D> nodePos);
+        void initializeBoundaryNodes(const BoundaryMeshBuildInformation& buildInfo);
         double constraintParameter = 0.0f;
         void enforceConstraints(double t);
         void cacheEdgesExtension();
-        Mesh();
+        // Mesh();
 };

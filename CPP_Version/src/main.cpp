@@ -6,22 +6,44 @@
 #include "utils.hpp"
 #include "renderer.hpp"
 #include "menu.hpp"
-
+#include "mesh.hpp"
+#include "loader.hpp"
 int main()
 {
     sf::Clock clock;
     std::cout<<"Hello World!"<<std::endl;
-    unsigned int numParticles = 100;
-    std::vector<Vec2D> particlePositions;
-    particlePositions.reserve(numParticles);
-    for (int i = 0; i < numParticles; i++)
-    {
-        Vec2D particle;
-        particle.x = randValueMine(-1.0, 1.0);
-        particle.y = randValueMine(-1.0, 1.0);
-        particlePositions.push_back(particle);
-    }
-    RendererSetupInformation setupInfo{.nodePositions = particlePositions};
+    std::vector<Vec2D> boundaryNodes;
+
+    for (double angle = 0; angle < M_PI; angle += 0.1)
+        boundaryNodes.push_back(Vec2D(cos(angle), sin(angle)));
+    // boundaryNodes.emplace_back(-1.0, -1.0);
+    // boundaryNodes.emplace_back(-1.0, 1.0);
+    // boundaryNodes.emplace_back(1.0, 1.0);
+    // boundaryNodes.emplace_back(0.0, 0.0);
+    // boundaryNodes.emplace_back(1.0, -1.0);
+    Mesh mesh;
+
+    BoundaryMeshBuildInformation boundaryInfo{
+    .targetDensity = 10.0,
+        .boundary = boundaryNodes,
+    };
+
+
+    mesh.initializeBoundaryNodes(boundaryInfo);
+
+
+    // unsigned int numParticles = 100;
+    // std::vector<Vec2D> particlePositions;
+    // particlePositions.reserve(numParticles);
+    // for (int i = 0; i < numParticles; i++)
+    // {
+    //     Vec2D particle;
+    //     particle.x = randValueMine(-1.0, 1.0);
+    //     particle.y = randValueMine(-1.0, 1.0);
+    //     particlePositions.push_back(particle);
+    // }
+    // std::cout<<
+    RendererSetupInformation setupInfo{.nodePositions = mesh.nodes.nodesPos};
     setupInfo.renderOrigin = Vec2D(DEFAULT_SCREEN_WIDTH/2.0, DEFAULT_SCREEN_HEIGHT/2.0);
     RendererUpdateData renderUpdateInfo{
         .propertyUpdated = StateUpdateFlags::NONE,

@@ -6,7 +6,7 @@
 Boundary::Boundary(const std::vector<Vec2D>& points)
 {
     // Copy points and set the count used by isInsideBoundary
-    this->boundaryPoints = points;
+    this->boundaryPointsPos = points;
     this->numBoundaryPoints = static_cast<unsigned int>(points.size());
 }
 
@@ -16,8 +16,8 @@ bool Boundary::isInsideBoundary(const Vec2D& testPoint) const
     unsigned int numIntersections = 0;
     for (unsigned int i = 0; i < numBoundaryPoints; i++)
     {
-        const Vec2D& boundaryPoint = boundaryPoints[i];
-        const Vec2D segmentDirection = boundaryPoints[(i+1)%numBoundaryPoints] - boundaryPoints[i];
+        const Vec2D& boundaryPoint = boundaryPointsPos[i];
+        const Vec2D segmentDirection = boundaryPointsPos[(i+1)%numBoundaryPoints] - boundaryPointsPos[i];
         // const double denom = rayDirection.x*segmentDirection.y - rayDirection.y*segmentDirection.x;
         const double denom = crossVec2D(rayDirection, segmentDirection);
         if (std::abs(denom) <= EPSILON) continue;
