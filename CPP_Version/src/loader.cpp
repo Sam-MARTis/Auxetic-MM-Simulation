@@ -30,3 +30,9 @@ bool Boundary::isInsideBoundary(const Vec2D& testPoint) const
     if (numIntersections%2 == 0) return false;
     return true;
 }
+
+InternalEdges::InternalEdges(const std::vector<std::pair<Vec2D, Vec2D>>& points)
+{
+    this->internalEdgesPointsPos = points;
+    this->numInternalEdges = static_cast<unsigned int>(points.size());
+}

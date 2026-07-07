@@ -14,22 +14,28 @@ int main()
     std::cout<<"Hello World!"<<std::endl;
     std::vector<Vec2D> boundaryNodes;
 
-    for (double angle = 0; angle < M_PI; angle += 0.1)
+    for (double angle = 0; angle < 1.5*M_PI; angle += 0.1)
         boundaryNodes.push_back(Vec2D(cos(angle), sin(angle)));
-    // boundaryNodes.emplace_back(-1.0, -1.0);
-    // boundaryNodes.emplace_back(-1.0, 1.0);
-    // boundaryNodes.emplace_back(1.0, 1.0);
-    // boundaryNodes.emplace_back(0.0, 0.0);
-    // boundaryNodes.emplace_back(1.0, -1.0);
+
+    std::vector<std::pair<Vec2D, Vec2D>> internalEdges;
+    internalEdges.push_back(std::make_pair(Vec2D(0, 0), Vec2D(0.5, 0.6)));
+    internalEdges.push_back(std::make_pair(Vec2D(-0.5, 0.5), Vec2D(0.4, 0.7)));
+
+
     Mesh mesh;
 
     BoundaryMeshBuildInformation boundaryInfo{
     .targetDensity = 10.0,
         .boundary = boundaryNodes,
     };
+    InternalEdgesMeshBuildInformation internalEdgeInfo{
+    .targetDensity = 10.0,
+    .internalEdges = internalEdges,
+    };
 
 
     mesh.initializeBoundaryNodes(boundaryInfo);
+    mesh.initializeInternalEdgesNodes(internalEdgeInfo);
 
 
     // unsigned int numParticles = 100;

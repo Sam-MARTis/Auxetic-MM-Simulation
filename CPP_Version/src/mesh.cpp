@@ -57,13 +57,13 @@ void Mesh::initializeBoundaryNodes(const BoundaryMeshBuildInformation& boundaryB
 void Mesh::initializeInternalEdgesNodes(const InternalEdgesMeshBuildInformation internalEdgeBuildInfo)
 {
     const unsigned int numInternalEdges = internalEdgeBuildInfo.internalEdges.numInternalEdges;
-    const std::vector<std::tuple<Vec2D, Vec2D>>& edgePoints = internalEdgeBuildInfo.internalEdges.internalEdgesPointsPos;
+    const std::vector<std::pair<Vec2D, Vec2D>>& edgePoints = internalEdgeBuildInfo.internalEdges.internalEdgesPointsPos;
     const bool shouldIncludeCorner = internalEdgeBuildInfo.pointAtCorners;
     std::vector<Vec2D> pointsToInsert;
     for (unsigned int i = 0; i < numInternalEdges; i++)
     {
         std::vector<Vec2D> pointsToInsertThisEdge;
-        const std::tuple<Vec2D, Vec2D>& edgeCurrent = edgePoints.at(i);
+        const std::pair<Vec2D, Vec2D>& edgeCurrent = edgePoints.at(i);
         const Vec2D corner1 = std::get<0>(edgeCurrent);
         const Vec2D corner2 = std::get<1>(edgeCurrent);
         const Vec2D direction = corner2 - corner1;

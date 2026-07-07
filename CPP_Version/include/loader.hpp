@@ -32,9 +32,9 @@ struct BoundaryMeshBuildInformation
 class InternalEdges
 {
     public:
-    InternalEdges(const std::vector<Vec2D>& points);
+    InternalEdges(const std::vector<std::pair<Vec2D, Vec2D>>& points);
     unsigned int numInternalEdges;
-    std::vector<std::tuple<Vec2D, Vec2D>> internalEdgesPointsPos;
+    std::vector<std::pair<Vec2D, Vec2D>> internalEdgesPointsPos;
 
 };
 
