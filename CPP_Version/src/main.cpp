@@ -61,14 +61,13 @@ int main()
         }
         ImGui::SFML::Update(window, clock.restart());
         renderMenu.processMenu(testRenderer);
-        // if ((menuData.renderInfo.propertyUpdated & StateUpdateFlags::SHOULD_RENDER) != StateUpdateFlags::NONE)
+
         if (renderMenu.menuData.renderInfo.shouldRender)
         {
-            std::cout<<"Render Information Updated"<<std::endl;
             testRenderer.draw(window);
         }
-        // testRenderer.draw(window);
-        std::cout<< ((menuData.renderInfo.propertyUpdated & StateUpdateFlags::SHOULD_RENDER) != StateUpdateFlags::NONE)<<std::endl;
+
+
         ImGui::SFML::Render(window);
         window.display();
     }

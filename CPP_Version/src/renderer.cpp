@@ -116,6 +116,5 @@ Vec2D Renderer::mapPhysicsToSpaceCoords(const float& physicsInX, const float& ph
 
 void Renderer::draw(sf::RenderWindow& window) const
 {
-    std::cout<<"Draw function called"<<std::endl;
     window.draw(particleVertices, renderState);
 }
