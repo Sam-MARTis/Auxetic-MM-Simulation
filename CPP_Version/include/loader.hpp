@@ -55,6 +55,5 @@ public:
     std::vector<std::pair<Vec2D, Vec2D>> internalEdgesNodesPos;
     Loader(const std::string& dxfFilepath);
     void alignPoints();
-
 };
 

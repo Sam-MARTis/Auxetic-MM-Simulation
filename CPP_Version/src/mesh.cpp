@@ -48,7 +48,8 @@ void Mesh::initializeBoundaryNodes(const BoundaryMeshBuildInformation& boundaryB
             pointsToInsertThisEdge.push_back(insertPosition);
         }
         BoundaryEdgeInformation thisBoundaryEdgeInfo;
-        thisBoundaryEdgeInfo.id = i;
+        thisBoundaryEdgeInfo.id = highestBoundaryID;
+        highestBoundaryID++;
         thisBoundaryEdgeInfo.boundsIndices = std::make_pair(indexStart, indexStart+ numNodesToInsert);
         boundaryEdgeInfo.push_back(thisBoundaryEdgeInfo);
         indexStart += numNodesToInsert;
@@ -58,7 +59,8 @@ void Mesh::initializeBoundaryNodes(const BoundaryMeshBuildInformation& boundaryB
 
     }
     insertNodesAtPositions(pointsToInsert);
-
+    boundaries.push_back(boundaryBuildInfo.boundary);
+    boundaryIncludeExclude.push_back(true);
 }
 
 void Mesh::initializeInternalEdgesNodes(const InternalEdgesMeshBuildInformation internalEdgeBuildInfo)

@@ -56,7 +56,11 @@ class Mesh{
     public:
         Nodes nodes;
         Edges edges;
+        unsigned int highestBoundaryID = 0;
         std::vector<BoundaryEdgeInformation> boundaryEdgeInfo;
+        unsigned int numBoundaries = 0;
+        std::vector<Boundary> boundaries;
+        std::vector<bool> boundaryIncludeExclude;
         void insertNodesAtPositions(const std::vector<Vec2D> nodePos);
         void initializeBoundaryNodes(const BoundaryMeshBuildInformation& boundaryBuildInfo);
         void initializeInternalEdgesNodes(const InternalEdgesMeshBuildInformation internalEdgeBuildInfo);

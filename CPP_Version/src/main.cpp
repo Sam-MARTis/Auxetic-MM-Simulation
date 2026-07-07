@@ -36,8 +36,8 @@ int main()
     };
 
 
-    mesh.initializeBoundaryNodes(boundaryInfo);
     mesh.initializeInternalEdgesNodes(internalEdgeInfo);
+    mesh.initializeBoundaryNodes(boundaryInfo);
 
 
     // unsigned int numParticles = 100;
@@ -51,6 +51,8 @@ int main()
     //     particlePositions.push_back(particle);
     // }
     // std::cout<<
+
+
     RendererSetupInformation setupInfo{.nodePositions = mesh.nodes.nodesPos, .boundaryEdgeInfo = mesh.boundaryEdgeInfo};
     setupInfo.renderOrigin = Vec2D(DEFAULT_SCREEN_WIDTH/2.0, DEFAULT_SCREEN_HEIGHT/2.0);
     RendererUpdateData renderUpdateInfo{
@@ -69,11 +71,12 @@ int main()
     };
 
     Renderer testRenderer { setupInfo };
-
     sf::ContextSettings contextSettings;
     contextSettings.antiAliasingLevel = 16;
     sf::RenderWindow window = sf::RenderWindow(sf::VideoMode({static_cast<unsigned int>(round(DEFAULT_SCREEN_WIDTH)), static_cast<unsigned int>(round(DEFAULT_SCREEN_HEIGHT))}),"Testing");
-    ImGui::SFML::Init(window);
+    bool imguiInitSuccess = ImGui::SFML::Init(window);
+    if (!imguiInitSuccess)
+        std::cerr << "SFML Init failed." << std::endl;
     window.setFramerateLimit(60);
 
     Menu renderMenu(menuData);
