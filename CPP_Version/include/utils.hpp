@@ -23,9 +23,19 @@ struct Vec2D
         x += other.x;
         y += other.y;
     }
+    void operator-=(const Vec2D& other)
+    {
+        x -= other.x;
+        y -= other.y;
+    }
     Vec2D operator*(const double multiplier) const
     {
         return {x*multiplier, y*multiplier};
+    }
+    void operator*=(const double multiplier)
+    {
+        x *= multiplier;
+        y *= multiplier;
     }
     Vec2D operator/(const double divisor) const
     {

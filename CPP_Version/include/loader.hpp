@@ -4,7 +4,7 @@
 
 #include <tuple>
 #include "utils.hpp"
-
+#include <string>
 
 // struct Segment
 // {
@@ -19,12 +19,12 @@ public:
     Boundary(const std::vector<Vec2D>& points);
     unsigned int numBoundaryPoints;
     std::vector<Vec2D> boundaryPointsPos;
-    bool isInsideBoundary(const Vec2D& testPoint) const;
+    [[nodiscard]] bool isInsideBoundary(const Vec2D& testPoint) const;
 };
 
 struct BoundaryMeshBuildInformation
 {
-    double targetDensity;
+    double targetDensity=10.0;
     Boundary boundary;
     bool pointAtCorners = false;
 };
@@ -40,7 +40,21 @@ class InternalEdges
 
 struct InternalEdgesMeshBuildInformation
 {
-    double targetDensity;
+    double targetDensity=10.0;
     InternalEdges internalEdges;
     bool pointAtCorners = false;
 };
+
+class Loader
+{
+private:
+    unsigned int numBoundaryPoints;
+    unsigned int numCutPairs;
+public:
+    std::vector<Vec2D> boundaryNodesPos;
+    std::vector<std::pair<Vec2D, Vec2D>> internalEdgesNodesPos;
+    Loader(const std::string& dxfFilepath);
+    void alignPoints();
+
+};
+

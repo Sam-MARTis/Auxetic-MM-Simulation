@@ -29,6 +29,8 @@ add_executable(${PROJECT_NAME} ${SOURCES}
 # find_package(glfw3 3.3 REQUIRED)
 target_compile_definitions(${PROJECT_NAME} PRIVATE
         PARTICLE_TEXTURE_PATH="${CMAKE_SOURCE_DIR}/resources/textures/circle.png"
+        DXFS_DIRECTORY_PATH="${CMAKE_SOURCE_DIR}/resources/DXFs"
+        SUBROUTINES_PATH="${CMAKE_SOURCE_DIR}/src/subroutines"
 
 )
 target_include_directories(${PROJECT_NAME} PRIVATE

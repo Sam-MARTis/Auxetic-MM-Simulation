@@ -4,6 +4,7 @@
 #include "utils.hpp"
 #include "constants.hpp"
 #include "flag.hpp"
+#include "mesh.hpp"
 
 #ifndef PARTICLE_TEXTURE_PATH
 #define PARTICLE_TEXTURE_PATH "resources/textures/circle.png"
@@ -18,6 +19,7 @@ struct RendererSetupInformation
     float renderScale = DEFAULT_SCREEN_SCALE;
     Vec2D renderOrigin;
     std::vector<Vec2D>& nodePositions;
+    std::vector<BoundaryEdgeInformation>& boundaryEdgeInfo;
 };
 
 
@@ -35,6 +37,7 @@ class Renderer
     sf::Color particleColour = sf::Color::Blue;
     sf::Color edgeColour = sf::Color::Red;
     Vec2D renderSpacePhysicsOrigin;
+    std::vector<BoundaryEdgeInformation>& boundaryEdgeInfos;
     float renderScaleFromPhysics;
     std::vector<Vec2D> particlePositions;
     sf::VertexArray particleVertices;

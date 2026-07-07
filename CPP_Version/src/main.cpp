@@ -12,25 +12,27 @@ int main()
 {
     sf::Clock clock;
     std::cout<<"Hello World!"<<std::endl;
-    std::vector<Vec2D> boundaryNodes;
-
-    for (double angle = 0; angle < 1.5*M_PI; angle += 0.1)
-        boundaryNodes.push_back(Vec2D(cos(angle), sin(angle)));
-
-    std::vector<std::pair<Vec2D, Vec2D>> internalEdges;
-    internalEdges.push_back(std::make_pair(Vec2D(0, 0), Vec2D(0.5, 0.6)));
-    internalEdges.push_back(std::make_pair(Vec2D(-0.5, 0.5), Vec2D(0.4, 0.7)));
-
-
+    // std::vector<Vec2D> boundaryNodes;
+    //
+    // for (double angle = 0; angle < 1.5*M_PI; angle += 0.1)
+    //     boundaryNodes.push_back(Vec2D(cos(angle), sin(angle)));
+    //
+    // std::vector<std::pair<Vec2D, Vec2D>> internalEdges;
+    // internalEdges.push_back(std::make_pair(Vec2D(0, 0), Vec2D(0.5, 0.6)));
+    // internalEdges.push_back(std::make_pair(Vec2D(-0.5, 0.5), Vec2D(0.4, 0.7)));
+    //
+    std::string dxfFilepath = std::string(DXFS_DIRECTORY_PATH)+ "/pattern_1x1_edge-gap_0.04.dxf";
+    Loader dxfLoader{dxfFilepath};
+    dxfLoader.alignPoints();
     Mesh mesh;
 
     BoundaryMeshBuildInformation boundaryInfo{
     .targetDensity = 10.0,
-        .boundary = boundaryNodes,
+        .boundary = dxfLoader.boundaryNodesPos,
     };
     InternalEdgesMeshBuildInformation internalEdgeInfo{
-    .targetDensity = 10.0,
-    .internalEdges = internalEdges,
+    .targetDensity = 30.0,
+    .internalEdges = dxfLoader.internalEdgesNodesPos,
     };
 
 
@@ -49,7 +51,7 @@ int main()
     //     particlePositions.push_back(particle);
     // }
     // std::cout<<
-    RendererSetupInformation setupInfo{.nodePositions = mesh.nodes.nodesPos};
+    RendererSetupInformation setupInfo{.nodePositions = mesh.nodes.nodesPos, .boundaryEdgeInfo = mesh.boundaryEdgeInfo};
     setupInfo.renderOrigin = Vec2D(DEFAULT_SCREEN_WIDTH/2.0, DEFAULT_SCREEN_HEIGHT/2.0);
     RendererUpdateData renderUpdateInfo{
         .propertyUpdated = StateUpdateFlags::NONE,

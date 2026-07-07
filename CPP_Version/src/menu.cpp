@@ -13,7 +13,7 @@ void Menu::processMenu(Renderer& renderer)
 {
     StateUpdateFlags renderFlags = menuData.renderInfo.propertyUpdated;
     RendererSetupInformation& info = menuData.renderInfo.info;
-    ImGui::SliderFloat("Particle Radius", &info.pRadius, 1e-3, 5e-1);
+    ImGui::SliderFloat("Particle Radius", &info.pRadius, 1e-3, 2e-2);
     if (ImGui::IsItemDeactivatedAfterEdit())
         renderFlags |= StateUpdateFlags::PARTICLE_RENDER_RADIUS;
 

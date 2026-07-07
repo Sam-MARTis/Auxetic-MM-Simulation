@@ -7,6 +7,11 @@
 #include "utils.hpp"
 #include "loader.hpp"
 
+struct BoundaryEdgeInformation
+{
+    unsigned int id;
+    std::pair<unsigned int, unsigned int> boundsIndices;
+};
 
 class Mesh{
     private:
@@ -51,6 +56,7 @@ class Mesh{
     public:
         Nodes nodes;
         Edges edges;
+        std::vector<BoundaryEdgeInformation> boundaryEdgeInfo;
         void insertNodesAtPositions(const std::vector<Vec2D> nodePos);
         void initializeBoundaryNodes(const BoundaryMeshBuildInformation& boundaryBuildInfo);
         void initializeInternalEdgesNodes(const InternalEdgesMeshBuildInformation internalEdgeBuildInfo);

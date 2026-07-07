@@ -7,6 +7,7 @@
 
 void Renderer::rebuildVertexArray()
 {
+
     const float r = renderScaleFromPhysics*static_cast<float>(particleRadius);
     for (unsigned int i = 0; i < numParticles; i++)
     {
@@ -23,10 +24,13 @@ void Renderer::rebuildVertexArray()
         particleVertices[6*i + 4] = {{x + r, y + r}, particleColour, {tw, th}};
         particleVertices[6*i + 5] = {{x + r, y - r}, particleColour, {tw, 0.f}};
     }
+    
+
 }
 
 
 Renderer::Renderer(const RendererSetupInformation& setupInfo)
+: boundaryEdgeInfos(setupInfo.boundaryEdgeInfo)
 {
     particleRadius = setupInfo.pRadius;
     edgeThickness = setupInfo.edgeThickness;
@@ -35,6 +39,7 @@ Renderer::Renderer(const RendererSetupInformation& setupInfo)
     edgeColour = setupInfo.edgeColour;
     renderScaleFromPhysics = setupInfo.renderScale;
     renderSpacePhysicsOrigin = setupInfo.renderOrigin;
+
     numParticles = setupInfo.nodePositions.size();
     particleVertices = sf::VertexArray(sf::PrimitiveType::Triangles, 6*numParticles);
     const sf::Vector2u texSize = particleTexture.getSize();
