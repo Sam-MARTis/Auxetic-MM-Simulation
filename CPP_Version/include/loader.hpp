@@ -2,6 +2,7 @@
 #include <vector>
 #include <cmath>
 
+#include <tuple>
 #include "utils.hpp"
 
 
@@ -26,8 +27,20 @@ struct BoundaryMeshBuildInformation
     double targetDensity;
     Boundary boundary;
     bool pointAtCorners = false;
-    // BoundaryMeshBuildInformation();
+};
+
+class InternalEdges
+{
+    public:
+    InternalEdges(const std::vector<Vec2D>& points);
+    unsigned int numInternalEdges;
+    std::vector<std::tuple<Vec2D, Vec2D>> internalEdgesPointsPos;
 
 };
 
-    
+struct InternalEdgesMeshBuildInformation
+{
+    double targetDensity;
+    InternalEdges internalEdges;
+    bool pointAtCorners = false;
+};

@@ -52,9 +52,11 @@ class Mesh{
         Nodes nodes;
         Edges edges;
         void insertNodesAtPositions(const std::vector<Vec2D> nodePos);
-        void initializeBoundaryNodes(const BoundaryMeshBuildInformation& buildInfo);
+        void initializeBoundaryNodes(const BoundaryMeshBuildInformation& boundaryBuildInfo);
+        void initializeInternalEdgesNodes(const InternalEdgesMeshBuildInformation internalEdgeBuildInfo);
         double constraintParameter = 0.0f;
         void enforceConstraints(double t);
         void cacheEdgesExtension();
         // Mesh();
 };
+
