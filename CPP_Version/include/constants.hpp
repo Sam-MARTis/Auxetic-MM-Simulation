@@ -14,3 +14,4 @@ constexpr unsigned int DEFAULT_NUMBER_INSERT_TRIES = 100;
 constexpr unsigned int DEFAULT_NUMBER_INTERNAL_NODES = 1000;
 constexpr unsigned int DEFAULT_NUMBER_AREA_SAMPLES = 10000;
 constexpr unsigned int DEFAULT_NUMBER_NODES_PER_TREE_LEAF = 10;
+constexpr double DEFAULT_EDGE_STIFFNESS = 1.0;

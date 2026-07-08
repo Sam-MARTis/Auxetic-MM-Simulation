@@ -217,6 +217,25 @@ void Mesh::createEdges(const unsigned int K, const double distanceTheshold)
     KDTree tree(2, cloud, nanoflann::KDTreeSingleIndexAdaptorParams(DEFAULT_NUMBER_NODES_PER_TREE_LEAF));
     std::vector<size_t> indices(K);
     std::vector<double> distances(K);
-
-
+    const double distanceThresholdSq = distanceTheshold*distanceTheshold;
+    std::unordered_set<EdgeKey, EdgeHash> edgeSet;
+    for (unsigned int node1Idx=0; node1Idx<nodes.numNodes; node1Idx++)
+    {
+        const Vec2D& queryPoint = nodes.nodesPos.at(node1Idx);
+        findNearestNeighbours(tree, queryPoint, K, indices, distances);
+        for (unsigned int edgeIdx = 0; edgeIdx<K; edgeIdx++)
+        {
+            const unsigned int node2Idx = indices.at(edgeIdx);
+            const double distance = distances.at(node2Idx);
+            if (distance * distance > distanceThresholdSq) continue;
+            EdgeKey edge(node1Idx, node2Idx);
+            if (!(edgeSet.insert(edge).second)) continue;
+            edges.edgesConnection.push_back({edge.a, edge.b});
+            edges.edgesProperty.push_back({
+                .natural_length = (nodes.nodesPos.at(edge.a)  - nodes.nodesPos.at(edge.b)).norm(),
+                .stiffness = DEFAULT_EDGE_STIFFNESS,
+                .cached_extension = 0.0
+            });
+        }
+    }
 }

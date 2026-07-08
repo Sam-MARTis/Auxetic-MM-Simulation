@@ -68,6 +68,28 @@ class Mesh{
             std::vector<Vec2D> nodesPos; // N
             Constraints constraints;
         };
+
+        struct EdgeKey
+        {
+            unsigned int a;
+            unsigned int b;
+
+            EdgeKey(unsigned int i, unsigned int j)
+            {
+                a = std::min(i, j);
+                b = std::max(i, j);
+            }
+
+            bool operator==(const EdgeKey&) const = default;
+        };
+        struct EdgeHash
+        {
+            size_t operator()(const EdgeKey& e) const
+            {
+                return std::hash<unsigned int>()(e.a) ^
+                       (std::hash<unsigned int>()(e.b) << 1);
+            }
+        };
         bool areaCalculationDone = false;
 
 
