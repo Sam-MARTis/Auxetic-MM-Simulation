@@ -70,8 +70,10 @@ class Mesh{
         void addInternalNodes_Uniform(const int numNodesToTargetAdd);
         double calculateAreaOfMeshObject(const unsigned int numSamples);
         double constraintParameter = 0.0f;
+        void createEdges(const double distanceTheshold);
         void enforceConstraints(double t);
         void cacheEdgesExtension();
+
         // Mesh();
 };
 

@@ -21,15 +21,21 @@ int main()
     // internalEdges.push_back(std::make_pair(Vec2D(0, 0), Vec2D(0.5, 0.6)));
     // internalEdges.push_back(std::make_pair(Vec2D(-0.5, 0.5), Vec2D(0.4, 0.7)));
     //
-    std::string dxfFilepath = std::string(DXFS_DIRECTORY_PATH)+ "/pattern_1x1_edge-gap_0.04.dxf";
+    // std::string dxfFilepath = std::string(DXFS_DIRECTORY_PATH)+ "/pattern_1x1_edge-gap_0.04.dxf";
+    std::string dxfFilepath = std::string(DXFS_DIRECTORY_PATH)+ "/testPattern.dxf";
     Loader dxfLoader{dxfFilepath};
+
     dxfLoader.alignPoints();
     Mesh mesh;
 
     BoundaryMeshBuildInformation boundaryInfo{
-    .targetDensity = 100.0,
-        .boundary = dxfLoader.boundaryNodesPos,
-    };
+        .targetDensity = 100.0,
+            .boundary = dxfLoader.boundaryNodesPos,
+        };
+    const Boundary& bound =  boundaryInfo.boundary;
+    bound.printBoundaryPoints();
+    // bound.testPoint({.5, .5});
+
     InternalEdgesMeshBuildInformation internalEdgeInfo{
     .targetDensity = 300.0,
     .internalEdges = dxfLoader.internalEdgesNodesPos,
@@ -43,7 +49,7 @@ int main()
 
     // mesh.addInternalNodes_Random(DEFAULT_NUMBER_INTERNAL_NODES);
 
-    mesh.addInternalNodes_Uniform(10000);
+    mesh.addInternalNodes_Uniform(1000);
 
 
     RendererSetupInformation setupInfo{.nodePositions = mesh.nodes.nodesPos, .boundaryEdgeInfo = mesh.boundaryEdgeInfo};

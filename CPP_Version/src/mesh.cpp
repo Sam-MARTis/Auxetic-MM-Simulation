@@ -62,6 +62,7 @@ void Mesh::initializeBoundaryNodes(const BoundaryMeshBuildInformation& boundaryB
     }
     insertNodesAtPositions(pointsToInsert);
     boundaries.push_back(boundaryBuildInfo.boundary);
+    numBoundaries++;
     boundaryIncludeExclude.push_back(true);
 }
 
@@ -109,7 +110,7 @@ void Mesh::addInternalNodes_Random(const unsigned int numNodesToAdd)
     for (unsigned int i = 0; i < numNodesToAdd; i++)
     {
         Vec2D randPos;
-        for (unsigned int iter = 0; iter< 100; iter++)
+        for (unsigned int iter = 0; iter< 1; iter++)
         {
             randPos.x = randValueMine(-1.0, 1.0);
             randPos.y = randValueMine(-1.0, 1.0);
@@ -119,6 +120,7 @@ void Mesh::addInternalNodes_Random(const unsigned int numNodesToAdd)
                 if (boundaries.at(boundaryIdx).isInsideBoundary(randPos) != boundaryIncludeExclude.at(boundaryIdx))
                 {
                     pointSatisfied = false;
+
                     break;
                 }
             }
@@ -159,6 +161,7 @@ double Mesh::calculateAreaOfMeshObject(const unsigned int numSamples)
 
 void Mesh::addInternalNodes_Uniform(const int numNodesToTargetAdd)
 {
+    boundaries.at(0).printBoundaryPoints();
     if (!areaCalculationDone)
     {
         std::cerr << "Area calculation not done. Uniform addition of nodes not allowed"<<std::endl;
@@ -170,6 +173,7 @@ void Mesh::addInternalNodes_Uniform(const int numNodesToTargetAdd)
     const double ds = 2.0/(numNodesWillAddPerDim+1.0);
     double x_start = ds-1.0;
     double y_start = ds-1.0;
+    std::cout<<"Num boundaries "<<numBoundaries<<std::endl;
     for (unsigned int i = 0; i<numNodesWillAddPerDim; i++)
     {
         double x = x_start + i*ds;
@@ -177,10 +181,11 @@ void Mesh::addInternalNodes_Uniform(const int numNodesToTargetAdd)
         {
             double y = y_start + j*ds;
             const Vec2D pointTest = Vec2D(x,y);
+
             bool isValidPoint = true;
             for (unsigned int boundaryIdx = 0; boundaryIdx < numBoundaries; boundaryIdx++)
             {
-                if (boundaries.at(boundaryIdx).isInsideBoundary(isValidPoint) != boundaryIncludeExclude.at(boundaryIdx))
+                if (boundaries.at(boundaryIdx).isInsideBoundary(pointTest) != boundaryIncludeExclude.at(boundaryIdx))
                 {
                     isValidPoint = false;
                     break;
@@ -195,3 +200,8 @@ void Mesh::addInternalNodes_Uniform(const int numNodesToTargetAdd)
     insertNodesAtPositions(pointsToInsert);
 }
 
+
+void Mesh::createEdges(const double distanceTheshold)
+{
+
+}

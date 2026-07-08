@@ -5,12 +5,30 @@
 #include "constants.hpp"
 #include "utils.hpp"
 #include <sstream>
-
+#include <cassert>
 Boundary::Boundary(const std::vector<Vec2D>& points)
 {
     // Copy points and set the count used by isInsideBoundary
     this->boundaryPointsPos = points;
     this->numBoundaryPoints = static_cast<unsigned int>(points.size());
+}
+
+void Boundary::printBoundaryPoints() const
+{
+    assert(numBoundaryPoints == boundaryPointsPos.size());
+    for (unsigned int i = 0; i < numBoundaryPoints; i++)
+    {
+        const Vec2D& vec = boundaryPointsPos.at(i);
+        std::cout << vec.x << " " << vec.y << std::endl;
+    }
+}
+
+void Boundary::testPoint(const Vec2D& testPoint) const
+{
+    bool isInside = isInsideBoundary(testPoint);
+    std::cout<<testPoint.x << " "<< testPoint.y<<std::endl;
+    std::cout << isInside << std::endl;
+    std::cout<<std::endl;
 }
 
 bool Boundary::isInsideBoundary(const Vec2D& testPoint) const
@@ -33,6 +51,7 @@ bool Boundary::isInsideBoundary(const Vec2D& testPoint) const
     if (numIntersections%2 == 0) return false;
     return true;
 }
+
 
 InternalEdges::InternalEdges(const std::vector<std::pair<Vec2D, Vec2D>>& points)
 {

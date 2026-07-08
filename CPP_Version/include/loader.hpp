@@ -20,6 +20,8 @@ public:
     unsigned int numBoundaryPoints;
     std::vector<Vec2D> boundaryPointsPos;
     [[nodiscard]] bool isInsideBoundary(const Vec2D& testPoint) const;
+    void printBoundaryPoints() const;
+    void testPoint(const Vec2D& testPoint) const;
 };
 
 struct BoundaryMeshBuildInformation
