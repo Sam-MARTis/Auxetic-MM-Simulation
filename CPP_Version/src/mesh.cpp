@@ -117,6 +117,7 @@ void Mesh::addInternalNodes(const unsigned int numNodesToAdd)
                 if (boundaries.at(i).isInsideBoundary(randPos) != boundaryIncludeExclude.at(i))
                 {
                     pointSatisfied = false;
+                    break;
                 }
             }
             if (pointSatisfied)
@@ -131,3 +132,24 @@ void Mesh::addInternalNodes(const unsigned int numNodesToAdd)
 
 }
 
+double Mesh::calculateAreaOfMeshObject(const unsigned int numSamples)
+{
+    const double areaOfPhysicsSpace = 4.0;
+    unsigned int numInside = 0;
+    for (unsigned int i = 0; i < numSamples; i++)
+    {
+        bool isValid = true;
+        for (unsigned int boundaryIdx = 0; boundaryIdx < numBoundaries; boundaryIdx++)
+        {
+            const Vec2D randPos = Vec2D(randValueMine(-1.0, 1.0), randValueMine(-1.0, 1.0));
+            if (boundaries.at(i).isInsideBoundary(Vec2D(randPos)) != boundaryIncludeExclude.at(i))
+            {
+                isValid = false;
+                break;
+            }
+        }
+        if (isValid) numInside++;
+    }
+    double area = areaOfPhysicsSpace * (static_cast<double>(numInside))/(static_cast<double>(numSamples));
+    return area;
+}

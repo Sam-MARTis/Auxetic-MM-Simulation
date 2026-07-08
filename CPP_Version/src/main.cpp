@@ -40,7 +40,8 @@ int main()
     mesh.initializeBoundaryNodes(boundaryInfo);
 
     mesh.addInternalNodes(DEFAULT_NUMBER_INTERNAL_NODES);
-
+    double dxfArea = mesh.calculateAreaOfMeshObject(DEFAULT_NUMBER_AREA_SAMPLES);
+    std::cout<<"dxfArea="<<dxfArea<<std::endl;
     // unsigned int numParticles = 100;
     // std::vector<Vec2D> particlePositions;
     // particlePositions.reserve(numParticles);

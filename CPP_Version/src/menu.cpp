@@ -24,8 +24,6 @@ void Menu::processMenu(Renderer& renderer)
         renderer.updateRenderInformation(menuData.renderInfo);
         menuData.renderInfo.propertyUpdated &= ~RebuildRenderMask;
     }
-
-
     ImGui::Checkbox("Render", &menuData.renderInfo.shouldRender);
 
 

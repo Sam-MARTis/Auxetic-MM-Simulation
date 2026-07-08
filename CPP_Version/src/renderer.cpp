@@ -38,7 +38,7 @@ void Renderer::rebuildVertexArray()
     {
         const BoundaryEdgeInformation& boundaryInfo = boundaryEdgeInfos.at(i);
         const unsigned int startIndex = std::get<0>(boundaryInfo.boundsIndices);
-        std::cout<<startIndex<<std::endl;
+        // std::cout<<startIndex<<std::endl;
         const unsigned int endIndex = std::get<1>(boundaryInfo.boundsIndices);
         const sf::Color thisEdgeColour = colours.at(i);
         for (unsigned int j=startIndex; j<endIndex; j++)

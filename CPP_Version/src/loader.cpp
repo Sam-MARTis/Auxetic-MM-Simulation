@@ -101,7 +101,7 @@ void Loader::alignPoints()
     double min_y = boundaryNodesPos.at(0).y;
     double max_x = boundaryNodesPos.at(0).x;
     double max_y = boundaryNodesPos.at(0).y;
-    std::cout<<"Aligning"<<std::endl;
+    // std::cout<<"Aligning"<<std::endl;
     for (unsigned int i = 0; i < numBoundaryPoints; i++)
     {
         const Vec2D& nodePos = boundaryNodesPos.at(i);
@@ -123,7 +123,7 @@ void Loader::alignPoints()
         if (nodePos2.x > max_x) max_x = nodePos2.x;
         if (nodePos2.y > max_y) max_y = nodePos2.y;
     }
-    std::cout<<"Align factors computed"<<std::endl;
+    // std::cout<<"Align factors computed"<<std::endl;
     double x_offset = (max_x + min_x)/2.0;
     double y_offset = (max_y + min_y)/2.0;
     double x_scaling = 2.0/(max_x - min_x);
@@ -139,7 +139,7 @@ void Loader::alignPoints()
         nodePos2 -= offset;
         nodePos2 *= scaling;
     }
-    std::cout<<"Internal edges aligned"<<std::endl;
+    // std::cout<<"Internal edges aligned"<<std::endl;
     for (unsigned int i = 0; i < numBoundaryPoints; i++)
     {
         Vec2D& nodePos = boundaryNodesPos.at(i);
