@@ -52,10 +52,12 @@ class Mesh{
             std::vector<Vec2D> nodesPos; // N
             Constraints constraints;
         };
+        bool areaCalculationDone = false;
 
     public:
         Nodes nodes;
         Edges edges;
+        double areaOfDxf = 4.0;
         unsigned int highestBoundaryID = 0;
         std::vector<BoundaryEdgeInformation> boundaryEdgeInfo;
         unsigned int numBoundaries = 0;
@@ -64,7 +66,8 @@ class Mesh{
         void insertNodesAtPositions(const std::vector<Vec2D> nodePos);
         void initializeBoundaryNodes(const BoundaryMeshBuildInformation& boundaryBuildInfo);
         void initializeInternalEdgesNodes(const InternalEdgesMeshBuildInformation internalEdgeBuildInfo);
-        void addInternalNodes(const unsigned int numNodesToAdd);
+        void addInternalNodes_Random(const unsigned int numNodesToAdd);
+        void addInternalNodes_Uniform(const int numNodesToTargetAdd);
         double calculateAreaOfMeshObject(const unsigned int numSamples);
         double constraintParameter = 0.0f;
         void enforceConstraints(double t);

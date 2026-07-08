@@ -1,5 +1,7 @@
 #include "mesh.hpp"
 
+#include <iostream>
+
 #include "constants.hpp"
 #include "utils.hpp"
 
@@ -101,7 +103,7 @@ void Mesh::initializeInternalEdgesNodes(const InternalEdgesMeshBuildInformation 
     insertNodesAtPositions(pointsToInsert);
 }
 
-void Mesh::addInternalNodes(const unsigned int numNodesToAdd)
+void Mesh::addInternalNodes_Random(const unsigned int numNodesToAdd)
 {
     std::vector<Vec2D> pointsToAdd;
     for (unsigned int i = 0; i < numNodesToAdd; i++)
@@ -114,7 +116,7 @@ void Mesh::addInternalNodes(const unsigned int numNodesToAdd)
             bool pointSatisfied = true;
             for (unsigned int boundaryIdx = 0; boundaryIdx < numBoundaries; boundaryIdx++)
             {
-                if (boundaries.at(i).isInsideBoundary(randPos) != boundaryIncludeExclude.at(i))
+                if (boundaries.at(boundaryIdx).isInsideBoundary(randPos) != boundaryIncludeExclude.at(boundaryIdx))
                 {
                     pointSatisfied = false;
                     break;
@@ -142,7 +144,7 @@ double Mesh::calculateAreaOfMeshObject(const unsigned int numSamples)
         for (unsigned int boundaryIdx = 0; boundaryIdx < numBoundaries; boundaryIdx++)
         {
             const Vec2D randPos = Vec2D(randValueMine(-1.0, 1.0), randValueMine(-1.0, 1.0));
-            if (boundaries.at(i).isInsideBoundary(Vec2D(randPos)) != boundaryIncludeExclude.at(i))
+            if (boundaries.at(boundaryIdx).isInsideBoundary(Vec2D(randPos)) != boundaryIncludeExclude.at(boundaryIdx))
             {
                 isValid = false;
                 break;
@@ -150,6 +152,46 @@ double Mesh::calculateAreaOfMeshObject(const unsigned int numSamples)
         }
         if (isValid) numInside++;
     }
-    double area = areaOfPhysicsSpace * (static_cast<double>(numInside))/(static_cast<double>(numSamples));
-    return area;
+    areaOfDxf = areaOfPhysicsSpace * (static_cast<double>(numInside))/(static_cast<double>(numSamples));
+    areaCalculationDone = true;
+    return areaOfDxf;
 }
+
+void Mesh::addInternalNodes_Uniform(const int numNodesToTargetAdd)
+{
+    if (!areaCalculationDone)
+    {
+        std::cerr << "Area calculation not done. Uniform addition of nodes not allowed"<<std::endl;
+        exit(1);
+    }
+    std::vector<Vec2D> pointsToInsert;
+    const unsigned int numNodesToAdd = static_cast<unsigned int>((4.0 * numNodesToTargetAdd)/areaOfDxf);
+    const unsigned int numNodesWillAddPerDim = static_cast<unsigned int>(sqrt(static_cast<double>(numNodesToAdd)));
+    const double ds = 2.0/(numNodesWillAddPerDim+1.0);
+    double x_start = ds-1.0;
+    double y_start = ds-1.0;
+    for (unsigned int i = 0; i<numNodesWillAddPerDim; i++)
+    {
+        double x = x_start + i*ds;
+        for (unsigned int j = 0; j<numNodesWillAddPerDim; j++)
+        {
+            double y = y_start + j*ds;
+            const Vec2D pointTest = Vec2D(x,y);
+            bool isValidPoint = true;
+            for (unsigned int boundaryIdx = 0; boundaryIdx < numBoundaries; boundaryIdx++)
+            {
+                if (boundaries.at(boundaryIdx).isInsideBoundary(isValidPoint) != boundaryIncludeExclude.at(boundaryIdx))
+                {
+                    isValidPoint = false;
+                    break;
+                }
+            }
+            if (isValidPoint)
+            {
+                pointsToInsert.push_back(pointTest);
+            }
+        }
+    }
+    insertNodesAtPositions(pointsToInsert);
+}
+

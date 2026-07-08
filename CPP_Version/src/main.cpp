@@ -27,32 +27,23 @@ int main()
     Mesh mesh;
 
     BoundaryMeshBuildInformation boundaryInfo{
-    .targetDensity = 10.0,
+    .targetDensity = 100.0,
         .boundary = dxfLoader.boundaryNodesPos,
     };
     InternalEdgesMeshBuildInformation internalEdgeInfo{
-    .targetDensity = 30.0,
+    .targetDensity = 300.0,
     .internalEdges = dxfLoader.internalEdgesNodesPos,
     };
 
 
     mesh.initializeInternalEdgesNodes(internalEdgeInfo);
     mesh.initializeBoundaryNodes(boundaryInfo);
-
-    mesh.addInternalNodes(DEFAULT_NUMBER_INTERNAL_NODES);
     double dxfArea = mesh.calculateAreaOfMeshObject(DEFAULT_NUMBER_AREA_SAMPLES);
     std::cout<<"dxfArea="<<dxfArea<<std::endl;
-    // unsigned int numParticles = 100;
-    // std::vector<Vec2D> particlePositions;
-    // particlePositions.reserve(numParticles);
-    // for (int i = 0; i < numParticles; i++)
-    // {
-    //     Vec2D particle;
-    //     particle.x = randValueMine(-1.0, 1.0);
-    //     particle.y = randValueMine(-1.0, 1.0);
-    //     particlePositions.push_back(particle);
-    // }
-    // std::cout<<
+
+    // mesh.addInternalNodes_Random(DEFAULT_NUMBER_INTERNAL_NODES);
+
+    mesh.addInternalNodes_Uniform(10000);
 
 
     RendererSetupInformation setupInfo{.nodePositions = mesh.nodes.nodesPos, .boundaryEdgeInfo = mesh.boundaryEdgeInfo};

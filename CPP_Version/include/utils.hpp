@@ -9,6 +9,8 @@ inline double randValueMine(const double min, const double max)
     return min + (max-min)*(1.0*rand()/(1.0*RAND_MAX));
 }
 
+
+
 struct Vec2D
 {
     double x;
