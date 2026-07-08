@@ -70,3 +70,17 @@ inline double crossVec2D(const Vec2D& p1, const Vec2D& p2)
 {
     return p1.x*p2.y - p1.y*p2.x;
 }
+inline bool orientation(const Vec2D& p, const Vec2D& q, const Vec2D& r)
+{
+    double val = (q.y-p.y)*(r.x - q.x) - (q.x-p.x)*(r.y - q.y);
+    return val <= 0;
+}
+inline bool segmentsIntersects2D(const Vec2D& p1, const Vec2D& p2, const Vec2D& p3, const Vec2D& p4)
+{
+    const bool o1 = orientation(p1, p2, p3);
+    const bool o2 = orientation(p1, p2, p4);
+    const bool o3 = orientation(p3, p4, p1);
+    const bool o4 = orientation(p3, p4, p2);
+    return o1!=o2 && o3!=o4;
+}
+

@@ -7,6 +7,22 @@
 #include "utils.hpp"
 #include "loader.hpp"
 
+#include <iostream>
+#include <nanoflann.hpp>
+#include <vector>
+
+
+
+struct PointCloud
+{
+    std::vector<Vec2D>& pointsPos;
+    size_t kdtree_get_point_count() const { return pointsPos.size(); };
+    double kdtree_get_pt(const size_t idx, int dim) const { return dim==0?pointsPos[idx].x:pointsPos[idx].y; };
+    template <class BBOX>
+    bool kdtree_get_bbox(BBOX&) const { return false;}
+};
+using KDTree = nanoflann::KDTreeSingleIndexAdaptor<nanoflann::L2_Simple_Adaptor<double, PointCloud>, PointCloud, 2>;
+
 struct BoundaryEdgeInformation
 {
     unsigned int id;
@@ -54,6 +70,11 @@ class Mesh{
         };
         bool areaCalculationDone = false;
 
+
+
+        // nanoflann::KNNResultSet<double> result;
+        // KDTree tree;
+        void findNearestNeighbours(const KDTree& tree, const Vec2D& queryPoint, unsigned int K, std::vector<size_t>& indices, std::vector<double>& distances);
     public:
         Nodes nodes;
         Edges edges;
@@ -70,9 +91,10 @@ class Mesh{
         void addInternalNodes_Uniform(const int numNodesToTargetAdd);
         double calculateAreaOfMeshObject(const unsigned int numSamples);
         double constraintParameter = 0.0f;
-        void createEdges(const double distanceTheshold);
+        void createEdges(const unsigned int K, const double distanceTheshold);
         void enforceConstraints(double t);
         void cacheEdgesExtension();
+
 
         // Mesh();
 };

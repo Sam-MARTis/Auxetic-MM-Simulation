@@ -4,6 +4,7 @@
 
 #include "constants.hpp"
 #include "utils.hpp"
+#include <nanoflann.hpp>
 
 void Mesh::insertNodesAtPositions(const std::vector<Vec2D> nodePos)
 {
@@ -200,8 +201,22 @@ void Mesh::addInternalNodes_Uniform(const int numNodesToTargetAdd)
     insertNodesAtPositions(pointsToInsert);
 }
 
-
-void Mesh::createEdges(const double distanceTheshold)
+void Mesh::findNearestNeighbours(const KDTree& tree, const Vec2D& queryPoint, unsigned int K, std::vector<size_t>& indices, std::vector<double>& distances)
 {
+    indices.resize(K);
+    distances.resize(K);
+    nanoflann::KNNResultSet<double> result(K);
+    result.init(indices.data(), distances.data());
+    tree.findNeighbors(result, &queryPoint.x);
+}
+
+void Mesh::createEdges(const unsigned int K, const double distanceTheshold)
+{
+    PointCloud cloud{
+    .pointsPos = nodes.nodesPos};
+    KDTree tree(2, cloud, nanoflann::KDTreeSingleIndexAdaptorParams(DEFAULT_NUMBER_NODES_PER_TREE_LEAF));
+    std::vector<size_t> indices(K);
+    std::vector<double> distances(K);
+
 
 }
