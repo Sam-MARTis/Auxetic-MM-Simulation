@@ -64,6 +64,8 @@ class Mesh{
         void insertNodesAtPositions(const std::vector<Vec2D> nodePos);
         void initializeBoundaryNodes(const BoundaryMeshBuildInformation& boundaryBuildInfo);
         void initializeInternalEdgesNodes(const InternalEdgesMeshBuildInformation internalEdgeBuildInfo);
+        void addInternalNodes(const unsigned int numNodesToAdd);
+        double calculateAreaOfMeshObject(const unsigned int numSamples);
         double constraintParameter = 0.0f;
         void enforceConstraints(double t);
         void cacheEdgesExtension();

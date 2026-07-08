@@ -39,6 +39,7 @@ int main()
     mesh.initializeInternalEdgesNodes(internalEdgeInfo);
     mesh.initializeBoundaryNodes(boundaryInfo);
 
+    mesh.addInternalNodes(DEFAULT_NUMBER_INTERNAL_NODES);
 
     // unsigned int numParticles = 100;
     // std::vector<Vec2D> particlePositions;

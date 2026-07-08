@@ -100,3 +100,34 @@ void Mesh::initializeInternalEdgesNodes(const InternalEdgesMeshBuildInformation 
     }
     insertNodesAtPositions(pointsToInsert);
 }
+
+void Mesh::addInternalNodes(const unsigned int numNodesToAdd)
+{
+    std::vector<Vec2D> pointsToAdd;
+    for (unsigned int i = 0; i < numNodesToAdd; i++)
+    {
+        Vec2D randPos;
+        for (unsigned int iter = 0; iter< 100; iter++)
+        {
+            randPos.x = randValueMine(-1.0, 1.0);
+            randPos.y = randValueMine(-1.0, 1.0);
+            bool pointSatisfied = true;
+            for (unsigned int boundaryIdx = 0; boundaryIdx < numBoundaries; boundaryIdx++)
+            {
+                if (boundaries.at(i).isInsideBoundary(randPos) != boundaryIncludeExclude.at(i))
+                {
+                    pointSatisfied = false;
+                }
+            }
+            if (pointSatisfied)
+            {
+                pointsToAdd.push_back(randPos);
+                break;
+            }
+        }
+
+    }
+    insertNodesAtPositions(pointsToAdd);
+
+}
+
