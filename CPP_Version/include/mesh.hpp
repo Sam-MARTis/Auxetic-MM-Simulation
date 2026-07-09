@@ -102,8 +102,9 @@ class Mesh{
         // nanoflann::KNNResultSet<double> result;
         // KDTree tree;
         std::vector<std::pair<Vec2D, Vec2D>> segmentDiscontinuities;
+        unsigned int numSegmentDiscontinuities = 0;
         void findNearestNeighbours(const KDTree& tree, const Vec2D& queryPoint, unsigned int K, std::vector<size_t>& indices, std::vector<double>& distances);
-         
+        bool doesEdgeIntersectDiscontinuity(const EdgesConnection& edgeToTest);
     public:
         Nodes nodes;
         Edges edges;
