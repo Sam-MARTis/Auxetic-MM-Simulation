@@ -5,6 +5,7 @@
 #include <Eigen/Dense>
 // #define NDEBUG
 
+#define SHOULD_PROFILE
 
 constexpr double EPSILON = 1.0e-8;
 constexpr double DEFAULT_DISTANCE_FROM_CORNER = 1.0e-4;

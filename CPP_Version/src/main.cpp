@@ -97,6 +97,7 @@ int main()
     
     while (window.isOpen())
     {
+        PROFILE_SCOPE("Main::frame");
         window.clear(sf::Color::Black);
         while (auto event = window.pollEvent())
         {
@@ -124,6 +125,7 @@ int main()
         // std::cout <<"test particle pos "<<mesh.nodePosFlat[0] <<std::endl;
         mesh.syncVecWithFlatVecData();
         testRenderer.updateNodePositionsFromMesh(mesh);
+        profiling::printLiveReport();
         ImGui::SFML::Render(window);
         window.display();
     }

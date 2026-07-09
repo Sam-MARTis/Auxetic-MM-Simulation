@@ -260,6 +260,9 @@ SFML_DIR:PATH=/usr/local/lib/cmake/SFML
 //Path to a file.
 SFML_DOC_DIR:PATH=SFML_DOC_DIR-NOTFOUND
 
+//Enable runtime profiling output
+SHOULD_PROFILE:BOOL=ON
+
 //Value Computed by CMake
 runThis_BINARY_DIR:STATIC=/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/build
 

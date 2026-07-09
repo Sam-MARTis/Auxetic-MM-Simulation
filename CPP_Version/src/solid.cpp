@@ -3,6 +3,7 @@
 
 void Solid::assembleConstraintMatrix()
 {
+    PROFILE_SCOPE("Solid::assembleConstraintMatrix");
     const unsigned int M = mesh.numBoundaryPoints;
     std::vector<Eigen::Triplet<double>> triplets;
     triplets.reserve(M * 2);
@@ -29,6 +30,7 @@ void Solid::assembleConstraintMatrix()
 
 void Solid::buildConstraintRHS()
 {
+    PROFILE_SCOPE("Solid::buildConstraintRHS");
     const unsigned M = mesh.numBoundaryPoints;
     c = Vec(M);
     int row = 0;
@@ -45,6 +47,7 @@ void Solid::buildConstraintRHS()
 
 void Solid::assembleGradientAndHessian()
 {
+    PROFILE_SCOPE("Solid::assembleGradientAndHessian");
     mesh.cacheEdgesExtensionFromFlatVec();
     const int N = mesh.nodes.numNodes;
     const int DOF = 2*N;
@@ -116,6 +119,7 @@ void Solid::assembleGradientAndHessian()
 
 void Solid::solve()
 {
+    PROFILE_SCOPE("Solid::solve");
     const int N   = mesh.nodes.numNodes;
     const int DOF = 2 * N;
     const int M   = A.rows();
@@ -128,36 +132,56 @@ void Solid::solve()
 
     for (int iter = 0; iter < MAX_SOLVER_INTERNAL_ITER; iter++)
     {
-        // rebuild K and g from current positions
-        assembleGradientAndHessian();
-
-        // constraint violation
-        Vec violation = A * mesh.nodePosFlat - c;
-
-        // assemble augmented system
+        Vec violation;
         SpMat K_aug(total, total);
-        K_aug.reserve(K.nonZeros() + 2 * A.nonZeros());
-
-        // Fill K_aug with K, A^T, and A
-        for (int j = 0; j < K.outerSize(); j++)
-            for (SpMat::InnerIterator it(K, j); it; ++it)
-                K_aug.insert(it.row(), it.col()) = it.value();
-
-        for (int j = 0; j < A.outerSize(); j++)
-            for (SpMat::InnerIterator it(A, j); it; ++it)
-            {
-                K_aug.insert(it.col(), DOF + it.row()) = it.value();  // A^T
-                K_aug.insert(DOF + it.row(), it.col()) = it.value();  // A
-            }
-
-        // RHS
         Vec rhs(total);
-        rhs.head(DOF) = -g;
-        rhs.tail(M)   = -violation;
 
-        // factorize and solve
-        solver.analyzePattern(K_aug);
-        solver.factorize(K_aug);
+        {
+            PROFILE_SCOPE("Solid::solve / assembleGradientAndHessian");
+            // rebuild K and g from current positions
+            assembleGradientAndHessian();
+        }
+
+        {
+            PROFILE_SCOPE("Solid::solve / constraintViolation");
+            // constraint violation
+            violation = A * mesh.nodePosFlat - c;
+        }
+
+        {
+            PROFILE_SCOPE("Solid::solve / assembleAugmentedSystem");
+            // assemble augmented system
+            K_aug.reserve(K.nonZeros() + 2 * A.nonZeros());
+
+            // Fill K_aug with K, A^T, and A
+            for (int j = 0; j < K.outerSize(); j++)
+                for (SpMat::InnerIterator it(K, j); it; ++it)
+                    K_aug.insert(it.row(), it.col()) = it.value();
+
+            for (int j = 0; j < A.outerSize(); j++)
+                for (SpMat::InnerIterator it(A, j); it; ++it)
+                {
+                    K_aug.insert(it.col(), DOF + it.row()) = it.value();  // A^T
+                    K_aug.insert(DOF + it.row(), it.col()) = it.value();  // A
+                }
+        }
+
+        {
+            PROFILE_SCOPE("Solid::solve / buildRHS");
+            // RHS
+            rhs.head(DOF) = -g;
+            rhs.tail(M)   = -violation;
+        }
+
+        {
+            PROFILE_SCOPE("Solid::solve / analyzePattern");
+            solver.analyzePattern(K_aug);
+        }
+
+        {
+            PROFILE_SCOPE("Solid::solve / factorize");
+            solver.factorize(K_aug);
+        }
         // std::cout << "K_aug size: " << K_aug.rows() << "x" << K_aug.cols() << "\n";
         // std::cout << "K nonzeros: " << K.nonZeros() << "\n";
         // std::cout << "A nonzeros: " << A.nonZeros() << "\n";
@@ -170,15 +194,27 @@ void Solid::solve()
             break;
         }
 
-        Vec sol = solver.solve(rhs);
+        Vec sol;
+        {
+            PROFILE_SCOPE("Solid::solve / solveLinearSystem");
+            sol = solver.solve(rhs);
+        }
 
-        // update
-        mesh.nodePosFlat += sol.head(DOF);
-        lambda           += sol.tail(M);
+        {
+            PROFILE_SCOPE("Solid::solve / updateState");
+            // update
+            mesh.nodePosFlat += sol.head(DOF);
+            lambda           += sol.tail(M);
+        }
 
-        // convergence check
-        double res_g = g.norm();
-        double res_c = violation.norm();
+        double res_g = 0.0;
+        double res_c = 0.0;
+        {
+            PROFILE_SCOPE("Solid::solve / convergenceCheck");
+            // convergence check
+            res_g = g.norm();
+            res_c = violation.norm();
+        }
 
         if (res_g < TOL && res_c < TOL)
         {
@@ -190,6 +226,7 @@ void Solid::solve()
 
 Solid::Solid(Mesh& solidMesh): mesh(solidMesh)
 {
+    PROFILE_SCOPE("Solid::Solid");
     std::cout << "Solid1"<<std::endl;
     std::vector<BoundaryEdgeInformation>& edgeInfo = mesh.boundaryEdgeInfo;
     std::vector<Vec2D> nodesPos = mesh.nodes.nodesPos;
@@ -222,6 +259,7 @@ Solid::Solid(Mesh& solidMesh): mesh(solidMesh)
 
 void Solid::timeStep(const double dt)
 {
+    PROFILE_SCOPE("Solid::timeStep");
     const float dC = dt*VELOCITY_CONSTRAINTS_EVOLUTION;
     assert(c.size() == mesh.numBoundaryPoints);
     for (unsigned int i = 0; i < mesh.numBoundaryPoints; i++){

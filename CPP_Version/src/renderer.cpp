@@ -1,5 +1,6 @@
 
 #include "renderer.hpp"
+#include "solid.hpp"
 
 #include <iostream>
 
@@ -7,6 +8,7 @@
 
 void Renderer::rebuildParticleVertexArray()
 {
+    PROFILE_SCOPE("Renderer::rebuildParticleVertexArray");
 
     const float r = renderScaleFromPhysics*static_cast<float>(particleRadius);
     for (unsigned int i = 0; i < numParticles; i++)
@@ -64,6 +66,7 @@ void Renderer::rebuildParticleVertexArray()
 
 void Renderer::rebuildEdgeVertexArray()
 {
+    PROFILE_SCOPE("Renderer::rebuildEdgeVertexArray");
     assert(numEdges == edgeConnections.size());
     for (unsigned int i=0; i<numEdges; i++)
     {
@@ -106,6 +109,7 @@ void Renderer::rebuildEdgeVertexArray()
 Renderer::Renderer(const RendererSetupInformation& setupInfo)
 : boundaryEdgeInfos(setupInfo.boundaryEdgeInfo)
 {
+    PROFILE_SCOPE("Renderer::Renderer");
     particleRadius = setupInfo.pRadius;
     edgeThickness = setupInfo.edgeThickness;
     particleColour = setupInfo.pColour;
@@ -138,6 +142,7 @@ Renderer::Renderer(const RendererSetupInformation& setupInfo)
 
 void Renderer::updateRenderInformation(const RendererUpdateData& updateInfo)
 {
+    PROFILE_SCOPE("Renderer::updateRenderInformation");
 
     const RendererSetupInformation& info = updateInfo.info;
     StateUpdateFlags flags = updateInfo.propertyUpdated;
@@ -204,6 +209,7 @@ Vec2D Renderer::mapPhysicsToSpaceCoords(const float& physicsInX, const float& ph
 
 void Renderer::draw(sf::RenderWindow& window) const
 {
+    PROFILE_SCOPE("Renderer::draw");
     window.draw(edgeVertices, renderState);
     window.draw(particleVertices, renderState);
     // std::cout<<numEdges<<std::endl;
@@ -211,6 +217,7 @@ void Renderer::draw(sf::RenderWindow& window) const
 
 void Renderer::updateNodePositionsFromMesh(Mesh& mesh)
 {
+    PROFILE_SCOPE("Renderer::updateNodePositionsFromMesh");
     particlePositions = mesh.nodes.nodesPos;
     rebuildParticleVertexArray();
     rebuildEdgeVertexArray();

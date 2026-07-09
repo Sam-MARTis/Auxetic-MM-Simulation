@@ -3,6 +3,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 project(runThis)
 
 set(CMAKE_CXX_STANDARD 20)
+option(SHOULD_PROFILE "Enable runtime profiling output" OFF)
 
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/external/imgui)
@@ -31,6 +32,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
         PARTICLE_TEXTURE_PATH="${CMAKE_SOURCE_DIR}/resources/textures/circle.png"
         DXFS_DIRECTORY_PATH="${CMAKE_SOURCE_DIR}/resources/DXFs"
         SUBROUTINES_PATH="${CMAKE_SOURCE_DIR}/src/subroutines"
+        $<$<BOOL:${SHOULD_PROFILE}>:SHOULD_PROFILE>
 
 )
 target_include_directories(${PROJECT_NAME} PRIVATE
