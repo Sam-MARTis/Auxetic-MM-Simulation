@@ -104,7 +104,7 @@ class Mesh{
         std::vector<std::pair<Vec2D, Vec2D>> segmentDiscontinuities;
         unsigned int numSegmentDiscontinuities = 0;
         void findNearestNeighbours(const KDTree& tree, const Vec2D& queryPoint, unsigned int K, std::vector<size_t>& indices, std::vector<double>& distances);
-        bool doesEdgeIntersectDiscontinuity(const EdgesConnection& edgeToTest);
+        bool doesEdgeIntersectDiscontinuity(const unsigned int node1Idx, unsigned int node2Idx);
     public:
         Nodes nodes;
         Edges edges;

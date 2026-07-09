@@ -38,8 +38,8 @@ void Mesh::initializeBoundaryNodes(const BoundaryMeshBuildInformation& boundaryB
         std::vector<Vec2D> pointsToInsertThisEdge;
         const Vec2D corner1 = boundaryPoints.at(i);
         const Vec2D corner2 = boundaryPoints.at((i+1)%numBoundaryPoints);
-        segmentDiscontinuities.push_back(std::make_pair(corner1, corner2));
-        numSegmentDiscontinuities ++;
+        // segmentDiscontinuities.push_back(std::make_pair(corner1, corner2));
+        // numSegmentDiscontinuities ++;
 
         const Vec2D direction = corner2 - corner1;
         double distance = direction.norm();
@@ -75,6 +75,12 @@ void Mesh::initializeBoundaryNodes(const BoundaryMeshBuildInformation& boundaryB
 
 void Mesh::initializeInternalEdgesNodes(const InternalEdgesMeshBuildInformation internalEdgeBuildInfo)
 {
+    if (numBoundaries == 0)
+    {
+        std::cerr << "Boundary nodes must be initialized before internal edge nodes" << std::endl;
+        exit(1);
+    }
+
     const unsigned int numInternalEdges = internalEdgeBuildInfo.internalEdges.numInternalEdges;
     const std::vector<std::pair<Vec2D, Vec2D>>& edgePoints = internalEdgeBuildInfo.internalEdges.internalEdgesPointsPos;
     const bool shouldIncludeCorner = internalEdgeBuildInfo.pointAtCorners;
@@ -100,11 +106,28 @@ void Mesh::initializeInternalEdgesNodes(const InternalEdgesMeshBuildInformation 
         Vec2D startingPoint = corner1;
         if (!shouldIncludeCorner) startingPoint += directionUnit*DEFAULT_DISTANCE_FROM_CORNER;
         const Vec2D insertOffsetFromEdge = normal * DEFAULT_INTERNAL_EDGE_INSERT_OFFSET;
+        std::cout<<"Num boundaries "<<numBoundaries<<std::endl;
         for (unsigned int j = 0; j < numNodesToInsert; j++)
         {
             const Vec2D insertPosition = startingPoint + (directionUnit * j*distanceBetweenNodes);
-            pointsToInsertThisEdge.push_back(insertPosition + insertOffsetFromEdge);
-            pointsToInsertThisEdge.push_back(insertPosition - insertOffsetFromEdge);
+            const Vec2D p1 = insertPosition + insertOffsetFromEdge;
+            const Vec2D p2 = insertPosition - insertOffsetFromEdge;
+            std::vector<Vec2D> points = {p1, p2};
+            for (unsigned int pidx = 0; pidx <2 ; pidx++)
+            {
+                const Vec2D& p = points.at(pidx);
+                bool isValidPoint = true;
+                for (unsigned int boundaryIdx = 0; boundaryIdx < numBoundaries; boundaryIdx++)
+                {
+                    if (boundaries.at(boundaryIdx).isInsideBoundary(p) != boundaryIncludeExclude.at(boundaryIdx))
+                    {
+                        isValidPoint = false;
+                        break;
+                    }
+                }
+                if (isValidPoint) pointsToInsertThisEdge.push_back(p);
+            }
+            // pointsToInsertThisEdge.push_back(insertPosition - insertOffsetFromEdge);
         }
 
         pointsToInsert.insert(pointsToInsert.end(), pointsToInsertThisEdge.begin(), pointsToInsertThisEdge.end());
@@ -238,6 +261,7 @@ void Mesh::createEdges(const unsigned int K, const double distanceTheshold)
             const unsigned int node2Idx = indices.at(edgeIdx);
             const double distanceSq = distances.at(edgeIdx);
             if (distanceSq > distanceThresholdSq) continue;
+            if (doesEdgeIntersectDiscontinuity(node1Idx, node2Idx)) continue;
             EdgeKey edge(node1Idx, node2Idx);
             if (!(edgeSet.insert(edge).second)) continue;
             edges.edgesConnection.push_back({edge.a, edge.b});
@@ -251,12 +275,12 @@ void Mesh::createEdges(const unsigned int K, const double distanceTheshold)
     }
 }
 
-bool Mesh::doesEdgeIntersectDiscontinuity(const EdgesConnection& edgeToTest)
+bool Mesh::doesEdgeIntersectDiscontinuity(const unsigned int node1Idx, unsigned int node2Idx)
 {
     for (unsigned int segmentIdx = 0; segmentIdx < numSegmentDiscontinuities; segmentIdx++)
     {
         const std::pair<Vec2D, Vec2D>& segment = segmentDiscontinuities.at(segmentIdx);
-        if (segmentsIntersects2D(nodes.nodesPos.at(edgeToTest.node1), nodes.nodesPos.at(edgeToTest.node2), std::get<0>(segment), std::get<1>(segment)))
+        if (segmentsIntersects2D(nodes.nodesPos.at(node1Idx), nodes.nodesPos.at(node2Idx), std::get<0>(segment), std::get<1>(segment)))
         {
             return true;
         }

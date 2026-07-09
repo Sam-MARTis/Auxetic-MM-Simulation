@@ -3,6 +3,8 @@
 #include <cmath>
 #include <stdint.h>
 
+#include "constants.hpp"
+
 
 inline double randValueMine(const double min, const double max)
 {

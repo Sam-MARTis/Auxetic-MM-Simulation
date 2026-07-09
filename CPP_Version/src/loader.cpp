@@ -149,6 +149,13 @@ void Loader::alignPoints()
     double y_scaling = 2.0/(max_y - min_y);
     double scaling = y_scaling>x_scaling?x_scaling:y_scaling;
     const Vec2D offset = Vec2D(x_offset, y_offset);
+    for (unsigned int i = 0; i < numBoundaryPoints; i++)
+    {
+        Vec2D& nodePos = boundaryNodesPos.at(i);
+        nodePos -= offset;
+        nodePos *= scaling;
+    }
+    scaling *= DEFAULT_INTERNAL_EDGE_EXPANSIVE_FACTOR;
     for (unsigned int i = 0; i < numCutPairs; i++)
     {
         Vec2D& nodePos1 = std::get<0>(internalEdgesNodesPos[i]);
@@ -159,10 +166,4 @@ void Loader::alignPoints()
         nodePos2 *= scaling;
     }
     // std::cout<<"Internal edges aligned"<<std::endl;
-    for (unsigned int i = 0; i < numBoundaryPoints; i++)
-    {
-        Vec2D& nodePos = boundaryNodesPos.at(i);
-        nodePos -= offset;
-        nodePos *= scaling;
-    }
 };
