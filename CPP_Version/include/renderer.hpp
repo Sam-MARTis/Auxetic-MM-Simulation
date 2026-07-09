@@ -60,4 +60,5 @@ class Renderer
     Vec2D mapPhysicsToSpaceCoords(const double& physicsInX, const double& physicsInY) const;
     Vec2D mapPhysicsToSpaceCoords(const float& physicsInX, const float& physicsInY) const;
     void draw(sf::RenderWindow& window) const;
+    void updateNodePositionsFromMesh(Mesh& mesh);
 };

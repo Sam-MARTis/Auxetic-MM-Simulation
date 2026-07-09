@@ -173,3 +173,41 @@ void Solid::solve()
         }
     }
 }
+
+Solid::Solid(Mesh& solidMesh): mesh(solidMesh)
+{
+    std::vector<BoundaryEdgeInformation>& edgeInfo = mesh.boundaryEdgeInfo;
+    std::vector<Vec2D> nodesPos = mesh.nodes.nodesPos;
+    assert(edgeInfo.size() == mesh.numBoundaries);
+    constraints.reserve(mesh.numBoundaries);
+    for (unsigned int i=0; i<mesh.numBoundaries; i++){
+        assert(i == edgeInfo.at(i).id);
+        const Vec2D& node1Pos = nodesPos.at(std::get<0>(edgeInfo.at(i).boundsIndices));
+        const Vec2D& node2Pos = nodesPos.at(std::get<1>(edgeInfo.at(i).boundsIndices)-1);
+        const Vec2D edgeVector = node2Pos - node1Pos;
+        const Vec2D normalVec = Vec2D(edgeVector.y, -edgeVector.x).normalized();
+        const double thisC = normalVec.x * node1Pos.x + normalVec.y * node1Pos.y;
+        assert(std::abs(normalVec.x * node2Pos.x + normalVec.y * node2Pos.y - thisC) < TOL);
+        BoundaryConstraint constraint;
+        constraint.c = thisC;
+        constraint.boundaryId = edgeInfo.at(i).id;
+        constraint.nVec = normalVec;
+        constraints.emplace_back(constraint);
+    }
+    mesh.createFlatVec();
+
+    assembleConstraintMatrix();
+    c = A * mesh.nodePosFlat;
+
+}
+
+void Solid::timeStep(const double dt)
+{
+    const float dC = dt*VELOCITY_CONSTRAINTS_EVOLUTION;
+    assert(c.size() == mesh.numBoundaries);
+    for (unsigned int i = 0; i < mesh.numBoundaries; i++){
+        c[i] += dC;
+    }
+
+}
+

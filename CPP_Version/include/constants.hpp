@@ -30,6 +30,8 @@ static constexpr double EPSILON2  = 1e-12;
 
 constexpr double DEFAULT_INTERNAL_EDGE_EXPANSIVE_FACTOR = 1.000001;
 
+constexpr double VELOCITY_CONSTRAINTS_EVOLUTION = 1.0e-1;
+constexpr double DEFAULT_TIME_STEP = 1.0e-1;
 
 using SpMat = Eigen::SparseMatrix<double>;
 using Vec   = Eigen::VectorXd;

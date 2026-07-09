@@ -208,3 +208,10 @@ void Renderer::draw(sf::RenderWindow& window) const
     window.draw(particleVertices, renderState);
     // std::cout<<numEdges<<std::endl;
 }
+
+void Renderer::updateNodePositionsFromMesh(Mesh& mesh)
+{
+    particlePositions = mesh.nodes.nodesPos;
+    rebuildParticleVertexArray();
+    rebuildEdgeVertexArray();
+}
