@@ -5,6 +5,8 @@
 
 #include "utils.hpp"
 #include "renderer.hpp"
+#include "constants.hpp"
+#include "solid.hpp"
 #include "menu.hpp"
 #include "mesh.hpp"
 #include "loader.hpp"
@@ -85,6 +87,14 @@ int main()
 
     Menu renderMenu(menuData);
 
+    
+
+
+    unsigned int iterationCount = 0;
+    double time = 0;
+    double dt = DEFAULT_TIME_STEP;
+    Solid solid(mesh);
+    
     while (window.isOpen())
     {
         window.clear(sf::Color::Black);
@@ -96,15 +106,23 @@ int main()
                 window.close();
             }
         }
+        
         ImGui::SFML::Update(window, clock.restart());
         renderMenu.processMenu(testRenderer);
 
         if (renderMenu.menuData.renderInfo.shouldRender)
         {
+            
             testRenderer.draw(window);
         }
-
-
+        for(unsigned int i=0; i<10; i++)
+        {
+            solid.timeStep(dt);
+            time += dt;
+            iterationCount++;
+        }
+        mesh.syncVecWithFlatVecData();
+        testRenderer.updateNodePositionsFromMesh(mesh);
         ImGui::SFML::Render(window);
         window.display();
     }

@@ -26,15 +26,15 @@ class Solid
     std::vector<BoundaryConstraint> constraints;
 
     // Remember to call flat vec initialization of mesh when solid made
-    void intializeNormalDirichletBCs();
-    public:
-    Solid(Mesh& solidMesh);
-    Mesh& mesh;
+    // void intializeNormalDirichletBCs();
     void assembleConstraintMatrix();
-
     void buildConstraintRHS();
     void assembleGradientAndHessian();
     void solve();
+    public:
+    Solid(Mesh& solidMesh);
+    Mesh& mesh;
+
     void timeStep(const double dt);
 
 };
