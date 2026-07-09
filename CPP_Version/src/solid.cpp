@@ -7,6 +7,7 @@ void Solid::assembleConstraintMatrix()
     std::vector<Eigen::Triplet<double>> triplets;
     triplets.reserve(M * 2);
     int row = 0;
+    
     for (const BoundaryConstraint& con : constraints)
     {
         const BoundaryEdgeInformation& boundary = mesh.boundaryEdgeInfo.at(con.boundaryId);
@@ -17,6 +18,8 @@ void Solid::assembleConstraintMatrix()
         {
             triplets.emplace_back(row, 2*i, con.nVec.x);
             triplets.emplace_back(row, 2*i+1, con.nVec.y);
+            assert(row < (int)M);
+            assert(2*i+1 < 2*mesh.nodes.numNodes);
             row++;
         }
     }
@@ -57,10 +60,14 @@ void Solid::assembleGradientAndHessian()
         const EdgeProperties& thisProp = props.at(i);
         const int a = thisEdge.node1;
         const int b = thisEdge.node2;
+        assert(a >= 0 && a < N);
+        assert(b >= 0 && b < N);
+        assert(2*a+1 < (int)mesh.nodePosFlat.size());
+        assert(2*b+1 < (int)mesh.nodePosFlat.size());
         const double dx = mesh. nodePosFlat[2*a] - mesh.nodePosFlat[2*b];
         const double dy = mesh.nodePosFlat[2*a+1] - mesh.nodePosFlat[2*b+1];
-        const double d = thisProp.cached_extension;
         const double l0 = thisProp.natural_length;
+        const double d = thisProp.cached_extension;
         const double k = thisProp.stiffness;
         if (d < EPSILON) continue;
         const double inv = 1.0/d;
@@ -113,7 +120,8 @@ void Solid::solve()
     const int DOF = 2 * N;
     const int M   = A.rows();
     const int total = DOF + M;
-
+    // std::cout << "A rows: " << A.rows() << " cols: " << A.cols() << "\n";
+    // std::cout << "A nonzeros: " << A.nonZeros() << "\n";
     Vec lambda = Vec::Zero(M);    // initialise lagrange multipliers
 
     Eigen::SparseLU<SpMat> solver;
@@ -150,6 +158,12 @@ void Solid::solve()
         // factorize and solve
         solver.analyzePattern(K_aug);
         solver.factorize(K_aug);
+        // std::cout << "K_aug size: " << K_aug.rows() << "x" << K_aug.cols() << "\n";
+        // std::cout << "K nonzeros: " << K.nonZeros() << "\n";
+        // std::cout << "A nonzeros: " << A.nonZeros() << "\n";
+        // std::cout << "K_aug nonzeros: " << K_aug.nonZeros() << "\n";
+        // std::cout << "g norm: " << g.norm() << "\n";
+        // std::cout << "c norm: " << c.norm() << "\n";
         if (solver.info() != Eigen::Success)
         {
             std::cerr << "Factorization failed at iteration " << iter << "\n";
@@ -176,16 +190,18 @@ void Solid::solve()
 
 Solid::Solid(Mesh& solidMesh): mesh(solidMesh)
 {
+    std::cout << "Solid1"<<std::endl;
     std::vector<BoundaryEdgeInformation>& edgeInfo = mesh.boundaryEdgeInfo;
     std::vector<Vec2D> nodesPos = mesh.nodes.nodesPos;
     assert(!edgeInfo.empty());
     constraints.reserve(edgeInfo.size());
+    std::cout << "Solid2"<<std::endl;
     for (unsigned int i=0; i<edgeInfo.size(); i++){
         assert(i == edgeInfo.at(i).id);
         const Vec2D& node1Pos = nodesPos.at(std::get<0>(edgeInfo.at(i).boundsIndices));
         const Vec2D& node2Pos = nodesPos.at(std::get<1>(edgeInfo.at(i).boundsIndices)-1);
         const Vec2D edgeVector = node2Pos - node1Pos;
-        const Vec2D normalVec = Vec2D(edgeVector.y, -edgeVector.x).normalized();
+        const Vec2D normalVec = Vec2D(-edgeVector.y, edgeVector.x).normalized();
         const double thisC = normalVec.x * node1Pos.x + normalVec.y * node1Pos.y;
         assert(std::abs(normalVec.x * node2Pos.x + normalVec.y * node2Pos.y - thisC) < TOL);
         BoundaryConstraint constraint;
@@ -194,10 +210,13 @@ Solid::Solid(Mesh& solidMesh): mesh(solidMesh)
         constraint.nVec = normalVec;
         constraints.emplace_back(constraint);
     }
+    std::cout << "Solid3"<<std::endl;
     mesh.createFlatVec();
-
+    std::cout << "nodePosFlat size: " << mesh.nodePosFlat.size() << "\n";
+    std::cout << "expected: " << 2 * mesh.nodes.numNodes << "\n";
     assembleConstraintMatrix();
     c = A * mesh.nodePosFlat;
+    std::cout<<"c[0] initial : "<<c[0]<<std::endl;
 
 }
 
@@ -208,6 +227,9 @@ void Solid::timeStep(const double dt)
     for (unsigned int i = 0; i < mesh.numBoundaryPoints; i++){
         c[i] += dC;
     }
+    solve();
+    std::cout<<"c[0] : "<<c[0]<<std::endl;
+    
 
 }
 

@@ -30,7 +30,7 @@ void Mesh::initializeBoundaryNodes(const BoundaryMeshBuildInformation& boundaryB
 {
     unsigned int indexStart = nodes.nodesPos.size();
     const unsigned int thisBoundaryNumPoints = boundaryBuildInfo.boundary.numBoundaryPoints;
-    numBoundaryPoints += thisBoundaryNumPoints;
+    // numBoundaryPoints += thisBoundaryNumPoints;
     const std::vector<Vec2D>& boundaryPoints = boundaryBuildInfo.boundary.boundaryPointsPos;
     const bool shouldIncludeCorner = boundaryBuildInfo.pointAtCorners;
     std::vector<Vec2D> pointsToInsert;
@@ -57,6 +57,7 @@ void Mesh::initializeBoundaryNodes(const BoundaryMeshBuildInformation& boundaryB
         {
             const Vec2D insertPosition = startingPoint + (directionUnit * j*distanceBetweenNodes);
             pointsToInsertThisEdge.push_back(insertPosition);
+            numBoundaryPoints++;
         }
         BoundaryEdgeInformation thisBoundaryEdgeInfo;
         thisBoundaryEdgeInfo.id = highestBoundaryID;
@@ -311,7 +312,7 @@ void Mesh::cacheEdgesExtensionFromFlatVec()
         const double dx = nodePosFlat[2*connection.node1] - nodePosFlat[2*connection.node2];
         const double dy = nodePosFlat[2*connection.node1+1] - nodePosFlat[2*connection.node2+1];
         const double currentLength = sqrt(dx*dx + dy*dy);
-        property.cached_extension = currentLength - property.natural_length;
+        property.cached_extension = currentLength;
     }
 }
 

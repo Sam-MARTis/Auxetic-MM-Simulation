@@ -115,12 +115,13 @@ int main()
             
             testRenderer.draw(window);
         }
-        for(unsigned int i=0; i<10; i++)
+        for(unsigned int i=0; i<2; i++)
         {
             solid.timeStep(dt);
             time += dt;
             iterationCount++;
         }
+        // std::cout <<"test particle pos "<<mesh.nodePosFlat[0] <<std::endl;
         mesh.syncVecWithFlatVecData();
         testRenderer.updateNodePositionsFromMesh(mesh);
         ImGui::SFML::Render(window);
