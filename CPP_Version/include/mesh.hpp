@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vector>
+
 #include <tuple>
 #include <functional>
 
@@ -11,6 +11,8 @@
 #include <nanoflann.hpp>
 #include <vector>
 
+#include <Eigen/Sparse>
+#include <Eigen/Dense>
 
 
 struct PointCloud
@@ -34,16 +36,16 @@ struct EdgesConnection{
     unsigned int node2;
 };
 
+struct EdgeProperties{
+    double natural_length;
+    double stiffness;
+    double cached_extension;
+};
 class Mesh{
     private:
         struct ConstraintParameter{
             double x0;
             double m;
-        };
-        struct EdgeProperties{
-            double natural_length;
-            double stiffness;
-            double cached_extension;
         };
 
         struct Edges{
@@ -52,23 +54,23 @@ class Mesh{
             std::vector<EdgesConnection> edgesConnection; // M
         };
 
-        struct Constraint{
-            std::function<double(double x0t, double t, double m)> func;
-            ConstraintParameter param;
-        };
-        struct Constraints{
-            unsigned int numConstraints = 0;
-            unsigned int numFree = 0;
-            std::vector<unsigned int> fixedIndices; // numConstraints
-            std::vector<unsigned int> freeIndices; // numNodes - numConstraints
-            std::vector<Constraint> constraints; // numConstraints
-        };
-        
+        // struct Constraint{
+        //     std::function<double(double x0t, double t, double m)> func;
+        //     ConstraintParameter param;
+        // };
+        // struct Constraints{
+        //     unsigned int numConstraints = 0;
+        //     unsigned int numFree = 0;
+        //     std::vector<unsigned int> fixedIndices; // numConstraints
+        //     std::vector<unsigned int> freeIndices; // numNodes - numConstraints
+        //     // std::vector<Constraint> constraints; // numConstraints
+        // };
+
 
         struct Nodes{
             unsigned int numNodes = 0;
             std::vector<Vec2D> nodesPos; // N
-            Constraints constraints;
+            // Constraints constraints;
         };
 
         struct EdgeKey
@@ -107,11 +109,13 @@ class Mesh{
         bool doesEdgeIntersectDiscontinuity(const unsigned int node1Idx, unsigned int node2Idx);
     public:
         Nodes nodes;
+        Vec nodePosFlat;
         Edges edges;
         double areaOfDxf = 4.0;
         unsigned int highestBoundaryID = 0;
         std::vector<BoundaryEdgeInformation> boundaryEdgeInfo;
         unsigned int numBoundaries = 0;
+        unsigned int numBoundaryPoints = 0;
         std::vector<Boundary> boundaries;
         std::vector<bool> boundaryIncludeExclude;
         void insertNodesAtPositions(const std::vector<Vec2D> nodePos);
@@ -122,8 +126,10 @@ class Mesh{
         double calculateAreaOfMeshObject(const unsigned int numSamples);
         double constraintParameter = 0.0f;
         void createEdges(const unsigned int K, const double distanceTheshold);
-        void enforceConstraints(double t);
-        void cacheEdgesExtension();
+        // void enforceConstraints(double t);
+        void createFlatVec();
+        void cacheEdgesExtensionFromFlatVec();
+        void syncVecWithFlatVecData();
 
 
         // Mesh();

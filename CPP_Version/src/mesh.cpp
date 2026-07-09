@@ -5,6 +5,7 @@
 #include "constants.hpp"
 #include "utils.hpp"
 #include <nanoflann.hpp>
+#include <math.h>
 
 void Mesh::insertNodesAtPositions(const std::vector<Vec2D> nodePos)
 {
@@ -14,12 +15,12 @@ void Mesh::insertNodesAtPositions(const std::vector<Vec2D> nodePos)
     const unsigned int firstNewIndex = static_cast<unsigned int>(nodes.nodesPos.size());
     nodes.numNodes += numAddedNodes;
     nodes.nodesPos.insert(nodes.nodesPos.end(), nodePos.begin(), nodePos.end());
-    nodes.constraints.numFree += numAddedNodes;
+    // nodes.constraints.numFree += numAddedNodes;
     std::vector<unsigned int> newFreeIndices;
     newFreeIndices.reserve(numAddedNodes);
     for (unsigned int i = 0; i < numAddedNodes; i++) newFreeIndices.push_back(firstNewIndex + i);
 
-    nodes.constraints.freeIndices.insert(nodes.constraints.freeIndices.end(), newFreeIndices.begin(), newFreeIndices.end());
+    // nodes.constraints.freeIndices.insert(nodes.constraints.freeIndices.end(), newFreeIndices.begin(), newFreeIndices.end());
     nodes.numNodes = static_cast<unsigned int>(nodes.nodesPos.size());
 
 }
@@ -28,7 +29,7 @@ void Mesh::insertNodesAtPositions(const std::vector<Vec2D> nodePos)
 void Mesh::initializeBoundaryNodes(const BoundaryMeshBuildInformation& boundaryBuildInfo)
 {
     unsigned int indexStart = nodes.nodesPos.size();
-    const unsigned int numBoundaryPoints = boundaryBuildInfo.boundary.numBoundaryPoints;
+    numBoundaryPoints += boundaryBuildInfo.boundary.numBoundaryPoints;
     const std::vector<Vec2D>& boundaryPoints = boundaryBuildInfo.boundary.boundaryPointsPos;
     const bool shouldIncludeCorner = boundaryBuildInfo.pointAtCorners;
     std::vector<Vec2D> pointsToInsert;
@@ -286,4 +287,38 @@ bool Mesh::doesEdgeIntersectDiscontinuity(const unsigned int node1Idx, unsigned 
         }
     }
     return false;
+}
+
+void Mesh::createFlatVec()
+{
+    nodePosFlat = Vec(nodes.numNodes*2);
+    const std::vector<Vec2D> nodesPos = nodes.nodesPos;
+    for (unsigned int nodeIdx=0; nodeIdx<nodes.numNodes; nodeIdx++)
+    {
+        nodePosFlat[2*nodeIdx] = nodesPos.at(nodeIdx).x;
+        nodePosFlat[2*nodeIdx+1] = nodesPos.at(nodeIdx).y;
+    }
+}
+
+
+void Mesh::cacheEdgesExtensionFromFlatVec()
+{
+    for (unsigned int i=0; i<edges.numEdges; i++)
+    {
+        EdgeProperties& property = edges.edgesProperty.at(i);
+        const EdgesConnection& connection = edges.edgesConnection.at(i);
+        const double dx = nodePosFlat[2*connection.node1] - nodePosFlat[2*connection.node2];
+        const double dy = nodePosFlat[2*connection.node1+1] - nodePosFlat[2*connection.node2+1];
+        const double currentLength = sqrt(dx*dx + dy*dy);
+        property.cached_extension = currentLength - property.natural_length;
+    }
+}
+
+void Mesh::syncVecWithFlatVecData()
+{
+    for (unsigned int i=0; i<nodes.numNodes; i++)
+    {
+        nodes.nodesPos.at(i).x = nodePosFlat[2*i];
+        nodes.nodesPos.at(i).y = nodePosFlat[2*i+1];
+    }
 }
