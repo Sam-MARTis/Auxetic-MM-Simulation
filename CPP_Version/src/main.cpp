@@ -10,8 +10,12 @@
 #include "menu.hpp"
 #include "mesh.hpp"
 #include "loader.hpp"
+#include <omp.h>
 int main()
 {
+
+    omp_set_num_threads(18);
+    Eigen::setNbThreads(18);
     sf::Clock clock;
     std::cout<<"Hello World!"<<std::endl;
     // std::vector<Vec2D> boundaryNodes;

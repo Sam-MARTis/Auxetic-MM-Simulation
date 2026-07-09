@@ -116,83 +116,72 @@ void Solid::assembleGradientAndHessian()
     K.setFromTriplets(triplets.begin(), triplets.end());
 }
 
-
 void Solid::solve()
 {
     PROFILE_SCOPE("Solid::solve");
-    const int N   = mesh.nodes.numNodes;
-    const int DOF = 2 * N;
-    const int M   = A.rows();
+    const int N     = mesh.nodes.numNodes;
+    const int DOF   = 2 * N;
+    const int M     = A.rows();
     const int total = DOF + M;
-    // std::cout << "A rows: " << A.rows() << " cols: " << A.cols() << "\n";
-    // std::cout << "A nonzeros: " << A.nonZeros() << "\n";
-    Vec lambda = Vec::Zero(M);    // initialise lagrange multipliers
 
-    Eigen::SparseLU<SpMat> solver;
+    Vec lambda = Vec::Zero(M);
 
     for (int iter = 0; iter < MAX_SOLVER_INTERNAL_ITER; iter++)
     {
-        Vec violation;
-        SpMat K_aug(total, total);
-        Vec rhs(total);
-
         {
             PROFILE_SCOPE("Solid::solve / assembleGradientAndHessian");
-            // rebuild K and g from current positions
             assembleGradientAndHessian();
         }
 
+        Vec violation;
         {
             PROFILE_SCOPE("Solid::solve / constraintViolation");
-            // constraint violation
             violation = A * mesh.nodePosFlat - c;
         }
 
         {
             PROFILE_SCOPE("Solid::solve / assembleAugmentedSystem");
-            // assemble augmented system
-            K_aug.reserve(K.nonZeros() + 2 * A.nonZeros());
+            std::vector<Eigen::Triplet<double>> triplets;
+            triplets.reserve(K.nonZeros() + 2 * A.nonZeros());
 
-            // Fill K_aug with K, A^T, and A
             for (int j = 0; j < K.outerSize(); j++)
                 for (SpMat::InnerIterator it(K, j); it; ++it)
-                    K_aug.insert(it.row(), it.col()) = it.value();
+                    triplets.emplace_back(it.row(), it.col(), it.value());
 
             for (int j = 0; j < A.outerSize(); j++)
                 for (SpMat::InnerIterator it(A, j); it; ++it)
                 {
-                    K_aug.insert(it.col(), DOF + it.row()) = it.value();  // A^T
-                    K_aug.insert(DOF + it.row(), it.col()) = it.value();  // A
+                    triplets.emplace_back(it.col(), DOF + it.row(), it.value());
+                    triplets.emplace_back(DOF + it.row(), it.col(), it.value());
                 }
-        }
 
-        {
-            PROFILE_SCOPE("Solid::solve / buildRHS");
-            // RHS
-            rhs.head(DOF) = -g;
-            rhs.tail(M)   = -violation;
+            K_aug = SpMat(total, total);
+            K_aug.setFromTriplets(triplets.begin(), triplets.end());
         }
 
         {
             PROFILE_SCOPE("Solid::solve / analyzePattern");
-            solver.analyzePattern(K_aug);
+            if (!patternAnalyzed)
+            {
+                solver.analyzePattern(K_aug);
+                patternAnalyzed = true;
+            }
         }
 
         {
             PROFILE_SCOPE("Solid::solve / factorize");
             solver.factorize(K_aug);
         }
-        // std::cout << "K_aug size: " << K_aug.rows() << "x" << K_aug.cols() << "\n";
-        // std::cout << "K nonzeros: " << K.nonZeros() << "\n";
-        // std::cout << "A nonzeros: " << A.nonZeros() << "\n";
-        // std::cout << "K_aug nonzeros: " << K_aug.nonZeros() << "\n";
-        // std::cout << "g norm: " << g.norm() << "\n";
-        // std::cout << "c norm: " << c.norm() << "\n";
+
         if (solver.info() != Eigen::Success)
         {
             std::cerr << "Factorization failed at iteration " << iter << "\n";
             break;
         }
+
+        Vec rhs(total);
+        rhs.head(DOF) = -g;
+        rhs.tail(M)   = -violation;
 
         Vec sol;
         {
@@ -202,16 +191,13 @@ void Solid::solve()
 
         {
             PROFILE_SCOPE("Solid::solve / updateState");
-            // update
             mesh.nodePosFlat += sol.head(DOF);
             lambda           += sol.tail(M);
         }
 
-        double res_g = 0.0;
-        double res_c = 0.0;
+        double res_g, res_c;
         {
             PROFILE_SCOPE("Solid::solve / convergenceCheck");
-            // convergence check
             res_g = g.norm();
             res_c = violation.norm();
         }

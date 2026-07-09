@@ -14,6 +14,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <Eigen/UmfPackSupport>
 
 #ifdef SHOULD_PROFILE
 namespace profiling
@@ -188,6 +189,7 @@ class Solid
     Vec c;
     SpMat K;
     Vec g;
+    SpMat K_aug;
 private:
     std::vector<BoundaryConstraint> constraints;
 
@@ -197,7 +199,10 @@ private:
     void buildConstraintRHS();
     void assembleGradientAndHessian();
     void solve();
+    bool patternAnalyzed = false;
 public:
+    // Eigen::SparseLU<SpMat> solver;
+    Eigen::UmfPackLU<SpMat> solver;
     Solid(Mesh& solidMesh);
     Mesh& mesh;
 

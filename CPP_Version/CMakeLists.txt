@@ -35,28 +35,33 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
         $<$<BOOL:${SHOULD_PROFILE}>:SHOULD_PROFILE>
 
 )
+
+
+
+find_package(SFML 3 COMPONENTS Graphics REQUIRED)
+find_package(Eigen3 REQUIRED)
+find_package(OpenMP REQUIRED)
+
+# find_package(PkgConfig REQUIRED)
+# pkg_check_modules(UMFPACK REQUIRED umfpack)
+
+
 target_include_directories(${PROJECT_NAME} PRIVATE
         include/
         ${IMGUI_DIR}
         ${IMGUI_SFML_DIR}
+        /usr/include/suitesparse
 )
 
-# find_package(glm REQUIRED)
-# find_package(assimp REQUIRED)
-find_package(SFML 3 COMPONENTS Graphics REQUIRED)
-find_package(Eigen3 REQUIRED)
-
-# target_link_libraries(${PROJECT_NAME} PRIVATE
-#     OpenGL::GL
-#     glfw
-#     glm::glm
-#     assimp::assimp
-# )
 target_link_libraries(${PROJECT_NAME} PRIVATE
-        SFML::Graphics
-        SFML::Window
-        SFML::System
-        Eigen3::Eigen
+    SFML::Graphics
+    SFML::Window
+    SFML::System
+    Eigen3::Eigen
+    OpenMP::OpenMP_CXX
+    OpenGL::GL
+
+    umfpack
 )
 
 find_package(OpenGL REQUIRED)
