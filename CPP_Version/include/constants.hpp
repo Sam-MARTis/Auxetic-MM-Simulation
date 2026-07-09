@@ -1,6 +1,10 @@
 #pragma once
+
 #include <string>
+#include <Eigen/Sparse>
+#include <Eigen/Dense>
 // #define NDEBUG
+
 
 constexpr double EPSILON = 1.0e-8;
 constexpr double DEFAULT_DISTANCE_FROM_CORNER = 1.0e-4;
@@ -22,3 +26,9 @@ constexpr double DEFAULT_EDGE_STIFFNESS = 1.0;
 
 
 constexpr double DEFAULT_INTERNAL_EDGE_EXPANSIVE_FACTOR = 1.000001;
+
+
+using SpMat = Eigen::SparseMatrix<double>;
+using Vec   = Eigen::VectorXd;
+using Mat22 = Eigen::Matrix2d;
+using Vec2  = Eigen::Vector2d;

@@ -42,6 +42,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 # find_package(glm REQUIRED)
 # find_package(assimp REQUIRED)
 find_package(SFML 3 COMPONENTS Graphics REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 # target_link_libraries(${PROJECT_NAME} PRIVATE
 #     OpenGL::GL
@@ -53,6 +54,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         SFML::Graphics
         SFML::Window
         SFML::System
+        Eigen3::Eigen
 )
 
 find_package(OpenGL REQUIRED)
