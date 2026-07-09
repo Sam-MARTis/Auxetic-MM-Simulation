@@ -70,24 +70,36 @@ void Renderer::rebuildEdgeVertexArray()
         const EdgesConnection& edge = edgeConnections.at(i);
         const Vec2D& node1Pos = particlePositions.at(edge.node1);
         const Vec2D& node2Pos = particlePositions.at(edge.node2);
-        const Vec2D screenPos1 = mapPhysicsToSpaceCoords(node1Pos);
-        const Vec2D screenPos2 = mapPhysicsToSpaceCoords(node2Pos);
-        const Vec2D edgeVector = screenPos2 - screenPos1;
-        const Vec2D Normal = {edgeVector.y, -edgeVector.x}.normalized();
+        const Vec2D edgeVec = node2Pos - node1Pos;
+        const Vec2D normal = Vec2D(edgeVec.y, -edgeVec.x).normalized();
         const float halfThickness = 0.5f*edgeThickness;
-        const Vec2D offset = Normal*halfThickness;
-        const Vec2D v1 = screenPos1 + offset;
-        const Vec2D v2 = screenPos1 - offset;
-        const Vec2D v3 = screenPos2 + offset;
-        const Vec2D v4 = screenPos2 - offset;
+        const Vec2D offset = normal*halfThickness;
+        const Vec2D r1 = node1Pos + offset;
+        const Vec2D r2 = node1Pos - offset;
+        const Vec2D r3 = node2Pos + offset;
+        const Vec2D r4 = node2Pos - offset;
+        const Vec2D v1 = mapPhysicsToSpaceCoords(r1);
+        const Vec2D v2 = mapPhysicsToSpaceCoords(r2);
+        const Vec2D v3 = mapPhysicsToSpaceCoords(r3);
+        const Vec2D v4 = mapPhysicsToSpaceCoords(r4);
+        // const Vec2D screenPos1 = mapPhysicsToSpaceCoords(node1Pos);
+        // const Vec2D screenPos2 = mapPhysicsToSpaceCoords(node2Pos);
+        // const Vec2D edgeVector = screenPos2 - screenPos1;
+        // const Vec2D Normal = Vec2D(edgeVector.y, -edgeVector.x).normalized();
+        // const float halfThickness = 0.5f*edgeThickness;
+        // const Vec2D offset = Normal*halfThickness;
+        // const Vec2D v1 = screenPos1 + offset;
+        // const Vec2D v2 = screenPos1 - offset;
+        // const Vec2D v3 = screenPos2 + offset;
+        // const Vec2D v4 = screenPos2 - offset;
         // Triangle 1
-        edgeVertices[6*i + 0] = {{static_cast<float>(v1.x), static_cast<float>(v1.y)}, edgeColour};
-        edgeVertices[6*i + 1] = {{static_cast<float>(v2.x), static_cast<float>(v2.y)}, edgeColour};
-        edgeVertices[6*i + 2] = {{static_cast<float>(v3.x), static_cast<float>(v3.y)}, edgeColour};
+        edgeVertices[6*i + 0] = {{static_cast<float>(v1.x), static_cast<float>(v1.y)}, edgeColour, {0.4f*tw, 0.4f*th}};
+        edgeVertices[6*i + 1] = {{static_cast<float>(v2.x), static_cast<float>(v2.y)}, edgeColour, {0.4f*tw, 0.6f*th}};
+        edgeVertices[6*i + 2] = {{static_cast<float>(v3.x), static_cast<float>(v3.y)}, edgeColour, {0.6f*tw, 0.4f*th}};
         // Triangle 2
-        edgeVertices[6*i + 3] = {{static_cast<float>(v2.x), static_cast<float>(v2.y)}, edgeColour};
-        edgeVertices[6*i + 4] = {{static_cast<float>(v4.x), static_cast<float>(v4.y)}, edgeColour};
-        edgeVertices[6*i + 5] = {{static_cast<float>(v3.x), static_cast<float>(v3.y)}, edgeColour};
+        edgeVertices[6*i + 3] = {{static_cast<float>(v2.x), static_cast<float>(v2.y)}, edgeColour, {0.4f*tw, 0.6f*th}};
+        edgeVertices[6*i + 4] = {{static_cast<float>(v4.x), static_cast<float>(v4.y)}, edgeColour, {0.6f*tw, 0.6f*th}};
+        edgeVertices[6*i + 5] = {{static_cast<float>(v3.x), static_cast<float>(v3.y)}, edgeColour, {0.6f*tw, 0.4f*th}};
     }
 }
 
@@ -178,7 +190,7 @@ void Renderer::updateRenderInformation(const RendererUpdateData& updateInfo)
 
 Vec2D Renderer::mapPhysicsToSpaceCoords(const Vec2D& physicsIn) const
 {
-    return {renderSpacePhysicsOrigin.x + renderScaleFromPhysics*physicsIn.x, renderSpacePhysicsOrigin.y - renderScaleFromPhysics* physicsIn.y};
+    return Vec2D(renderSpacePhysicsOrigin.x + renderScaleFromPhysics*physicsIn.x, renderSpacePhysicsOrigin.y - renderScaleFromPhysics* physicsIn.y);
 }
 
 Vec2D Renderer::mapPhysicsToSpaceCoords(const double& physicsInX, const double& physicsInY) const
@@ -193,5 +205,6 @@ Vec2D Renderer::mapPhysicsToSpaceCoords(const float& physicsInX, const float& ph
 void Renderer::draw(sf::RenderWindow& window) const
 {
     window.draw(particleVertices, renderState);
+    std::cout<<numEdges<<std::endl;
     window.draw(edgeVertices, renderState);
 }
