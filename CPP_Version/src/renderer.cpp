@@ -204,7 +204,7 @@ Vec2D Renderer::mapPhysicsToSpaceCoords(const float& physicsInX, const float& ph
 
 void Renderer::draw(sf::RenderWindow& window) const
 {
-    window.draw(particleVertices, renderState);
-    std::cout<<numEdges<<std::endl;
     window.draw(edgeVertices, renderState);
+    window.draw(particleVertices, renderState);
+    // std::cout<<numEdges<<std::endl;
 }

@@ -38,6 +38,7 @@ void Mesh::initializeBoundaryNodes(const BoundaryMeshBuildInformation& boundaryB
         std::vector<Vec2D> pointsToInsertThisEdge;
         const Vec2D corner1 = boundaryPoints.at(i);
         const Vec2D corner2 = boundaryPoints.at((i+1)%numBoundaryPoints);
+        segmentDiscontinuities.push_back(std::make_pair(corner1, corner2));
         const Vec2D direction = corner2 - corner1;
         double distance = direction.norm();
         if (!shouldIncludeCorner) distance -= 2*DEFAULT_DISTANCE_FROM_CORNER;
@@ -80,6 +81,7 @@ void Mesh::initializeInternalEdgesNodes(const InternalEdgesMeshBuildInformation 
     {
         std::vector<Vec2D> pointsToInsertThisEdge;
         const std::pair<Vec2D, Vec2D>& edgeCurrent = edgePoints.at(i);
+        segmentDiscontinuities.push_back(edgeCurrent);
         const Vec2D corner1 = std::get<0>(edgeCurrent);
         const Vec2D corner2 = std::get<1>(edgeCurrent);
         const Vec2D direction = corner2 - corner1;
