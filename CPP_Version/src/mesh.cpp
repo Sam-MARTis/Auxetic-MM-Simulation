@@ -29,16 +29,17 @@ void Mesh::insertNodesAtPositions(const std::vector<Vec2D> nodePos)
 void Mesh::initializeBoundaryNodes(const BoundaryMeshBuildInformation& boundaryBuildInfo)
 {
     unsigned int indexStart = nodes.nodesPos.size();
-    numBoundaryPoints += boundaryBuildInfo.boundary.numBoundaryPoints;
+    const unsigned int thisBoundaryNumPoints = boundaryBuildInfo.boundary.numBoundaryPoints;
+    numBoundaryPoints += thisBoundaryNumPoints;
     const std::vector<Vec2D>& boundaryPoints = boundaryBuildInfo.boundary.boundaryPointsPos;
     const bool shouldIncludeCorner = boundaryBuildInfo.pointAtCorners;
     std::vector<Vec2D> pointsToInsert;
 
-    for (unsigned int i = 0; i < numBoundaryPoints; i++)
+    for (unsigned int i = 0; i < thisBoundaryNumPoints; i++)
     {
         std::vector<Vec2D> pointsToInsertThisEdge;
         const Vec2D corner1 = boundaryPoints.at(i);
-        const Vec2D corner2 = boundaryPoints.at((i+1)%numBoundaryPoints);
+        const Vec2D corner2 = boundaryPoints.at((i+1)%thisBoundaryNumPoints);
         // segmentDiscontinuities.push_back(std::make_pair(corner1, corner2));
         // numSegmentDiscontinuities ++;
 

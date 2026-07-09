@@ -178,9 +178,9 @@ Solid::Solid(Mesh& solidMesh): mesh(solidMesh)
 {
     std::vector<BoundaryEdgeInformation>& edgeInfo = mesh.boundaryEdgeInfo;
     std::vector<Vec2D> nodesPos = mesh.nodes.nodesPos;
-    assert(edgeInfo.size() == mesh.numBoundaries);
-    constraints.reserve(mesh.numBoundaries);
-    for (unsigned int i=0; i<mesh.numBoundaries; i++){
+    assert(!edgeInfo.empty());
+    constraints.reserve(edgeInfo.size());
+    for (unsigned int i=0; i<edgeInfo.size(); i++){
         assert(i == edgeInfo.at(i).id);
         const Vec2D& node1Pos = nodesPos.at(std::get<0>(edgeInfo.at(i).boundsIndices));
         const Vec2D& node2Pos = nodesPos.at(std::get<1>(edgeInfo.at(i).boundsIndices)-1);
@@ -204,8 +204,8 @@ Solid::Solid(Mesh& solidMesh): mesh(solidMesh)
 void Solid::timeStep(const double dt)
 {
     const float dC = dt*VELOCITY_CONSTRAINTS_EVOLUTION;
-    assert(c.size() == mesh.numBoundaries);
-    for (unsigned int i = 0; i < mesh.numBoundaries; i++){
+    assert(c.size() == mesh.numBoundaryPoints);
+    for (unsigned int i = 0; i < mesh.numBoundaryPoints; i++){
         c[i] += dC;
     }
 
