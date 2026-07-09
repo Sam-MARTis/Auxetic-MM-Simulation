@@ -5,7 +5,7 @@
 
 #include "utils.hpp"
 
-void Renderer::rebuildVertexArray()
+void Renderer::rebuildParticleVertexArray()
 {
 
     const float r = renderScaleFromPhysics*static_cast<float>(particleRadius);
@@ -24,6 +24,7 @@ void Renderer::rebuildVertexArray()
         particleVertices[6*i + 4] = {{x + r, y + r}, particleColour, {tw, th}};
         particleVertices[6*i + 5] = {{x + r, y - r}, particleColour, {tw, 0.f}};
     }
+
     const std::vector<sf::Color> colours = {
         sf::Color::Green,
         sf::Color::Red,
@@ -61,6 +62,35 @@ void Renderer::rebuildVertexArray()
 }
 
 
+void Renderer::rebuildEdgeVertexArray()
+{
+    assert(numEdges == edgeConnections.size());
+    for (unsigned int i=0; i<numEdges; i++)
+    {
+        const EdgesConnection& edge = edgeConnections.at(i);
+        const Vec2D& node1Pos = particlePositions.at(edge.node1);
+        const Vec2D& node2Pos = particlePositions.at(edge.node2);
+        const Vec2D screenPos1 = mapPhysicsToSpaceCoords(node1Pos);
+        const Vec2D screenPos2 = mapPhysicsToSpaceCoords(node2Pos);
+        const Vec2D edgeVector = screenPos2 - screenPos1;
+        const Vec2D Normal = {edgeVector.y, -edgeVector.x}.normalized();
+        const float halfThickness = 0.5f*edgeThickness;
+        const Vec2D offset = Normal*halfThickness;
+        const Vec2D v1 = screenPos1 + offset;
+        const Vec2D v2 = screenPos1 - offset;
+        const Vec2D v3 = screenPos2 + offset;
+        const Vec2D v4 = screenPos2 - offset;
+        // Triangle 1
+        edgeVertices[6*i + 0] = {{static_cast<float>(v1.x), static_cast<float>(v1.y)}, edgeColour};
+        edgeVertices[6*i + 1] = {{static_cast<float>(v2.x), static_cast<float>(v2.y)}, edgeColour};
+        edgeVertices[6*i + 2] = {{static_cast<float>(v3.x), static_cast<float>(v3.y)}, edgeColour};
+        // Triangle 2
+        edgeVertices[6*i + 3] = {{static_cast<float>(v2.x), static_cast<float>(v2.y)}, edgeColour};
+        edgeVertices[6*i + 4] = {{static_cast<float>(v4.x), static_cast<float>(v4.y)}, edgeColour};
+        edgeVertices[6*i + 5] = {{static_cast<float>(v3.x), static_cast<float>(v3.y)}, edgeColour};
+    }
+}
+
 Renderer::Renderer(const RendererSetupInformation& setupInfo)
 : boundaryEdgeInfos(setupInfo.boundaryEdgeInfo)
 {
@@ -73,7 +103,9 @@ Renderer::Renderer(const RendererSetupInformation& setupInfo)
     renderSpacePhysicsOrigin = setupInfo.renderOrigin;
 
     numParticles = setupInfo.nodePositions.size();
+    numEdges = setupInfo.edgesConnections.size();
     particleVertices = sf::VertexArray(sf::PrimitiveType::Triangles, 6*numParticles);
+    edgeVertices = sf::VertexArray(sf::PrimitiveType::Triangles, 6*numEdges);
     const sf::Vector2u texSize = particleTexture.getSize();
     tw = static_cast<float>(texSize.x);
     th = static_cast<float>(texSize.y);
@@ -81,9 +113,15 @@ Renderer::Renderer(const RendererSetupInformation& setupInfo)
     renderState.texture = &particleTexture;
 
     const std::vector<Vec2D>& pos = setupInfo.nodePositions;
+    const std::vector<EdgesConnection>& edgeCon = setupInfo.edgesConnections;
     particlePositions.reserve(numParticles);
     particlePositions.insert(particlePositions.end(), pos.begin(), pos.end());
-    rebuildVertexArray();
+
+    edgeConnections.reserve(numEdges);
+    edgeConnections.insert(edgeConnections.end(), edgeCon.begin(), edgeCon.end());
+    rebuildParticleVertexArray();
+    rebuildEdgeVertexArray();
+
 }
 
 void Renderer::updateRenderInformation(const RendererUpdateData& updateInfo)
@@ -133,7 +171,8 @@ void Renderer::updateRenderInformation(const RendererUpdateData& updateInfo)
 
     if ((flags & StateUpdateFlags::SHOULD_REBUILD_VERTICES) != StateUpdateFlags::NONE)
     {
-        rebuildVertexArray();
+        rebuildParticleVertexArray();
+
     }
 }
 
@@ -154,4 +193,5 @@ Vec2D Renderer::mapPhysicsToSpaceCoords(const float& physicsInX, const float& ph
 void Renderer::draw(sf::RenderWindow& window) const
 {
     window.draw(particleVertices, renderState);
+    window.draw(edgeVertices, renderState);
 }

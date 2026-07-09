@@ -19,6 +19,8 @@ struct RendererSetupInformation
     float renderScale = DEFAULT_SCREEN_SCALE;
     Vec2D renderOrigin;
     std::vector<Vec2D>& nodePositions;
+    std::vector<EdgesConnection>& edgesConnections;
+
     std::vector<BoundaryEdgeInformation>& boundaryEdgeInfo;
 };
 
@@ -40,13 +42,17 @@ class Renderer
     std::vector<BoundaryEdgeInformation>& boundaryEdgeInfos;
     float renderScaleFromPhysics;
     std::vector<Vec2D> particlePositions;
+    std::vector<EdgesConnection> edgeConnections;
     sf::VertexArray particleVertices;
+    sf::VertexArray edgeVertices;
     unsigned int numParticles;
+    unsigned int numEdges;
     sf::Texture particleTexture = sf::Texture(PARTICLE_TEXTURE_PATH);
     float tw, th;
     sf::RenderStates renderState;
 
-    void rebuildVertexArray();
+    void rebuildParticleVertexArray();
+    void rebuildEdgeVertexArray();
     public:
     Renderer(const RendererSetupInformation& setupInfo);
     void updateRenderInformation(const RendererUpdateData& updateInfo);

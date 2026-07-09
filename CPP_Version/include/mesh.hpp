@@ -29,6 +29,11 @@ struct BoundaryEdgeInformation
     std::pair<unsigned int, unsigned int> boundsIndices;
 };
 
+struct EdgesConnection{
+    unsigned int node1;
+    unsigned int node2;
+};
+
 class Mesh{
     private:
         struct ConstraintParameter{
@@ -40,10 +45,7 @@ class Mesh{
             double stiffness;
             double cached_extension;
         };
-        struct EdgesConnection{
-            unsigned int node1;
-            unsigned int node2;
-        };
+
         struct Edges{
             unsigned int numEdges;
             std::vector<EdgeProperties> edgesProperty; // M
