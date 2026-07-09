@@ -23,3 +23,19 @@ void Solid::assembleConstraintMatrix()
     A = SpMat(M, 2*mesh.nodes.numNodes);
     A.setFromTriplets(triplets.begin(), triplets.end());
 }
+
+void Solid::buildConstraintRHS()
+{
+    const unsigned M = mesh.numBoundaryPoints;
+    c = Vec(M);
+    int row = 0;
+    for (const BoundaryConstraint& con : constraints)
+    {
+        const BoundaryEdgeInformation& boundary = mesh.boundaryEdgeInfo.at(con.boundaryId);
+        const unsigned int startingIdx = std::get<0>(boundary.boundsIndices);
+        const unsigned int endingIdx = std::get<1>(boundary.boundsIndices);
+        unsigned int count = endingIdx - startingIdx;
+        c.segment(row, count).setConstant(con.c);
+        row += count;
+    }
+}
