@@ -57,7 +57,7 @@ void Solid::assembleGradientAndHessian()
         const EdgeProperties& thisProp = props.at(i);
         const int a = thisEdge.node1;
         const int b = thisEdge.node2;
-        const double dx = mesh.nodePosFlat[2*a] - mesh.nodePosFlat[2*b];
+        const double dx = mesh. nodePosFlat[2*a] - mesh.nodePosFlat[2*b];
         const double dy = mesh.nodePosFlat[2*a+1] - mesh.nodePosFlat[2*b+1];
         const double d = thisProp.cached_extension;
         const double l0 = thisProp.natural_length;
@@ -104,4 +104,72 @@ void Solid::assembleGradientAndHessian()
     }
     K = SpMat(DOF, DOF);
     K.setFromTriplets(triplets.begin(), triplets.end());
+}
+
+
+void Solid::solve()
+{
+    const int N   = mesh.nodes.numNodes;
+    const int DOF = 2 * N;
+    const int M   = A.rows();
+    const int total = DOF + M;
+
+    Vec lambda = Vec::Zero(M);    // initialise lagrange multipliers
+
+    Eigen::SparseLU<SpMat> solver;
+
+    for (int iter = 0; iter < MAX_SOLVER_INTERNAL_ITER; iter++)
+    {
+        // rebuild K and g from current positions
+        assembleGradientAndHessian();
+
+        // constraint violation
+        Vec violation = A * mesh.nodePosFlat - c;
+
+        // assemble augmented system
+        SpMat K_aug(total, total);
+        K_aug.reserve(K.nonZeros() + 2 * A.nonZeros());
+
+        // Fill K_aug with K, A^T, and A
+        for (int j = 0; j < K.outerSize(); j++)
+            for (SpMat::InnerIterator it(K, j); it; ++it)
+                K_aug.insert(it.row(), it.col()) = it.value();
+
+        for (int j = 0; j < A.outerSize(); j++)
+            for (SpMat::InnerIterator it(A, j); it; ++it)
+            {
+                K_aug.insert(it.col(), DOF + it.row()) = it.value();  // A^T
+                K_aug.insert(DOF + it.row(), it.col()) = it.value();  // A
+            }
+
+        // RHS
+        Vec rhs(total);
+        rhs.head(DOF) = -g;
+        rhs.tail(M)   = -violation;
+
+        // factorize and solve
+        solver.analyzePattern(K_aug);
+        solver.factorize(K_aug);
+        if (solver.info() != Eigen::Success)
+        {
+            std::cerr << "Factorization failed at iteration " << iter << "\n";
+            break;
+        }
+
+        Vec sol = solver.solve(rhs);
+
+        // update
+        mesh.nodePosFlat += sol.head(DOF);
+        lambda           += sol.tail(M);
+
+        // convergence check
+        double res_g = g.norm();
+        double res_c = violation.norm();
+
+        if (res_g < TOL && res_c < TOL)
+        {
+            std::cout << "Converged at iteration " << iter << "\n";
+            break;
+        }
+    }
 }

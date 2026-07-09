@@ -31,5 +31,6 @@ class Solid
 
     void buildConstraintRHS();
     void assembleGradientAndHessian();
+    void solve();
 
 };

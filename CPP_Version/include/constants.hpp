@@ -24,6 +24,9 @@ constexpr double DEFAULT_DISTANCE_THRESHOLD_FOR_EDGES = 9e-2;
 constexpr double DEFAULT_EDGE_RENDER_THICKNESS = 4e-3;
 constexpr double DEFAULT_EDGE_STIFFNESS = 1.0;
 
+static constexpr int    MAX_SOLVER_INTERNAL_ITER = 50;
+static constexpr double TOL      = 1e-10;
+static constexpr double EPSILON2  = 1e-12;
 
 constexpr double DEFAULT_INTERNAL_EDGE_EXPANSIVE_FACTOR = 1.000001;
 
