@@ -8,16 +8,19 @@
 
 void Mesh::insertNodesAtPositions(const std::vector<Vec2D> nodePos)
 {
-    const unsigned int lastIndexOfExistingNodes = nodes.nodesPos.size() - 1;
     const unsigned int numAddedNodes = nodePos.size();
+    if (numAddedNodes == 0) return;
+
+    const unsigned int firstNewIndex = static_cast<unsigned int>(nodes.nodesPos.size());
     nodes.numNodes += numAddedNodes;
     nodes.nodesPos.insert(nodes.nodesPos.end(), nodePos.begin(), nodePos.end());
     nodes.constraints.numFree += numAddedNodes;
     std::vector<unsigned int> newFreeIndices;
     newFreeIndices.reserve(numAddedNodes);
-    for (unsigned int i = 0; i < numAddedNodes; i++) newFreeIndices.push_back(i+1+lastIndexOfExistingNodes);
+    for (unsigned int i = 0; i < numAddedNodes; i++) newFreeIndices.push_back(firstNewIndex + i);
 
     nodes.constraints.freeIndices.insert(nodes.constraints.freeIndices.end(), newFreeIndices.begin(), newFreeIndices.end());
+    nodes.numNodes = static_cast<unsigned int>(nodes.nodesPos.size());
 
 }
 
@@ -219,6 +222,7 @@ void Mesh::createEdges(const unsigned int K, const double distanceTheshold)
     std::vector<double> distances(K);
     const double distanceThresholdSq = distanceTheshold*distanceTheshold;
     std::unordered_set<EdgeKey, EdgeHash> edgeSet;
+    assert(nodes.numNodes == nodes.nodesPos.size());
     for (unsigned int node1Idx=0; node1Idx<nodes.numNodes; node1Idx++)
     {
         const Vec2D& queryPoint = nodes.nodesPos.at(node1Idx);
@@ -226,8 +230,8 @@ void Mesh::createEdges(const unsigned int K, const double distanceTheshold)
         for (unsigned int edgeIdx = 0; edgeIdx<K; edgeIdx++)
         {
             const unsigned int node2Idx = indices.at(edgeIdx);
-            const double distance = distances.at(node2Idx);
-            if (distance * distance > distanceThresholdSq) continue;
+            const double distanceSq = distances.at(edgeIdx);
+            if (distanceSq > distanceThresholdSq) continue;
             EdgeKey edge(node1Idx, node2Idx);
             if (!(edgeSet.insert(edge).second)) continue;
             edges.edgesConnection.push_back({edge.a, edge.b});
@@ -236,6 +240,7 @@ void Mesh::createEdges(const unsigned int K, const double distanceTheshold)
                 .stiffness = DEFAULT_EDGE_STIFFNESS,
                 .cached_extension = 0.0
             });
+            edges.numEdges++;
         }
     }
 }

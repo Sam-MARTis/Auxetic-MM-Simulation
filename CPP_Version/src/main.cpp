@@ -50,13 +50,14 @@ int main()
     // mesh.addInternalNodes_Random(DEFAULT_NUMBER_INTERNAL_NODES);
 
     mesh.addInternalNodes_Uniform(1000);
+    mesh.createEdges(DEFAULT_NUM_NEIGHBOURS_FOR_EDGES, DEFAULT_DISTANCE_THRESHOLD_FOR_EDGES);
 
-    EdgesConnection testEdge1{.node1 = 0, .node2 = 900};
-    EdgesConnection testEdge2{.node1 = 100, .node2 = 200};
+    // EdgesConnection testEdge1{.node1 = 0, .node2 = 900};
+    // EdgesConnection testEdge2{.node1 = 100, .node2 = 200};
     // EdgesConnection test
     // std::vector<EdgesConnection> testEdges{testEdge1, testEdge2};
-
-    RendererSetupInformation setupInfo{.nodePositions = mesh.nodes.nodesPos, .edgesConnections = testEdges, .boundaryEdgeInfo = mesh.boundaryEdgeInfo};
+    std::cout <<"Edges initialized"<<std::endl;
+    RendererSetupInformation setupInfo{.nodePositions = mesh.nodes.nodesPos, .edgesConnections = mesh.edges.edgesConnection, .boundaryEdgeInfo = mesh.boundaryEdgeInfo};
     setupInfo.renderOrigin = Vec2D(DEFAULT_SCREEN_WIDTH/2.0, DEFAULT_SCREEN_HEIGHT/2.0);
     RendererUpdateData renderUpdateInfo{
         .propertyUpdated = StateUpdateFlags::NONE,

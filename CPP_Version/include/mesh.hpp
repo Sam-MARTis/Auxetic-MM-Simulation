@@ -47,7 +47,7 @@ class Mesh{
         };
 
         struct Edges{
-            unsigned int numEdges;
+            unsigned int numEdges = 0;
             std::vector<EdgeProperties> edgesProperty; // M
             std::vector<EdgesConnection> edgesConnection; // M
         };
@@ -57,8 +57,8 @@ class Mesh{
             ConstraintParameter param;
         };
         struct Constraints{
-            unsigned int numConstraints;
-            unsigned int numFree;
+            unsigned int numConstraints = 0;
+            unsigned int numFree = 0;
             std::vector<unsigned int> fixedIndices; // numConstraints
             std::vector<unsigned int> freeIndices; // numNodes - numConstraints
             std::vector<Constraint> constraints; // numConstraints
@@ -66,7 +66,7 @@ class Mesh{
         
 
         struct Nodes{
-            unsigned int numNodes;
+            unsigned int numNodes = 0;
             std::vector<Vec2D> nodesPos; // N
             Constraints constraints;
         };
@@ -82,7 +82,10 @@ class Mesh{
                 b = std::max(i, j);
             }
 
-            bool operator==(const EdgeKey&) const = default;
+            bool operator==(const EdgeKey& other) const
+            {
+                return a == other.a && b == other.b;
+            }
         };
         struct EdgeHash
         {
