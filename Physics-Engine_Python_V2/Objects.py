@@ -282,7 +282,7 @@ class Solid:
             for k in range(num_external_edges):
                 ext_node_a_pos = edges_external[k][0]
                 ext_node_b_pos = edges_external[k][1]
-                if segments_intersect_2d_fast(node_a_pos, node_b_pos, ext_node_a_pos, ext_node_b_pos):
+                if segments_intersect_2d_fast(node_a_pos, node_b_pos, ext_node_a_pos, Fig):
                     break
             else:
                 filtered_pairs.append((i, j))

@@ -1,1 +1,6 @@
 *.ipynb linguist-vendored
+**/Makefile linguist-generated
+**/CMakeFiles/** linguist-generated
+**/CMakeCache.txt linguist-generated
+**/cmake_install.cmake linguist-generated
+**/CTestTestfile.cmake linguist-generated
