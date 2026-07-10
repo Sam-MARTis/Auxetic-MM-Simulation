@@ -489,7 +489,7 @@ $SKPOLY
   9
 $TDCREATE
  40
-2461230.5429861112
+2461232.4052430554
   9
 $TDUCREATE
  40
@@ -497,7 +497,7 @@ $TDUCREATE
   9
 $TDUPDATE
  40
-2461230.5429861112
+2461232.4052430554
   9
 $TDUUPDATE
  40
@@ -929,11 +929,11 @@ $PSTYLEMODE
   9
 $FINGERPRINTGUID
   2
-{47516D86-5834-423B-8D9F-02591781264D}
+{D74DE064-D908-4E26-872B-B5107404ADDB}
   9
 $VERSIONGUID
   2
-{7C11B5F9-11C5-478C-A6C0-6EAE7E1538DD}
+{06C6A52F-5FA0-46F9-A206-19E10E31236F}
   9
 $EXTNAMES
 290
@@ -961,7 +961,7 @@ $HIDETEXT
   9
 $XCLIPFRAME
 280
-0
+1
   9
 $HALOGAP
 280
@@ -1323,9 +1323,9 @@ ISM
   0
 CLASS
   1
-LAYOUT
+ACDBPLACEHOLDER
   2
-AcDbLayout
+AcDbPlaceHolder
   3
 ObjectDBX Classes
  90
@@ -1339,9 +1339,9 @@ ObjectDBX Classes
   0
 CLASS
   1
-ACDBPLACEHOLDER
+LAYOUT
   2
-AcDbPlaceHolder
+AcDbLayout
   3
 ObjectDBX Classes
  90
@@ -2228,8 +2228,6 @@ A
 0
 100
 AcDbDictionary
-280
-0
 281
 1
   3
@@ -2288,8 +2286,6 @@ B
 A
 100
 AcDbDictionary
-280
-0
 281
 1
   0
@@ -2300,8 +2296,6 @@ C
 A
 100
 AcDbDictionary
-280
-0
 281
 1
   0
@@ -2312,8 +2306,6 @@ D
 A
 100
 AcDbDictionary
-280
-0
 281
 1
   3
@@ -2332,8 +2324,6 @@ E
 A
 100
 AcDbDictionary
-280
-0
 281
 1
   3
@@ -2356,8 +2346,6 @@ F
 A
 100
 AcDbDictionary
-280
-0
 281
 1
   3
@@ -2372,8 +2360,6 @@ DICTIONARY
 A
 100
 AcDbDictionary
-280
-0
 281
 1
   3
@@ -2388,8 +2374,6 @@ DICTIONARY
 A
 100
 AcDbDictionary
-280
-0
 281
 1
   0
@@ -2400,8 +2384,6 @@ ACDBDICTIONARYWDFLT
 A
 100
 AcDbDictionary
-280
-0
 281
 1
   3
@@ -2426,8 +2408,6 @@ DICTIONARY
 A
 100
 AcDbDictionary
-280
-0
 281
 1
   0
@@ -2438,8 +2418,6 @@ DICTIONARY
 A
 100
 AcDbDictionary
-280
-0
 281
 1
   0
@@ -2450,8 +2428,6 @@ DICTIONARY
 A
 100
 AcDbDictionary
-280
-0
 281
 1
   0
@@ -2464,8 +2440,6 @@ D
 AcDbPlotSettings
   1
 
-  2
-Adobe PDF
   4
 A3
   6
@@ -2590,8 +2564,6 @@ D
 AcDbPlotSettings
   1
 
-  2
-Adobe PDF
   4
 A3
   6
@@ -3222,6 +3194,8 @@ DICTIONARY
 A
 100
 AcDbDictionary
+280
+1
 281
 1
   3
@@ -3243,7 +3217,7 @@ DictionaryVariables
 280
 0
   1
-1.1.3 @ 2026-07-08T07:31:54.892032+00:00
+1.4.4 @ 2026-07-10T04:13:33.726050+00:00
   0
 DICTIONARYVAR
   5
@@ -3255,7 +3229,7 @@ DictionaryVariables
 280
 0
   1
-1.1.3 @ 2026-07-08T07:31:54.892968+00:00
+1.4.4 @ 2026-07-10T04:13:33.728118+00:00
   0
 ENDSEC
   0
