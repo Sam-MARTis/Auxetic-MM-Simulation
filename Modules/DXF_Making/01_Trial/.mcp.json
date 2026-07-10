@@ -6,7 +6,7 @@
         "/home/odin/.vscode/extensions/jeil-structuralengineering-consultants.stgen-0.3.3/media/mcp-server.js"
       ],
       "env": {
-        "STGEN_MCP_PORT": "52789",
+        "STGEN_MCP_PORT": "52791",
         "STGEN_AI_PRIMITIVE_BUDGET_MODE": "warn",
         "STGEN_AI_PRIMITIVE_BUDGET_LIMIT": "3"
       }

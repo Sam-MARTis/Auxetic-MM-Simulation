@@ -36,6 +36,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
         DXFS_DIRECTORY_PATH="${CMAKE_SOURCE_DIR}/resources/DXFs"
         SUBROUTINES_PATH="${CMAKE_SOURCE_DIR}/src/subroutines"
         OUTPUT_VIDEOS_DIR="${CMAKE_SOURCE_DIR}/output/videos"
+        OUTPUT_IMAGES_DIR="${CMAKE_SOURCE_DIR}/output/images"
         $<$<BOOL:${SHOULD_PROFILE}>:SHOULD_PROFILE>
 
 )

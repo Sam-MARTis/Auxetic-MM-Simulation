@@ -94,7 +94,7 @@ if __name__ == "__main__":
     msp = doc.modelspace()
 
     cut_size = 1
-    edge_gap = 0.04
+    edge_gap = 0.02
     side_gap = 0.1
     θ_in_degrees = 65
     θ_in_radians = np.radians(θ_in_degrees)
@@ -115,12 +115,14 @@ if __name__ == "__main__":
                 mirror=is_odd(i + j),
             )
     # Draw lines around
-    msp.add_line((0, 0), (unit_cell.dx*n, 0), dxfattribs={"layer": "BOUNDARY"})
-    msp.add_line((unit_cell.dx*n, 0), (unit_cell.dx*n,unit_cell.dy*n), dxfattribs={"layer": "BOUNDARY"})
-    msp.add_line((unit_cell.dx*n, unit_cell.dy*n), (0, unit_cell.dy*n), dxfattribs={"layer": "BOUNDARY"})
-    msp.add_line((0, unit_cell.dy*n), (0, 0), dxfattribs={"layer": "BOUNDARY"})
+    msp.add_line((0, 0),(0, unit_cell.dy*n),  dxfattribs={"layer": "BOUNDARY"})
+    msp.add_line((0, unit_cell.dy*n), (unit_cell.dx*n, unit_cell.dy*n), dxfattribs={"layer": "BOUNDARY"})
+    msp.add_line((unit_cell.dx*n,unit_cell.dy*n),(unit_cell.dx*n, 0),  dxfattribs={"layer": "BOUNDARY"})
+    msp.add_line((unit_cell.dx*n, 0), (0, 0), dxfattribs={"layer": "BOUNDARY"})
 
-    name = f"pattern_{n}x{n}_edge-gap_{edge_gap}.dxf"
-    dir = "/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/resources/DXFs"
-    doc.saveas(f"{dir}/{name}")
+    name = f"cell1.dxf"
+    dir1 = "/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/Modules/DXF_Making/01_Trial"
+    dir2 = "/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/resources/DXFs"
+    doc.saveas(f"{dir2}/{name}")
+    doc.saveas(f"{dir1}/{name}")
     print(f"Pattern saved as {name}")

@@ -16,6 +16,8 @@
 #include <omp.h>
 #include <implot.h>
 #include <filesystem>
+#include <fstream>
+#include <sstream>
 #include <vector>
 
 int main()
@@ -134,9 +136,9 @@ int main()
     EnergyLog.push_back(0.0);
     while (window.isOpen())
     {
-        if(time>17) break;
+        if(time>14) break;
         PROFILE_SCOPE("Main::frame");
-        window.clear(sf::Color::Black);
+        window.clear(sf::Color::White);
         while (auto event = window.pollEvent())
         {
             ImGui::SFML::ProcessEvent(window, *event);
@@ -201,6 +203,37 @@ int main()
         ImGui::SFML::Render(window);
         window.display();
     }
+    const std::filesystem::path outputImagesDir{OUTPUT_IMAGES_DIR};
+    if (should_record_structure_evolution || shoould_snapshot_energy_log)
+    {
+        std::filesystem::create_directories(outputImagesDir);
+    }
+
+    if (shoould_snapshot_energy_log)
+    {
+        const auto energyLogCsvPath = outputImagesDir / "energy_log.csv";
+        {
+            std::ofstream energyLogCsvFile(energyLogCsvPath);
+            if (!energyLogCsvFile)
+            {
+                std::cerr << "Failed to open energy log CSV for writing: " << energyLogCsvPath << std::endl;
+            }
+            else
+            {
+                energyLogCsvFile << "time,energy\n";
+                for (std::size_t i = 0; i < timeLog.size() && i < EnergyLog.size(); ++i)
+                    energyLogCsvFile << timeLog[i] << ',' << EnergyLog[i] << '\n';
+            }
+        }
+
+        const auto snapshotPath = outputImagesDir / "energy_log_snapshot.png";
+        const std::filesystem::path energyPlotScriptPath{SUBROUTINES_PATH};
+        const std::string pythonCommand =
+            "/bin/python3 \"" + (energyPlotScriptPath / "plot_energy_log.py").string() +
+            "\" \"" + energyLogCsvPath.string() + "\" \"" + snapshotPath.string() + "\"";
+        std::system(pythonCommand.c_str());
+    }
+
     ImPlot::DestroyContext();
 
     if (should_record_structure_evolution)

@@ -19,7 +19,8 @@ class Vec2D:
     
 
 class Unit_Cell: 
-    def __init__(self, s, t, θ, a):
+    def __init__(self, s, t, θ, d):
+        a = Unit_Cell.solve_a_from_d(s, t, θ, d)
         self.internalCuts = []
         self.boundaryCuts = []
         
@@ -50,7 +51,33 @@ class Unit_Cell:
         self.internalCuts.append([hp2, ep2]) 
         self.internalCuts.append([hp3, ep3])
 
+    
+    def solve_a_from_d(s, t, theta_deg, d):
+        deg = 3.14159265/180
+        theta = theta_deg*deg
 
+        Px = -s/2
+        Py = (3**0.5/2)*(2*t - s)
+        P2 = Px*Px + Py*Py
+
+        ang = 30*deg + theta
+        Qx = 3**0.5*cos(ang)
+        Qy = 3**0.5*sin(ang)
+        PdotQ = Px*Qx + Py*Qy
+        Q2 = 3.0  # = Qx*Qx+Qy*Qy, always 3
+
+        disc = PdotQ**2 - Q2*(P2 - d**2)
+        if disc < 0:
+            raise ValueError("No real solution: requested d unreachable for given s,t,θ")
+
+        a1 = (-PdotQ + disc**0.5) / Q2
+        a2 = (-PdotQ - disc**0.5) / Q2
+        if(a1 < 0 and a2 < 0):
+            raise ValueError("No positive solution: requested d unreachable for given s,t,θ")
+        if(a1>0): 
+            return a1
+        return a2
+           # pick the valid/positive one
         
         # self.cut_size = cut_size
         # self.θ_in_radians = θ_in_radians
@@ -157,11 +184,12 @@ if __name__ == "__main__":
     edge_gap = 0.04
     t = 0.1
     θ = 10
-    a = 0.65
+    # a = 0.70
+    d = 0.1
     # θ_in_radians = np.radians(θ_in_degrees)
 
     # def __init__(self, s, t, θ, a):
-    unit_cell = Unit_Cell(s, t, θ, a)
+    unit_cell = Unit_Cell(s, t, θ, d)
     
     # Generate pattern array
     n = 1  # number of repetitions in each direction
@@ -180,7 +208,9 @@ if __name__ == "__main__":
     # msp.add_line((unit_cell.dx*n, unit_cell.dy*n), (0, unit_cell.dy*n), dxfattribs={"layer": "BOUNDARY"})
     # msp.add_line((0, unit_cell.dy*n), (0, 0), dxfattribs={"layer": "BOUNDARY"})
 
-    name = f"testPattern.dxf"
-    dir = "/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/Modules/DXF_Making/02_triangular"
-    doc.saveas(f"{dir}/{name}")
+    name = f"cell2.dxf"
+    dir1 = "/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/Modules/DXF_Making/02_triangular"
+    dir2 = "/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/resources/DXFs"
+    doc.saveas(f"{dir2}/{name}")
+    doc.saveas(f"{dir1}/{name}")
     print(f"Pattern saved as {name}")
