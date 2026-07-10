@@ -44,74 +44,89 @@ void Solid::buildConstraintRHS()
         row += count;
     }
 }
-
 void Solid::assembleGradientAndHessian()
 {
     PROFILE_SCOPE("Solid::assembleGradientAndHessian");
     mesh.cacheEdgesExtensionFromFlatVec();
-    const int N = mesh.nodes.numNodes;
-    const int DOF = 2*N;
+    const int N   = mesh.nodes.numNodes;
+    const int DOF = 2 * N;
+
     g = Vec::Zero(DOF);
-    std::vector<Eigen::Triplet<double>> triplets;
-    triplets.reserve(mesh.edges.numEdges * 16);
+
+    const int nThreads = omp_get_max_threads();
+    std::vector<Vec> g_local(nThreads, Vec::Zero(DOF));
+    std::vector<std::vector<Eigen::Triplet<double>>> triplets_local(nThreads);
+    for (int t = 0; t < nThreads; t++)
+        triplets_local[t].reserve((mesh.edges.numEdges / nThreads + 1) * 16);
+
     std::vector<EdgesConnection>& connections = mesh.edges.edgesConnection;
-    std::vector<EdgeProperties>& props = mesh.edges.edgesProperty;
-    assert(connections.size() == mesh.edges.numEdges);
-   
-    for (unsigned int i=0; i< mesh.edges.numEdges; i++){
-        const EdgesConnection& thisEdge = connections.at(i);
-        const EdgeProperties& thisProp = props.at(i);
-        const int a = thisEdge.node1;
-        const int b = thisEdge.node2;
-        assert(a >= 0 && a < N);
-        assert(b >= 0 && b < N);
-        assert(2*a+1 < (int)mesh.nodePosFlat.size());
-        assert(2*b+1 < (int)mesh.nodePosFlat.size());
-        const double dx = mesh. nodePosFlat[2*a] - mesh.nodePosFlat[2*b];
+    std::vector<EdgeProperties>&  props       = mesh.edges.edgesProperty;
+
+    #pragma omp parallel for schedule(static)
+    for (unsigned int i = 0; i < mesh.edges.numEdges; i++)
+    {
+        const int tid = omp_get_thread_num();
+
+        const int a  = connections[i].node1;
+        const int b  = connections[i].node2;
+        const double dx = mesh.nodePosFlat[2*a]   - mesh.nodePosFlat[2*b];
         const double dy = mesh.nodePosFlat[2*a+1] - mesh.nodePosFlat[2*b+1];
-        const double l0 = thisProp.natural_length;
-        const double d = thisProp.cached_extension;
-        const double k = thisProp.stiffness;
+        const double d  = props[i].cached_extension;   // keep cache
+        const double l0 = props[i].natural_length;
+        const double k  = props[i].stiffness;
+
         if (d < EPSILON) continue;
-        const double inv = 1.0/d;
+
+        const double inv   = 1.0 / d;
         const double alpha = k * (1.0 - l0 * inv);
-        const double beta = k * l0 * inv;
-        const double fx = alpha * dx;
-        const double fy = alpha * dy;
-        g[2*a] += fx;
-        g[2*a+1] += fy;
-        g[2*b] -= fx;
-        g[2*b+1] -= fy;
-        const double ex = dx * inv;
-        const double ey = dy * inv;
+        const double beta  = k * l0 * inv;
+        const double fx    = alpha * dx;
+        const double fy    = alpha * dy;
+
+        g_local[tid][2*a]   += fx;
+        g_local[tid][2*a+1] += fy;
+        g_local[tid][2*b]   -= fx;
+        g_local[tid][2*b+1] -= fy;
+
+        const double ex  = dx * inv;
+        const double ey  = dy * inv;
         const double c00 = alpha + beta * ex * ex;
-        const double c01 = beta * ex * ey;
+        const double c01 = beta  * ex * ey;
         const double c11 = alpha + beta * ey * ey;
+
         const int r1x = 2*a, r1y = 2*a+1;
         const int r2x = 2*b, r2y = 2*b+1;
-        triplets.emplace_back(r1x, r1x, c00);
-        triplets.emplace_back(r1x, r1y, c01);
-        triplets.emplace_back(r1y, r1x, c01);
-        triplets.emplace_back(r1y, r1y, c11);
 
-        triplets.emplace_back(r2x, r2x, c00);
-        triplets.emplace_back(r2x, r2y, c01);
-        triplets.emplace_back(r2y, r2x, c01);
-        triplets.emplace_back(r2y, r2y, c11);
-
-        triplets.emplace_back(r1x, r2x, -c00);
-        triplets.emplace_back(r1x, r2y, -c01);
-        triplets.emplace_back(r1y, r2x, -c01);
-        triplets.emplace_back(r1y, r2y, -c11);
-
-        triplets.emplace_back(r2x, r1x, -c00);
-        triplets.emplace_back(r2x, r1y, -c01);
-        triplets.emplace_back(r2y, r1x, -c01);
-        triplets.emplace_back(r2y, r1y, -c11);
-
-
-
+        auto& tl = triplets_local[tid];
+        tl.emplace_back(r1x, r1x,  c00);
+        tl.emplace_back(r1x, r1y,  c01);
+        tl.emplace_back(r1y, r1x,  c01);
+        tl.emplace_back(r1y, r1y,  c11);
+        tl.emplace_back(r2x, r2x,  c00);
+        tl.emplace_back(r2x, r2y,  c01);
+        tl.emplace_back(r2y, r2x,  c01);
+        tl.emplace_back(r2y, r2y,  c11);
+        tl.emplace_back(r1x, r2x, -c00);
+        tl.emplace_back(r1x, r2y, -c01);
+        tl.emplace_back(r1y, r2x, -c01);
+        tl.emplace_back(r1y, r2y, -c11);
+        tl.emplace_back(r2x, r1x, -c00);
+        tl.emplace_back(r2x, r1y, -c01);
+        tl.emplace_back(r2y, r1x, -c01);
+        tl.emplace_back(r2y, r1y, -c11);
     }
+
+    // merge g
+    for (int t = 0; t < nThreads; t++)
+        g += g_local[t];
+
+    // merge and build K
+    triplets.clear();
+    for (int t = 0; t < nThreads; t++)
+        triplets.insert(triplets.end(),
+                        triplets_local[t].begin(),
+                        triplets_local[t].end());
+
     K = SpMat(DOF, DOF);
     K.setFromTriplets(triplets.begin(), triplets.end());
 }
@@ -240,6 +255,7 @@ Solid::Solid(Mesh& solidMesh): mesh(solidMesh)
     assembleConstraintMatrix();
     c = A * mesh.nodePosFlat;
     std::cout<<"c[0] initial : "<<c[0]<<std::endl;
+    triplets.reserve(mesh.edges.numEdges * 16);
 
 }
 

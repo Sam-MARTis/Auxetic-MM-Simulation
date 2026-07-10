@@ -24,6 +24,7 @@ add_executable(${PROJECT_NAME} ${SOURCES}
         include/menu.hpp
         src/menu.cpp
         include/flag.hpp
+        include/profiling.hpp
 )
 
 # find_package(OpenGL REQUIRED)

@@ -28,7 +28,7 @@ int main()
     // internalEdges.push_back(std::make_pair(Vec2D(-0.5, 0.5), Vec2D(0.4, 0.7)));
     //
     // std::string dxfFilepath = std::string(DXFS_DIRECTORY_PATH)+ "/pattern_1x1_edge-gap_0.04.dxf";
-    std::string dxfFilepath = std::string(DXFS_DIRECTORY_PATH)+ "/cell2.dxf";
+    std::string dxfFilepath = std::string(DXFS_DIRECTORY_PATH)+ "/cell1.dxf";
     Loader dxfLoader{dxfFilepath};
 
     dxfLoader.alignPoints();
