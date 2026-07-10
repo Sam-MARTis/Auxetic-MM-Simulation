@@ -8,8 +8,10 @@ option(SHOULD_PROFILE "Enable runtime profiling output" OFF)
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/external/imgui)
 set(IMGUI_SFML_DIR ${CMAKE_SOURCE_DIR}/external/imgui-sfml)
+set(IMPLOT_DIR ${CMAKE_SOURCE_DIR}/external/implot)
 
 file(GLOB IMGUI_SOURCES ${IMGUI_DIR}/*.cpp)
+file(GLOB IMPLOT_SOURCES ${IMPLOT_DIR}/*.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCES}
         include/constants.hpp
@@ -20,19 +22,20 @@ add_executable(${PROJECT_NAME} ${SOURCES}
         include/utils.hpp
         src/loader.cpp
         ${IMGUI_SOURCES}
+        ${IMPLOT_SOURCES}
         ${IMGUI_SFML_DIR}/imgui-SFML.cpp
         include/menu.hpp
         src/menu.cpp
         include/flag.hpp
         include/profiling.hpp
 )
-
 # find_package(OpenGL REQUIRED)
 # find_package(glfw3 3.3 REQUIRED)
 target_compile_definitions(${PROJECT_NAME} PRIVATE
         PARTICLE_TEXTURE_PATH="${CMAKE_SOURCE_DIR}/resources/textures/circle.png"
         DXFS_DIRECTORY_PATH="${CMAKE_SOURCE_DIR}/resources/DXFs"
         SUBROUTINES_PATH="${CMAKE_SOURCE_DIR}/src/subroutines"
+        OUTPUT_VIDEOS_DIR="${CMAKE_SOURCE_DIR}/output/videos"
         $<$<BOOL:${SHOULD_PROFILE}>:SHOULD_PROFILE>
 
 )
@@ -50,6 +53,7 @@ find_package(OpenMP REQUIRED)
 target_include_directories(${PROJECT_NAME} PRIVATE
         include/
         ${IMGUI_DIR}
+        ${IMPLOT_DIR}
         ${IMGUI_SFML_DIR}
         /usr/include/suitesparse
 )

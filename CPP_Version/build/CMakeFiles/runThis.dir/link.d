@@ -13,10 +13,15 @@ runThis: \
   CMakeFiles/runThis.dir/external/imgui/imgui_draw.cpp.o \
   CMakeFiles/runThis.dir/external/imgui/imgui_tables.cpp.o \
   CMakeFiles/runThis.dir/external/imgui/imgui_widgets.cpp.o \
+  CMakeFiles/runThis.dir/external/implot/implot.cpp.o \
+  CMakeFiles/runThis.dir/external/implot/implot_items.cpp.o \
   CMakeFiles/runThis.dir/external/imgui-sfml/imgui-SFML.cpp.o \
   /usr/local/lib/libsfml-graphics.so.3.0.0 \
   /usr/local/lib/libsfml-window.so.3.0.0 \
   /usr/local/lib/libsfml-system.so.3.0.0 \
+  /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/libumfpack.so \
+  /usr/lib/gcc/x86_64-linux-gnu/13/libgomp.so \
+  /usr/lib/x86_64-linux-gnu/libpthread.a \
   /usr/lib/x86_64-linux-gnu/libGLX.so \
   /usr/lib/x86_64-linux-gnu/libOpenGL.so \
   /usr/lib/gcc/x86_64-linux-gnu/13/libstdc++.so \
@@ -64,6 +69,10 @@ runThis: \
   /lib/i386-linux-gnu/libudev.so.1 \
   /usr/lib/i386-linux-gnu/libudev.so.1 \
   /lib/x86_64-linux-gnu/libudev.so.1 \
+  /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/libcholmod.so.5 \
+  /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/libblas.so.3 \
+  /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/libamd.so.3 \
+  /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/libsuitesparseconfig.so.7 \
   /lib/i386-linux-gnu/libGLdispatch.so.0 \
   /usr/lib/i386-linux-gnu/libGLdispatch.so.0 \
   /lib/x86_64-linux-gnu/libGLdispatch.so.0 \
@@ -94,6 +103,10 @@ runThis: \
   /lib/i386-linux-gnu/libcap.so.2 \
   /usr/lib/i386-linux-gnu/libcap.so.2 \
   /lib/x86_64-linux-gnu/libcap.so.2 \
+  /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/libcolamd.so.3 \
+  /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/libcamd.so.3 \
+  /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/libccolamd.so.3 \
+  /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/liblapack.so.3 \
   /lib/i386-linux-gnu/libbrotlicommon.so.1 \
   /usr/lib/i386-linux-gnu/libbrotlicommon.so.1 \
   /lib/x86_64-linux-gnu/libbrotlicommon.so.1 \
@@ -103,6 +116,7 @@ runThis: \
   /lib/i386-linux-gnu/libXdmcp.so.6 \
   /usr/lib/i386-linux-gnu/libXdmcp.so.6 \
   /lib/x86_64-linux-gnu/libXdmcp.so.6 \
+  /lib/x86_64-linux-gnu/libgfortran.so.5 \
   /lib/i386-linux-gnu/libbsd.so.0 \
   /usr/lib/i386-linux-gnu/libbsd.so.0 \
   /lib/x86_64-linux-gnu/libbsd.so.0 \
@@ -138,6 +152,10 @@ CMakeFiles/runThis.dir/external/imgui/imgui_tables.cpp.o:
 
 CMakeFiles/runThis.dir/external/imgui/imgui_widgets.cpp.o:
 
+CMakeFiles/runThis.dir/external/implot/implot.cpp.o:
+
+CMakeFiles/runThis.dir/external/implot/implot_items.cpp.o:
+
 CMakeFiles/runThis.dir/external/imgui-sfml/imgui-SFML.cpp.o:
 
 /usr/local/lib/libsfml-graphics.so.3.0.0:
@@ -145,6 +163,12 @@ CMakeFiles/runThis.dir/external/imgui-sfml/imgui-SFML.cpp.o:
 /usr/local/lib/libsfml-window.so.3.0.0:
 
 /usr/local/lib/libsfml-system.so.3.0.0:
+
+/usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/libumfpack.so:
+
+/usr/lib/gcc/x86_64-linux-gnu/13/libgomp.so:
+
+/usr/lib/x86_64-linux-gnu/libpthread.a:
 
 /usr/lib/x86_64-linux-gnu/libGLX.so:
 
@@ -240,6 +264,14 @@ CMakeFiles/runThis.dir/external/imgui-sfml/imgui-SFML.cpp.o:
 
 /lib/x86_64-linux-gnu/libudev.so.1:
 
+/usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/libcholmod.so.5:
+
+/usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/libblas.so.3:
+
+/usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/libamd.so.3:
+
+/usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/libsuitesparseconfig.so.7:
+
 /lib/i386-linux-gnu/libGLdispatch.so.0:
 
 /usr/lib/i386-linux-gnu/libGLdispatch.so.0:
@@ -300,6 +332,14 @@ CMakeFiles/runThis.dir/external/imgui-sfml/imgui-SFML.cpp.o:
 
 /lib/x86_64-linux-gnu/libcap.so.2:
 
+/usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/libcolamd.so.3:
+
+/usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/libcamd.so.3:
+
+/usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/libccolamd.so.3:
+
+/usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/liblapack.so.3:
+
 /lib/i386-linux-gnu/libbrotlicommon.so.1:
 
 /usr/lib/i386-linux-gnu/libbrotlicommon.so.1:
@@ -317,6 +357,8 @@ CMakeFiles/runThis.dir/external/imgui-sfml/imgui-SFML.cpp.o:
 /usr/lib/i386-linux-gnu/libXdmcp.so.6:
 
 /lib/x86_64-linux-gnu/libXdmcp.so.6:
+
+/lib/x86_64-linux-gnu/libgfortran.so.5:
 
 /lib/i386-linux-gnu/libbsd.so.0:
 

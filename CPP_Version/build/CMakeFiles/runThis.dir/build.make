@@ -226,10 +226,38 @@ CMakeFiles/runThis.dir/external/imgui/imgui_widgets.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/runThis.dir/external/imgui/imgui_widgets.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/imgui/imgui_widgets.cpp -o CMakeFiles/runThis.dir/external/imgui/imgui_widgets.cpp.s
 
+CMakeFiles/runThis.dir/external/implot/implot.cpp.o: CMakeFiles/runThis.dir/flags.make
+CMakeFiles/runThis.dir/external/implot/implot.cpp.o: /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/implot/implot.cpp
+CMakeFiles/runThis.dir/external/implot/implot.cpp.o: CMakeFiles/runThis.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/runThis.dir/external/implot/implot.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/runThis.dir/external/implot/implot.cpp.o -MF CMakeFiles/runThis.dir/external/implot/implot.cpp.o.d -o CMakeFiles/runThis.dir/external/implot/implot.cpp.o -c /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/implot/implot.cpp
+
+CMakeFiles/runThis.dir/external/implot/implot.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/runThis.dir/external/implot/implot.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/implot/implot.cpp > CMakeFiles/runThis.dir/external/implot/implot.cpp.i
+
+CMakeFiles/runThis.dir/external/implot/implot.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/runThis.dir/external/implot/implot.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/implot/implot.cpp -o CMakeFiles/runThis.dir/external/implot/implot.cpp.s
+
+CMakeFiles/runThis.dir/external/implot/implot_items.cpp.o: CMakeFiles/runThis.dir/flags.make
+CMakeFiles/runThis.dir/external/implot/implot_items.cpp.o: /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/implot/implot_items.cpp
+CMakeFiles/runThis.dir/external/implot/implot_items.cpp.o: CMakeFiles/runThis.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/runThis.dir/external/implot/implot_items.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/runThis.dir/external/implot/implot_items.cpp.o -MF CMakeFiles/runThis.dir/external/implot/implot_items.cpp.o.d -o CMakeFiles/runThis.dir/external/implot/implot_items.cpp.o -c /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/implot/implot_items.cpp
+
+CMakeFiles/runThis.dir/external/implot/implot_items.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/runThis.dir/external/implot/implot_items.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/implot/implot_items.cpp > CMakeFiles/runThis.dir/external/implot/implot_items.cpp.i
+
+CMakeFiles/runThis.dir/external/implot/implot_items.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/runThis.dir/external/implot/implot_items.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/implot/implot_items.cpp -o CMakeFiles/runThis.dir/external/implot/implot_items.cpp.s
+
 CMakeFiles/runThis.dir/external/imgui-sfml/imgui-SFML.cpp.o: CMakeFiles/runThis.dir/flags.make
 CMakeFiles/runThis.dir/external/imgui-sfml/imgui-SFML.cpp.o: /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/imgui-sfml/imgui-SFML.cpp
 CMakeFiles/runThis.dir/external/imgui-sfml/imgui-SFML.cpp.o: CMakeFiles/runThis.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/runThis.dir/external/imgui-sfml/imgui-SFML.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/runThis.dir/external/imgui-sfml/imgui-SFML.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/runThis.dir/external/imgui-sfml/imgui-SFML.cpp.o -MF CMakeFiles/runThis.dir/external/imgui-sfml/imgui-SFML.cpp.o.d -o CMakeFiles/runThis.dir/external/imgui-sfml/imgui-SFML.cpp.o -c /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/imgui-sfml/imgui-SFML.cpp
 
 CMakeFiles/runThis.dir/external/imgui-sfml/imgui-SFML.cpp.i: cmake_force
@@ -253,6 +281,8 @@ runThis_OBJECTS = \
 "CMakeFiles/runThis.dir/external/imgui/imgui_draw.cpp.o" \
 "CMakeFiles/runThis.dir/external/imgui/imgui_tables.cpp.o" \
 "CMakeFiles/runThis.dir/external/imgui/imgui_widgets.cpp.o" \
+"CMakeFiles/runThis.dir/external/implot/implot.cpp.o" \
+"CMakeFiles/runThis.dir/external/implot/implot_items.cpp.o" \
 "CMakeFiles/runThis.dir/external/imgui-sfml/imgui-SFML.cpp.o"
 
 # External object files for target runThis
@@ -269,16 +299,20 @@ runThis: CMakeFiles/runThis.dir/external/imgui/imgui_demo.cpp.o
 runThis: CMakeFiles/runThis.dir/external/imgui/imgui_draw.cpp.o
 runThis: CMakeFiles/runThis.dir/external/imgui/imgui_tables.cpp.o
 runThis: CMakeFiles/runThis.dir/external/imgui/imgui_widgets.cpp.o
+runThis: CMakeFiles/runThis.dir/external/implot/implot.cpp.o
+runThis: CMakeFiles/runThis.dir/external/implot/implot_items.cpp.o
 runThis: CMakeFiles/runThis.dir/external/imgui-sfml/imgui-SFML.cpp.o
 runThis: CMakeFiles/runThis.dir/build.make
 runThis: CMakeFiles/runThis.dir/compiler_depend.ts
 runThis: /usr/local/lib/libsfml-graphics.so.3.0.0
 runThis: /usr/local/lib/libsfml-window.so.3.0.0
 runThis: /usr/local/lib/libsfml-system.so.3.0.0
+runThis: /usr/lib/gcc/x86_64-linux-gnu/13/libgomp.so
+runThis: /usr/lib/x86_64-linux-gnu/libpthread.a
 runThis: /usr/lib/x86_64-linux-gnu/libGLX.so
 runThis: /usr/lib/x86_64-linux-gnu/libOpenGL.so
 runThis: CMakeFiles/runThis.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Linking CXX executable runThis"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Linking CXX executable runThis"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/runThis.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

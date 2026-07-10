@@ -1,6 +1,6 @@
 CMakeFiles/runThis.dir/src/main.cpp.o: \
  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/main.cpp \
- /usr/include/stdc-predef.h /usr/include/c++/13/iostream \
+ /usr/include/stdc-predef.h /usr/include/c++/13/iomanip \
  /usr/include/c++/13/bits/requires_hosted.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/os_defines.h \
@@ -12,8 +12,7 @@ CMakeFiles/runThis.dir/src/main.cpp.o: \
  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/cpu_defines.h \
- /usr/include/c++/13/pstl/pstl_config.h /usr/include/c++/13/ostream \
- /usr/include/c++/13/ios /usr/include/c++/13/iosfwd \
+ /usr/include/c++/13/pstl/pstl_config.h /usr/include/c++/13/iosfwd \
  /usr/include/c++/13/bits/stringfwd.h \
  /usr/include/c++/13/bits/memoryfwd.h /usr/include/c++/13/bits/postypes.h \
  /usr/include/c++/13/cwchar /usr/include/wchar.h \
@@ -30,38 +29,17 @@ CMakeFiles/runThis.dir/src/main.cpp.o: \
  /usr/include/x86_64-linux-gnu/bits/types/FILE.h \
  /usr/include/x86_64-linux-gnu/bits/types/locale_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
- /usr/include/c++/13/exception /usr/include/c++/13/bits/exception.h \
- /usr/include/c++/13/bits/exception_ptr.h \
- /usr/include/c++/13/bits/exception_defines.h \
- /usr/include/c++/13/bits/cxxabi_init_exception.h \
- /usr/include/c++/13/typeinfo /usr/include/c++/13/bits/hash_bytes.h \
- /usr/include/c++/13/new /usr/include/c++/13/bits/move.h \
- /usr/include/c++/13/type_traits \
- /usr/include/c++/13/bits/nested_exception.h \
- /usr/include/c++/13/bits/char_traits.h /usr/include/c++/13/compare \
- /usr/include/c++/13/concepts /usr/include/c++/13/bits/stl_construct.h \
- /usr/include/c++/13/bits/stl_iterator_base_types.h \
- /usr/include/c++/13/bits/iterator_concepts.h \
- /usr/include/c++/13/bits/ptr_traits.h \
- /usr/include/c++/13/bits/ranges_cmp.h \
- /usr/include/c++/13/bits/stl_iterator_base_funcs.h \
- /usr/include/c++/13/bits/concept_check.h \
- /usr/include/c++/13/debug/assertions.h \
- /usr/include/c++/13/bits/localefwd.h \
- /usr/include/x86_64-linux-gnu/c++/13/bits/c++locale.h \
- /usr/include/c++/13/clocale /usr/include/locale.h \
- /usr/include/x86_64-linux-gnu/bits/locale.h /usr/include/c++/13/cctype \
- /usr/include/ctype.h /usr/include/x86_64-linux-gnu/bits/types.h \
- /usr/include/x86_64-linux-gnu/bits/typesizes.h \
- /usr/include/x86_64-linux-gnu/bits/time64.h \
- /usr/include/x86_64-linux-gnu/bits/endian.h \
- /usr/include/x86_64-linux-gnu/bits/endianness.h \
  /usr/include/c++/13/bits/ios_base.h /usr/include/c++/13/ext/atomicity.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/gthr.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/gthr-default.h \
  /usr/include/pthread.h /usr/include/sched.h \
+ /usr/include/x86_64-linux-gnu/bits/types.h \
+ /usr/include/x86_64-linux-gnu/bits/typesizes.h \
+ /usr/include/x86_64-linux-gnu/bits/time64.h \
  /usr/include/x86_64-linux-gnu/bits/types/time_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_timespec.h \
+ /usr/include/x86_64-linux-gnu/bits/endian.h \
+ /usr/include/x86_64-linux-gnu/bits/endianness.h \
  /usr/include/x86_64-linux-gnu/bits/sched.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h \
  /usr/include/x86_64-linux-gnu/bits/cpu-set.h /usr/include/time.h \
@@ -85,11 +63,28 @@ CMakeFiles/runThis.dir/src/main.cpp.o: \
  /usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/atomic_word.h \
  /usr/include/x86_64-linux-gnu/sys/single_threaded.h \
- /usr/include/c++/13/bits/locale_classes.h /usr/include/c++/13/string \
+ /usr/include/c++/13/bits/localefwd.h \
+ /usr/include/x86_64-linux-gnu/c++/13/bits/c++locale.h \
+ /usr/include/c++/13/clocale /usr/include/locale.h \
+ /usr/include/x86_64-linux-gnu/bits/locale.h /usr/include/c++/13/cctype \
+ /usr/include/ctype.h /usr/include/c++/13/bits/locale_classes.h \
+ /usr/include/c++/13/string /usr/include/c++/13/bits/char_traits.h \
+ /usr/include/c++/13/type_traits /usr/include/c++/13/compare \
+ /usr/include/c++/13/concepts /usr/include/c++/13/bits/stl_construct.h \
+ /usr/include/c++/13/new /usr/include/c++/13/bits/exception.h \
+ /usr/include/c++/13/bits/move.h \
+ /usr/include/c++/13/bits/stl_iterator_base_types.h \
+ /usr/include/c++/13/bits/iterator_concepts.h \
+ /usr/include/c++/13/bits/ptr_traits.h \
+ /usr/include/c++/13/bits/ranges_cmp.h \
+ /usr/include/c++/13/bits/stl_iterator_base_funcs.h \
+ /usr/include/c++/13/bits/concept_check.h \
+ /usr/include/c++/13/debug/assertions.h \
  /usr/include/c++/13/bits/allocator.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++allocator.h \
  /usr/include/c++/13/bits/new_allocator.h \
  /usr/include/c++/13/bits/functexcept.h \
+ /usr/include/c++/13/bits/exception_defines.h \
  /usr/include/c++/13/bits/cpp_type_traits.h \
  /usr/include/c++/13/bits/ostream_insert.h \
  /usr/include/c++/13/bits/cxxabi_forced.h \
@@ -109,6 +104,7 @@ CMakeFiles/runThis.dir/src/main.cpp.o: \
  /usr/include/c++/13/ext/alloc_traits.h \
  /usr/include/c++/13/bits/alloc_traits.h /usr/include/c++/13/string_view \
  /usr/include/c++/13/bits/functional_hash.h \
+ /usr/include/c++/13/bits/hash_bytes.h \
  /usr/include/c++/13/bits/ranges_base.h \
  /usr/include/c++/13/bits/max_size_type.h /usr/include/c++/13/numbers \
  /usr/include/c++/13/bits/string_view.tcc \
@@ -143,18 +139,31 @@ CMakeFiles/runThis.dir/src/main.cpp.o: \
  /usr/include/c++/13/bits/locale_classes.tcc \
  /usr/include/c++/13/system_error \
  /usr/include/x86_64-linux-gnu/c++/13/bits/error_constants.h \
- /usr/include/c++/13/stdexcept /usr/include/c++/13/streambuf \
- /usr/include/c++/13/bits/streambuf.tcc \
- /usr/include/c++/13/bits/basic_ios.h \
- /usr/include/c++/13/bits/locale_facets.h /usr/include/c++/13/cwctype \
- /usr/include/wctype.h /usr/include/x86_64-linux-gnu/bits/wctype-wchar.h \
+ /usr/include/c++/13/stdexcept /usr/include/c++/13/exception \
+ /usr/include/c++/13/bits/exception_ptr.h \
+ /usr/include/c++/13/bits/cxxabi_init_exception.h \
+ /usr/include/c++/13/typeinfo /usr/include/c++/13/bits/nested_exception.h \
+ /usr/include/c++/13/locale /usr/include/c++/13/bits/locale_facets.h \
+ /usr/include/c++/13/cwctype /usr/include/wctype.h \
+ /usr/include/x86_64-linux-gnu/bits/wctype-wchar.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/ctype_base.h \
+ /usr/include/c++/13/streambuf /usr/include/c++/13/bits/streambuf.tcc \
  /usr/include/c++/13/bits/streambuf_iterator.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/ctype_inline.h \
  /usr/include/c++/13/bits/locale_facets.tcc \
- /usr/include/c++/13/bits/basic_ios.tcc \
- /usr/include/c++/13/bits/ostream.tcc /usr/include/c++/13/istream \
+ /usr/include/c++/13/bits/locale_facets_nonio.h /usr/include/c++/13/ctime \
+ /usr/include/x86_64-linux-gnu/c++/13/bits/time_members.h \
+ /usr/include/x86_64-linux-gnu/c++/13/bits/messages_members.h \
+ /usr/include/libintl.h /usr/include/c++/13/bits/codecvt.h \
+ /usr/include/c++/13/bits/locale_facets_nonio.tcc \
+ /usr/include/c++/13/bits/locale_conv.h \
+ /usr/include/c++/13/bits/quoted_string.h /usr/include/c++/13/sstream \
+ /usr/include/c++/13/istream /usr/include/c++/13/ios \
+ /usr/include/c++/13/bits/basic_ios.h \
+ /usr/include/c++/13/bits/basic_ios.tcc /usr/include/c++/13/ostream \
+ /usr/include/c++/13/bits/ostream.tcc \
  /usr/include/c++/13/bits/istream.tcc \
+ /usr/include/c++/13/bits/sstream.tcc /usr/include/c++/13/iostream \
  /usr/local/include/SFML/Graphics.hpp \
  /usr/local/include/SFML/Graphics/BlendMode.hpp \
  /usr/local/include/SFML/Graphics/Export.hpp \
@@ -234,16 +243,8 @@ CMakeFiles/runThis.dir/src/main.cpp.o: \
  /usr/include/c++/13/pstl/execution_defs.h /usr/include/c++/13/filesystem \
  /usr/include/c++/13/bits/fs_fwd.h /usr/include/c++/13/bits/chrono.h \
  /usr/include/c++/13/ratio /usr/include/c++/13/limits \
- /usr/include/c++/13/ctime /usr/include/c++/13/bits/parse_numbers.h \
- /usr/include/c++/13/bits/fs_path.h /usr/include/c++/13/locale \
- /usr/include/c++/13/bits/locale_facets_nonio.h \
- /usr/include/x86_64-linux-gnu/c++/13/bits/time_members.h \
- /usr/include/x86_64-linux-gnu/c++/13/bits/messages_members.h \
- /usr/include/libintl.h /usr/include/c++/13/bits/codecvt.h \
- /usr/include/c++/13/bits/locale_facets_nonio.tcc \
- /usr/include/c++/13/bits/locale_conv.h /usr/include/c++/13/iomanip \
- /usr/include/c++/13/bits/quoted_string.h /usr/include/c++/13/sstream \
- /usr/include/c++/13/bits/sstream.tcc /usr/include/c++/13/codecvt \
+ /usr/include/c++/13/bits/parse_numbers.h \
+ /usr/include/c++/13/bits/fs_path.h /usr/include/c++/13/codecvt \
  /usr/include/c++/13/bits/fs_dir.h /usr/include/c++/13/bits/fs_ops.h \
  /usr/include/c++/13/unordered_map \
  /usr/include/c++/13/bits/unordered_map.h \
@@ -306,6 +307,8 @@ CMakeFiles/runThis.dir/src/main.cpp.o: \
  /usr/local/include/SFML/System/InputStream.hpp \
  /usr/local/include/SFML/System/MemoryInputStream.hpp \
  /usr/local/include/SFML/System/Sleep.hpp \
+ /usr/local/include/SFML/OpenGL.hpp /usr/include/GL/gl.h \
+ /usr/include/GL/glext.h /usr/include/KHR/khrplatform.h \
  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/imgui-sfml/imgui-SFML.h \
  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/imgui-sfml/imgui-SFML_export.h \
  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/utils.hpp \
@@ -343,6 +346,7 @@ CMakeFiles/runThis.dir/src/main.cpp.o: \
  /usr/lib/gcc/x86_64-linux-gnu/13/include/mm_malloc.h \
  /usr/include/c++/13/stdlib.h /usr/include/c++/13/complex \
  /usr/include/eigen3/Eigen/src/Core/util/MKL_support.h \
+ /usr/lib/gcc/x86_64-linux-gnu/13/include/omp.h \
  /usr/include/c++/13/functional /usr/include/c++/13/bits/std_function.h \
  /usr/include/c++/13/cstring /usr/include/string.h /usr/include/strings.h \
  /usr/include/c++/13/algorithm /usr/include/c++/13/bits/ranges_algo.h \
@@ -622,4 +626,17 @@ CMakeFiles/runThis.dir/src/main.cpp.o: \
  /usr/include/c++/13/unordered_set \
  /usr/include/c++/13/bits/unordered_set.h \
  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/solid.hpp \
- /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/menu.hpp
+ /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/profiling.hpp \
+ /usr/include/eigen3/Eigen/UmfPackSupport \
+ /usr/include/suitesparse/umfpack.h \
+ /usr/include/suitesparse/SuiteSparse_config.h \
+ /usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h \
+ /usr/include/inttypes.h /usr/include/c++/13/math.h \
+ /usr/include/suitesparse/amd.h \
+ /usr/include/eigen3/Eigen/src/UmfPackSupport/UmfPackSupport.h \
+ /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/menu.hpp \
+ /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/implot/implot.h \
+ /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/imgui/imgui.h \
+ /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/imgui/imconfig.h \
+ /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/imgui-sfml/imgui-SFML_export.h \
+ /usr/lib/gcc/x86_64-linux-gnu/13/include/float.h

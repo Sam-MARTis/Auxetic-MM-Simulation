@@ -268,8 +268,33 @@ void Solid::timeStep(const double dt)
         c[i] += dC;
     }
     solve();
-    std::cout<<"c[0] : "<<c[0]<<std::endl;
+    // std::cout<<"c[0] : "<<c[0]<<std::endl;
     
 
 }
 
+double Solid::computeElasticEnergyFromExtensionCache()
+{
+    const unsigned int numEdges = mesh.edges.numEdges;
+    const std::vector<EdgeProperties>& edgeProps = mesh.edges.edgesProperty;
+    double totalEnergy = 0.0;
+    
+    for (unsigned int i = 0; i < numEdges; i++)
+    {
+        const double d  = edgeProps[i].cached_extension;
+        const double l0 = edgeProps[i].natural_length;
+        const double k  = edgeProps[i].stiffness;
+
+        if (d < EPSILON) continue;
+
+        const double energy = 0.5 * k * (d - l0) * (d - l0);
+        totalEnergy += energy;
+    }
+    return totalEnergy;
+}
+
+void Solid::logCurrentElasticEnergy()
+{
+    const double energy = computeElasticEnergyFromExtensionCache();
+    EnergyHistory.push_back(energy);
+}

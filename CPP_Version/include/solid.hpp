@@ -36,13 +36,16 @@ private:
     void buildConstraintRHS();
     void assembleGradientAndHessian();
     void solve();
+
     bool patternAnalyzed = false;
 public:
     // Eigen::SparseLU<SpMat> solver;
     Eigen::UmfPackLU<SpMat> solver;
     Solid(Mesh& solidMesh);
+    std::vector<double> EnergyHistory;
     Mesh& mesh;
-
+    double computeElasticEnergyFromExtensionCache();
     void timeStep(const double dt);
+    void logCurrentElasticEnergy();
 
 };

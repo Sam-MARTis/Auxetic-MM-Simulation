@@ -1551,6 +1551,510 @@ CMakeFiles/runThis.dir/external/imgui/imgui_widgets.cpp.o: /home/odin/Academic/R
   /usr/local/include/SFML/System/Vector2.hpp \
   /usr/local/include/SFML/System/Vector2.inl
 
+CMakeFiles/runThis.dir/external/implot/implot.cpp.o: /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/implot/implot.cpp \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/imgui-sfml/imgui-SFML_export.h \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/imgui/imconfig.h \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/imgui/imgui.h \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/imgui/imgui_internal.h \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/implot/implot.h \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/implot/implot_internal.h \
+  /usr/include/alloca.h \
+  /usr/include/assert.h \
+  /usr/include/c++/13/bit \
+  /usr/include/c++/13/bits/concept_check.h \
+  /usr/include/c++/13/bits/cpp_type_traits.h \
+  /usr/include/c++/13/bits/exception.h \
+  /usr/include/c++/13/bits/exception_defines.h \
+  /usr/include/c++/13/bits/functexcept.h \
+  /usr/include/c++/13/bits/iterator_concepts.h \
+  /usr/include/c++/13/bits/move.h \
+  /usr/include/c++/13/bits/predefined_ops.h \
+  /usr/include/c++/13/bits/ptr_traits.h \
+  /usr/include/c++/13/bits/ranges_cmp.h \
+  /usr/include/c++/13/bits/requires_hosted.h \
+  /usr/include/c++/13/bits/specfun.h \
+  /usr/include/c++/13/bits/std_abs.h \
+  /usr/include/c++/13/bits/stl_algobase.h \
+  /usr/include/c++/13/bits/stl_construct.h \
+  /usr/include/c++/13/bits/stl_iterator.h \
+  /usr/include/c++/13/bits/stl_iterator_base_funcs.h \
+  /usr/include/c++/13/bits/stl_iterator_base_types.h \
+  /usr/include/c++/13/bits/stl_pair.h \
+  /usr/include/c++/13/bits/utility.h \
+  /usr/include/c++/13/cassert \
+  /usr/include/c++/13/cmath \
+  /usr/include/c++/13/compare \
+  /usr/include/c++/13/concepts \
+  /usr/include/c++/13/cstdint \
+  /usr/include/c++/13/cstdlib \
+  /usr/include/c++/13/debug/assertions.h \
+  /usr/include/c++/13/debug/debug.h \
+  /usr/include/c++/13/ext/numeric_traits.h \
+  /usr/include/c++/13/ext/type_traits.h \
+  /usr/include/c++/13/limits \
+  /usr/include/c++/13/math.h \
+  /usr/include/c++/13/new \
+  /usr/include/c++/13/pstl/pstl_config.h \
+  /usr/include/c++/13/stdlib.h \
+  /usr/include/c++/13/tr1/bessel_function.tcc \
+  /usr/include/c++/13/tr1/beta_function.tcc \
+  /usr/include/c++/13/tr1/ell_integral.tcc \
+  /usr/include/c++/13/tr1/exp_integral.tcc \
+  /usr/include/c++/13/tr1/gamma.tcc \
+  /usr/include/c++/13/tr1/hypergeometric.tcc \
+  /usr/include/c++/13/tr1/legendre_function.tcc \
+  /usr/include/c++/13/tr1/modified_bessel_func.tcc \
+  /usr/include/c++/13/tr1/poly_hermite.tcc \
+  /usr/include/c++/13/tr1/poly_laguerre.tcc \
+  /usr/include/c++/13/tr1/riemann_zeta.tcc \
+  /usr/include/c++/13/tr1/special_function_util.h \
+  /usr/include/c++/13/type_traits \
+  /usr/include/endian.h \
+  /usr/include/features-time64.h \
+  /usr/include/features.h \
+  /usr/include/limits.h \
+  /usr/include/linux/limits.h \
+  /usr/include/math.h \
+  /usr/include/stdc-predef.h \
+  /usr/include/stdint.h \
+  /usr/include/stdio.h \
+  /usr/include/stdlib.h \
+  /usr/include/string.h \
+  /usr/include/strings.h \
+  /usr/include/time.h \
+  /usr/include/x86_64-linux-gnu/bits/atomic_wide_counter.h \
+  /usr/include/x86_64-linux-gnu/bits/byteswap.h \
+  /usr/include/x86_64-linux-gnu/bits/endian.h \
+  /usr/include/x86_64-linux-gnu/bits/endianness.h \
+  /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
+  /usr/include/x86_64-linux-gnu/bits/floatn.h \
+  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
+  /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
+  /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
+  /usr/include/x86_64-linux-gnu/bits/iscanonical.h \
+  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
+  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
+  /usr/include/x86_64-linux-gnu/bits/local_lim.h \
+  /usr/include/x86_64-linux-gnu/bits/long-double.h \
+  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
+  /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
+  /usr/include/x86_64-linux-gnu/bits/mathcalls-narrow.h \
+  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
+  /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
+  /usr/include/x86_64-linux-gnu/bits/posix2_lim.h \
+  /usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h \
+  /usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h \
+  /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h \
+  /usr/include/x86_64-linux-gnu/bits/select.h \
+  /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
+  /usr/include/x86_64-linux-gnu/bits/stdint-least.h \
+  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
+  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
+  /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
+  /usr/include/x86_64-linux-gnu/bits/struct_mutex.h \
+  /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h \
+  /usr/include/x86_64-linux-gnu/bits/thread-shared-types.h \
+  /usr/include/x86_64-linux-gnu/bits/time.h \
+  /usr/include/x86_64-linux-gnu/bits/time64.h \
+  /usr/include/x86_64-linux-gnu/bits/timesize.h \
+  /usr/include/x86_64-linux-gnu/bits/timex.h \
+  /usr/include/x86_64-linux-gnu/bits/types.h \
+  /usr/include/x86_64-linux-gnu/bits/types/FILE.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__FILE.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/clock_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/clockid_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/locale_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/sigset_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h \
+  /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h \
+  /usr/include/x86_64-linux-gnu/bits/types/struct_timespec.h \
+  /usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h \
+  /usr/include/x86_64-linux-gnu/bits/types/struct_tm.h \
+  /usr/include/x86_64-linux-gnu/bits/types/time_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/timer_t.h \
+  /usr/include/x86_64-linux-gnu/bits/typesizes.h \
+  /usr/include/x86_64-linux-gnu/bits/uintn-identity.h \
+  /usr/include/x86_64-linux-gnu/bits/uio_lim.h \
+  /usr/include/x86_64-linux-gnu/bits/waitflags.h \
+  /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
+  /usr/include/x86_64-linux-gnu/bits/wchar.h \
+  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
+  /usr/include/x86_64-linux-gnu/bits/xopen_lim.h \
+  /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
+  /usr/include/x86_64-linux-gnu/c++/13/bits/cpu_defines.h \
+  /usr/include/x86_64-linux-gnu/c++/13/bits/os_defines.h \
+  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
+  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
+  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
+  /usr/include/x86_64-linux-gnu/sys/select.h \
+  /usr/include/x86_64-linux-gnu/sys/types.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/adxintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/amxbf16intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/amxcomplexintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/amxfp16intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/amxint8intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/amxtileintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx2intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx5124fmapsintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx5124vnniwintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512bf16intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512bf16vlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512bitalgintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512bwintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512cdintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512dqintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512erintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512fintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512fp16intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512fp16vlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512ifmaintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512ifmavlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512pfintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512vbmi2intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512vbmi2vlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512vbmiintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512vbmivlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512vlbwintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512vldqintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512vlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512vnniintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512vnnivlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512vp2intersectintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512vp2intersectvlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512vpopcntdqintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512vpopcntdqvlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avxifmaintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avxintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avxneconvertintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avxvnniint8intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avxvnniintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/bmi2intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/bmiintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/cetintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/cldemoteintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/clflushoptintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/clwbintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/clzerointrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/cmpccxaddintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/emmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/enqcmdintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/f16cintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/float.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/fmaintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/fxsrintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/gfniintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/hresetintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/ia32intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/immintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/keylockerintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/limits.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/lwpintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/lzcntintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/mm_malloc.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/mmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/movdirintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/mwaitintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/mwaitxintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/pconfigintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/pkuintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/pmmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/popcntintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/prfchiintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/prfchwintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/raointintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/rdseedintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/rtmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/serializeintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/sgxintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/shaintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/smmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/syslimits.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/tbmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/tmmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/tsxldtrkintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/uintrintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/vaesintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/vpclmulqdqintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/waitpkgintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/wbnoinvdintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/wmmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/x86gprintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/xmmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/xsavecintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/xsaveintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/xsaveoptintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/xsavesintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/xtestintrin.h \
+  /usr/local/include/SFML/Config.hpp \
+  /usr/local/include/SFML/Graphics/Color.hpp \
+  /usr/local/include/SFML/Graphics/Color.inl \
+  /usr/local/include/SFML/System/Angle.hpp \
+  /usr/local/include/SFML/System/Angle.inl \
+  /usr/local/include/SFML/System/Export.hpp \
+  /usr/local/include/SFML/System/Vector2.hpp \
+  /usr/local/include/SFML/System/Vector2.inl
+
+CMakeFiles/runThis.dir/external/implot/implot_items.cpp.o: /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/implot/implot_items.cpp \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/imgui-sfml/imgui-SFML_export.h \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/imgui/imconfig.h \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/imgui/imgui.h \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/imgui/imgui_internal.h \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/implot/implot.h \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/implot/implot_internal.h \
+  /usr/include/alloca.h \
+  /usr/include/assert.h \
+  /usr/include/c++/13/bit \
+  /usr/include/c++/13/bits/concept_check.h \
+  /usr/include/c++/13/bits/cpp_type_traits.h \
+  /usr/include/c++/13/bits/exception.h \
+  /usr/include/c++/13/bits/exception_defines.h \
+  /usr/include/c++/13/bits/functexcept.h \
+  /usr/include/c++/13/bits/iterator_concepts.h \
+  /usr/include/c++/13/bits/move.h \
+  /usr/include/c++/13/bits/predefined_ops.h \
+  /usr/include/c++/13/bits/ptr_traits.h \
+  /usr/include/c++/13/bits/ranges_cmp.h \
+  /usr/include/c++/13/bits/requires_hosted.h \
+  /usr/include/c++/13/bits/specfun.h \
+  /usr/include/c++/13/bits/std_abs.h \
+  /usr/include/c++/13/bits/stl_algobase.h \
+  /usr/include/c++/13/bits/stl_construct.h \
+  /usr/include/c++/13/bits/stl_iterator.h \
+  /usr/include/c++/13/bits/stl_iterator_base_funcs.h \
+  /usr/include/c++/13/bits/stl_iterator_base_types.h \
+  /usr/include/c++/13/bits/stl_pair.h \
+  /usr/include/c++/13/bits/utility.h \
+  /usr/include/c++/13/cassert \
+  /usr/include/c++/13/cmath \
+  /usr/include/c++/13/compare \
+  /usr/include/c++/13/concepts \
+  /usr/include/c++/13/cstdint \
+  /usr/include/c++/13/cstdlib \
+  /usr/include/c++/13/debug/assertions.h \
+  /usr/include/c++/13/debug/debug.h \
+  /usr/include/c++/13/ext/numeric_traits.h \
+  /usr/include/c++/13/ext/type_traits.h \
+  /usr/include/c++/13/limits \
+  /usr/include/c++/13/math.h \
+  /usr/include/c++/13/new \
+  /usr/include/c++/13/pstl/pstl_config.h \
+  /usr/include/c++/13/stdlib.h \
+  /usr/include/c++/13/tr1/bessel_function.tcc \
+  /usr/include/c++/13/tr1/beta_function.tcc \
+  /usr/include/c++/13/tr1/ell_integral.tcc \
+  /usr/include/c++/13/tr1/exp_integral.tcc \
+  /usr/include/c++/13/tr1/gamma.tcc \
+  /usr/include/c++/13/tr1/hypergeometric.tcc \
+  /usr/include/c++/13/tr1/legendre_function.tcc \
+  /usr/include/c++/13/tr1/modified_bessel_func.tcc \
+  /usr/include/c++/13/tr1/poly_hermite.tcc \
+  /usr/include/c++/13/tr1/poly_laguerre.tcc \
+  /usr/include/c++/13/tr1/riemann_zeta.tcc \
+  /usr/include/c++/13/tr1/special_function_util.h \
+  /usr/include/c++/13/type_traits \
+  /usr/include/endian.h \
+  /usr/include/features-time64.h \
+  /usr/include/features.h \
+  /usr/include/limits.h \
+  /usr/include/linux/limits.h \
+  /usr/include/math.h \
+  /usr/include/stdc-predef.h \
+  /usr/include/stdint.h \
+  /usr/include/stdio.h \
+  /usr/include/stdlib.h \
+  /usr/include/string.h \
+  /usr/include/strings.h \
+  /usr/include/time.h \
+  /usr/include/x86_64-linux-gnu/bits/atomic_wide_counter.h \
+  /usr/include/x86_64-linux-gnu/bits/byteswap.h \
+  /usr/include/x86_64-linux-gnu/bits/endian.h \
+  /usr/include/x86_64-linux-gnu/bits/endianness.h \
+  /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
+  /usr/include/x86_64-linux-gnu/bits/floatn.h \
+  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
+  /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
+  /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
+  /usr/include/x86_64-linux-gnu/bits/iscanonical.h \
+  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
+  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
+  /usr/include/x86_64-linux-gnu/bits/local_lim.h \
+  /usr/include/x86_64-linux-gnu/bits/long-double.h \
+  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
+  /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
+  /usr/include/x86_64-linux-gnu/bits/mathcalls-narrow.h \
+  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
+  /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
+  /usr/include/x86_64-linux-gnu/bits/posix2_lim.h \
+  /usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h \
+  /usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h \
+  /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h \
+  /usr/include/x86_64-linux-gnu/bits/select.h \
+  /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
+  /usr/include/x86_64-linux-gnu/bits/stdint-least.h \
+  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
+  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
+  /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
+  /usr/include/x86_64-linux-gnu/bits/struct_mutex.h \
+  /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h \
+  /usr/include/x86_64-linux-gnu/bits/thread-shared-types.h \
+  /usr/include/x86_64-linux-gnu/bits/time.h \
+  /usr/include/x86_64-linux-gnu/bits/time64.h \
+  /usr/include/x86_64-linux-gnu/bits/timesize.h \
+  /usr/include/x86_64-linux-gnu/bits/timex.h \
+  /usr/include/x86_64-linux-gnu/bits/types.h \
+  /usr/include/x86_64-linux-gnu/bits/types/FILE.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__FILE.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/clock_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/clockid_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/locale_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/sigset_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h \
+  /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h \
+  /usr/include/x86_64-linux-gnu/bits/types/struct_timespec.h \
+  /usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h \
+  /usr/include/x86_64-linux-gnu/bits/types/struct_tm.h \
+  /usr/include/x86_64-linux-gnu/bits/types/time_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/timer_t.h \
+  /usr/include/x86_64-linux-gnu/bits/typesizes.h \
+  /usr/include/x86_64-linux-gnu/bits/uintn-identity.h \
+  /usr/include/x86_64-linux-gnu/bits/uio_lim.h \
+  /usr/include/x86_64-linux-gnu/bits/waitflags.h \
+  /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
+  /usr/include/x86_64-linux-gnu/bits/wchar.h \
+  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
+  /usr/include/x86_64-linux-gnu/bits/xopen_lim.h \
+  /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
+  /usr/include/x86_64-linux-gnu/c++/13/bits/cpu_defines.h \
+  /usr/include/x86_64-linux-gnu/c++/13/bits/os_defines.h \
+  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
+  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
+  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
+  /usr/include/x86_64-linux-gnu/sys/select.h \
+  /usr/include/x86_64-linux-gnu/sys/types.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/adxintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/amxbf16intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/amxcomplexintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/amxfp16intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/amxint8intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/amxtileintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx2intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx5124fmapsintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx5124vnniwintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512bf16intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512bf16vlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512bitalgintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512bwintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512cdintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512dqintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512erintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512fintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512fp16intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512fp16vlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512ifmaintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512ifmavlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512pfintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512vbmi2intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512vbmi2vlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512vbmiintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512vbmivlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512vlbwintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512vldqintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512vlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512vnniintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512vnnivlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512vp2intersectintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512vp2intersectvlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512vpopcntdqintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512vpopcntdqvlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avxifmaintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avxintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avxneconvertintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avxvnniint8intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/avxvnniintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/bmi2intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/bmiintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/cetintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/cldemoteintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/clflushoptintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/clwbintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/clzerointrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/cmpccxaddintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/emmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/enqcmdintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/f16cintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/float.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/fmaintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/fxsrintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/gfniintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/hresetintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/ia32intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/immintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/keylockerintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/limits.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/lwpintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/lzcntintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/mm_malloc.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/mmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/movdirintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/mwaitintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/mwaitxintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/pconfigintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/pkuintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/pmmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/popcntintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/prfchiintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/prfchwintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/raointintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/rdseedintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/rtmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/serializeintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/sgxintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/shaintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/smmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/syslimits.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/tbmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/tmmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/tsxldtrkintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/uintrintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/vaesintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/vpclmulqdqintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/waitpkgintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/wbnoinvdintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/wmmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/x86gprintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/xmmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/xsavecintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/xsaveintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/xsaveoptintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/xsavesintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/xtestintrin.h \
+  /usr/local/include/SFML/Config.hpp \
+  /usr/local/include/SFML/Graphics/Color.hpp \
+  /usr/local/include/SFML/Graphics/Color.inl \
+  /usr/local/include/SFML/System/Angle.hpp \
+  /usr/local/include/SFML/System/Angle.inl \
+  /usr/local/include/SFML/System/Export.hpp \
+  /usr/local/include/SFML/System/Vector2.hpp \
+  /usr/local/include/SFML/System/Vector2.inl
+
 CMakeFiles/runThis.dir/src/loader.cpp.o: /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/loader.cpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/constants.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/loader.hpp \
@@ -2099,6 +2603,7 @@ CMakeFiles/runThis.dir/src/loader.cpp.o: /home/odin/Academic/Research/Metamateri
   /usr/lib/gcc/x86_64-linux-gnu/13/include/limits.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/mm_malloc.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/mmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/omp.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h \
@@ -2108,14 +2613,21 @@ CMakeFiles/runThis.dir/src/loader.cpp.o: /home/odin/Academic/Research/Metamateri
 CMakeFiles/runThis.dir/src/main.cpp.o: /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/main.cpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/imgui-sfml/imgui-SFML.h \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/imgui-sfml/imgui-SFML_export.h \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/imgui/imconfig.h \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/imgui/imgui.h \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/implot/implot.h \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/constants.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/flag.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/loader.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/menu.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/mesh.hpp \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/profiling.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/renderer.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/solid.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/utils.hpp \
+  /usr/include/GL/gl.h \
+  /usr/include/GL/glext.h \
+  /usr/include/KHR/khrplatform.h \
   /usr/include/alloca.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
@@ -2289,6 +2801,7 @@ CMakeFiles/runThis.dir/src/main.cpp.o: /home/odin/Academic/Research/Metamaterial
   /usr/include/c++/13/list \
   /usr/include/c++/13/locale \
   /usr/include/c++/13/map \
+  /usr/include/c++/13/math.h \
   /usr/include/c++/13/memory \
   /usr/include/c++/13/mutex \
   /usr/include/c++/13/new \
@@ -2348,6 +2861,7 @@ CMakeFiles/runThis.dir/src/main.cpp.o: /home/odin/Academic/Research/Metamaterial
   /usr/include/eigen3/Eigen/SparseCore \
   /usr/include/eigen3/Eigen/SparseLU \
   /usr/include/eigen3/Eigen/SparseQR \
+  /usr/include/eigen3/Eigen/UmfPackSupport \
   /usr/include/eigen3/Eigen/src/Cholesky/LDLT.h \
   /usr/include/eigen3/Eigen/src/Cholesky/LLT.h \
   /usr/include/eigen3/Eigen/src/Core/ArithmeticSequence.h \
@@ -2570,6 +3084,7 @@ CMakeFiles/runThis.dir/src/main.cpp.o: /home/odin/Academic/Research/Metamaterial
   /usr/include/eigen3/Eigen/src/SparseLU/SparseLU_pruneL.h \
   /usr/include/eigen3/Eigen/src/SparseLU/SparseLU_relax_snode.h \
   /usr/include/eigen3/Eigen/src/SparseQR/SparseQR.h \
+  /usr/include/eigen3/Eigen/src/UmfPackSupport/UmfPackSupport.h \
   /usr/include/eigen3/Eigen/src/misc/Image.h \
   /usr/include/eigen3/Eigen/src/misc/Kernel.h \
   /usr/include/eigen3/Eigen/src/misc/RealSvd2x2.h \
@@ -2586,6 +3101,7 @@ CMakeFiles/runThis.dir/src/main.cpp.o: /home/odin/Academic/Research/Metamaterial
   /usr/include/errno.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
+  /usr/include/inttypes.h \
   /usr/include/libintl.h \
   /usr/include/limits.h \
   /usr/include/linux/close_range.h \
@@ -2603,6 +3119,9 @@ CMakeFiles/runThis.dir/src/main.cpp.o: /home/odin/Academic/Research/Metamaterial
   /usr/include/stdlib.h \
   /usr/include/string.h \
   /usr/include/strings.h \
+  /usr/include/suitesparse/SuiteSparse_config.h \
+  /usr/include/suitesparse/amd.h \
+  /usr/include/suitesparse/umfpack.h \
   /usr/include/syscall.h \
   /usr/include/time.h \
   /usr/include/unistd.h \
@@ -2716,10 +3235,13 @@ CMakeFiles/runThis.dir/src/main.cpp.o: /home/odin/Academic/Research/Metamaterial
   /usr/include/x86_64-linux-gnu/sys/time.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/emmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/float.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/limits.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/mm_malloc.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/mmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/omp.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/syslimits.h \
@@ -2760,6 +3282,7 @@ CMakeFiles/runThis.dir/src/main.cpp.o: /home/odin/Academic/Research/Metamaterial
   /usr/local/include/SFML/Graphics/VertexArray.hpp \
   /usr/local/include/SFML/Graphics/VertexBuffer.hpp \
   /usr/local/include/SFML/Graphics/View.hpp \
+  /usr/local/include/SFML/OpenGL.hpp \
   /usr/local/include/SFML/System.hpp \
   /usr/local/include/SFML/System/Angle.hpp \
   /usr/local/include/SFML/System/Angle.inl \
@@ -3419,6 +3942,7 @@ CMakeFiles/runThis.dir/src/menu.cpp.o: /home/odin/Academic/Research/Metamaterial
   /usr/lib/gcc/x86_64-linux-gnu/13/include/limits.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/mm_malloc.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/mmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/omp.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h \
@@ -4079,6 +4603,7 @@ CMakeFiles/runThis.dir/src/mesh.cpp.o: /home/odin/Academic/Research/Metamaterial
   /usr/lib/gcc/x86_64-linux-gnu/13/include/limits.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/mm_malloc.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/mmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/omp.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h \
@@ -4090,6 +4615,7 @@ CMakeFiles/runThis.dir/src/renderer.cpp.o: /home/odin/Academic/Research/Metamate
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/flag.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/loader.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/mesh.hpp \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/profiling.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/renderer.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/solid.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/utils.hpp \
@@ -4266,6 +4792,7 @@ CMakeFiles/runThis.dir/src/renderer.cpp.o: /home/odin/Academic/Research/Metamate
   /usr/include/c++/13/list \
   /usr/include/c++/13/locale \
   /usr/include/c++/13/map \
+  /usr/include/c++/13/math.h \
   /usr/include/c++/13/memory \
   /usr/include/c++/13/mutex \
   /usr/include/c++/13/new \
@@ -4325,6 +4852,7 @@ CMakeFiles/runThis.dir/src/renderer.cpp.o: /home/odin/Academic/Research/Metamate
   /usr/include/eigen3/Eigen/SparseCore \
   /usr/include/eigen3/Eigen/SparseLU \
   /usr/include/eigen3/Eigen/SparseQR \
+  /usr/include/eigen3/Eigen/UmfPackSupport \
   /usr/include/eigen3/Eigen/src/Cholesky/LDLT.h \
   /usr/include/eigen3/Eigen/src/Cholesky/LLT.h \
   /usr/include/eigen3/Eigen/src/Core/ArithmeticSequence.h \
@@ -4547,6 +5075,7 @@ CMakeFiles/runThis.dir/src/renderer.cpp.o: /home/odin/Academic/Research/Metamate
   /usr/include/eigen3/Eigen/src/SparseLU/SparseLU_pruneL.h \
   /usr/include/eigen3/Eigen/src/SparseLU/SparseLU_relax_snode.h \
   /usr/include/eigen3/Eigen/src/SparseQR/SparseQR.h \
+  /usr/include/eigen3/Eigen/src/UmfPackSupport/UmfPackSupport.h \
   /usr/include/eigen3/Eigen/src/misc/Image.h \
   /usr/include/eigen3/Eigen/src/misc/Kernel.h \
   /usr/include/eigen3/Eigen/src/misc/RealSvd2x2.h \
@@ -4563,6 +5092,7 @@ CMakeFiles/runThis.dir/src/renderer.cpp.o: /home/odin/Academic/Research/Metamate
   /usr/include/errno.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
+  /usr/include/inttypes.h \
   /usr/include/libintl.h \
   /usr/include/limits.h \
   /usr/include/linux/close_range.h \
@@ -4580,6 +5110,9 @@ CMakeFiles/runThis.dir/src/renderer.cpp.o: /home/odin/Academic/Research/Metamate
   /usr/include/stdlib.h \
   /usr/include/string.h \
   /usr/include/strings.h \
+  /usr/include/suitesparse/SuiteSparse_config.h \
+  /usr/include/suitesparse/amd.h \
+  /usr/include/suitesparse/umfpack.h \
   /usr/include/syscall.h \
   /usr/include/time.h \
   /usr/include/unistd.h \
@@ -4696,7 +5229,9 @@ CMakeFiles/runThis.dir/src/renderer.cpp.o: /home/odin/Academic/Research/Metamate
   /usr/lib/gcc/x86_64-linux-gnu/13/include/limits.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/mm_malloc.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/mmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/omp.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/syslimits.h \
@@ -4784,6 +5319,7 @@ CMakeFiles/runThis.dir/src/solid.cpp.o: /home/odin/Academic/Research/Metamateria
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/constants.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/loader.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/mesh.hpp \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/profiling.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/solid.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/utils.hpp \
   /usr/include/alloca.h \
@@ -4946,6 +5482,7 @@ CMakeFiles/runThis.dir/src/solid.cpp.o: /home/odin/Academic/Research/Metamateria
   /usr/include/c++/13/list \
   /usr/include/c++/13/locale \
   /usr/include/c++/13/map \
+  /usr/include/c++/13/math.h \
   /usr/include/c++/13/mutex \
   /usr/include/c++/13/new \
   /usr/include/c++/13/numbers \
@@ -5002,6 +5539,7 @@ CMakeFiles/runThis.dir/src/solid.cpp.o: /home/odin/Academic/Research/Metamateria
   /usr/include/eigen3/Eigen/SparseCore \
   /usr/include/eigen3/Eigen/SparseLU \
   /usr/include/eigen3/Eigen/SparseQR \
+  /usr/include/eigen3/Eigen/UmfPackSupport \
   /usr/include/eigen3/Eigen/src/Cholesky/LDLT.h \
   /usr/include/eigen3/Eigen/src/Cholesky/LLT.h \
   /usr/include/eigen3/Eigen/src/Core/ArithmeticSequence.h \
@@ -5224,6 +5762,7 @@ CMakeFiles/runThis.dir/src/solid.cpp.o: /home/odin/Academic/Research/Metamateria
   /usr/include/eigen3/Eigen/src/SparseLU/SparseLU_pruneL.h \
   /usr/include/eigen3/Eigen/src/SparseLU/SparseLU_relax_snode.h \
   /usr/include/eigen3/Eigen/src/SparseQR/SparseQR.h \
+  /usr/include/eigen3/Eigen/src/UmfPackSupport/UmfPackSupport.h \
   /usr/include/eigen3/Eigen/src/misc/Image.h \
   /usr/include/eigen3/Eigen/src/misc/Kernel.h \
   /usr/include/eigen3/Eigen/src/misc/RealSvd2x2.h \
@@ -5240,6 +5779,7 @@ CMakeFiles/runThis.dir/src/solid.cpp.o: /home/odin/Academic/Research/Metamateria
   /usr/include/errno.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
+  /usr/include/inttypes.h \
   /usr/include/libintl.h \
   /usr/include/limits.h \
   /usr/include/linux/close_range.h \
@@ -5257,6 +5797,9 @@ CMakeFiles/runThis.dir/src/solid.cpp.o: /home/odin/Academic/Research/Metamateria
   /usr/include/stdlib.h \
   /usr/include/string.h \
   /usr/include/strings.h \
+  /usr/include/suitesparse/SuiteSparse_config.h \
+  /usr/include/suitesparse/amd.h \
+  /usr/include/suitesparse/umfpack.h \
   /usr/include/syscall.h \
   /usr/include/time.h \
   /usr/include/unistd.h \
@@ -5373,7 +5916,9 @@ CMakeFiles/runThis.dir/src/solid.cpp.o: /home/odin/Academic/Research/Metamateria
   /usr/lib/gcc/x86_64-linux-gnu/13/include/limits.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/mm_malloc.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/mmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/omp.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
+  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/syslimits.h \
@@ -5417,6 +5962,7 @@ runThis: /lib/i386-linux-gnu/libGLdispatch.so.0 \
   /lib/x86_64-linux-gnu/libc.so.6 \
   /lib/x86_64-linux-gnu/libcap.so.2 \
   /lib/x86_64-linux-gnu/libfreetype.so.6 \
+  /lib/x86_64-linux-gnu/libgfortran.so.5 \
   /lib/x86_64-linux-gnu/libm.so.6 \
   /lib/x86_64-linux-gnu/libmd.so.0 \
   /lib/x86_64-linux-gnu/libmvec.so.1 \
@@ -5428,13 +5974,23 @@ runThis: /lib/i386-linux-gnu/libGLdispatch.so.0 \
   /usr/lib/x86_64-linux-gnu/Scrt1.o \
   /usr/lib/x86_64-linux-gnu/crti.o \
   /usr/lib/x86_64-linux-gnu/crtn.o \
+  /usr/lib/x86_64-linux-gnu/libamd.so.3 \
+  /usr/lib/x86_64-linux-gnu/libblas.so.3 \
   /usr/lib/x86_64-linux-gnu/libc.so \
+  /usr/lib/x86_64-linux-gnu/libcamd.so.3 \
+  /usr/lib/x86_64-linux-gnu/libccolamd.so.3 \
+  /usr/lib/x86_64-linux-gnu/libcholmod.so.5 \
+  /usr/lib/x86_64-linux-gnu/libcolamd.so.3 \
   /usr/lib/x86_64-linux-gnu/libgcc_s.so.1 \
+  /usr/lib/x86_64-linux-gnu/liblapack.so.3 \
   /usr/lib/x86_64-linux-gnu/libm.so \
+  /usr/lib/x86_64-linux-gnu/libsuitesparseconfig.so.7 \
+  /usr/lib/x86_64-linux-gnu/libumfpack.so \
   /usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o \
   /usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o \
   /usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a \
   /usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so \
+  /usr/lib/gcc/x86_64-linux-gnu/13/libgomp.so \
   /usr/lib/gcc/x86_64-linux-gnu/13/libstdc++.so \
   /usr/lib/i386-linux-gnu/libGLdispatch.so.0 \
   /usr/lib/i386-linux-gnu/libX11.so.6 \
@@ -5460,6 +6016,7 @@ runThis: /lib/i386-linux-gnu/libGLdispatch.so.0 \
   /usr/lib/x86_64-linux-gnu/libGLX.so \
   /usr/lib/x86_64-linux-gnu/libOpenGL.so \
   /usr/lib/x86_64-linux-gnu/libc_nonshared.a \
+  /usr/lib/x86_64-linux-gnu/libpthread.a \
   /usr/local/lib/libsfml-graphics.so.3.0.0 \
   /usr/local/lib/libsfml-system.so.3.0.0 \
   /usr/local/lib/libsfml-window.so.3.0.0 \
@@ -5469,6 +6026,8 @@ runThis: /lib/i386-linux-gnu/libGLdispatch.so.0 \
   CMakeFiles/runThis.dir/external/imgui/imgui_draw.cpp.o \
   CMakeFiles/runThis.dir/external/imgui/imgui_tables.cpp.o \
   CMakeFiles/runThis.dir/external/imgui/imgui_widgets.cpp.o \
+  CMakeFiles/runThis.dir/external/implot/implot.cpp.o \
+  CMakeFiles/runThis.dir/external/implot/implot_items.cpp.o \
   CMakeFiles/runThis.dir/src/loader.cpp.o \
   CMakeFiles/runThis.dir/src/main.cpp.o \
   CMakeFiles/runThis.dir/src/menu.cpp.o \
@@ -5483,6 +6042,10 @@ CMakeFiles/runThis.dir/src/mesh.cpp.o:
 
 CMakeFiles/runThis.dir/src/menu.cpp.o:
 
+CMakeFiles/runThis.dir/external/implot/implot_items.cpp.o:
+
+CMakeFiles/runThis.dir/external/implot/implot.cpp.o:
+
 CMakeFiles/runThis.dir/external/imgui/imgui_demo.cpp.o:
 
 CMakeFiles/runThis.dir/external/imgui/imgui.cpp.o:
@@ -5490,6 +6053,8 @@ CMakeFiles/runThis.dir/external/imgui/imgui.cpp.o:
 CMakeFiles/runThis.dir/external/imgui-sfml/imgui-SFML.cpp.o:
 
 /usr/local/lib/libsfml-graphics.so.3.0.0:
+
+/usr/lib/x86_64-linux-gnu/libpthread.a:
 
 /usr/lib/x86_64-linux-gnu/libc_nonshared.a:
 
@@ -5519,9 +6084,25 @@ CMakeFiles/runThis.dir/external/imgui-sfml/imgui-SFML.cpp.o:
 
 /usr/lib/i386-linux-gnu/libXau.so.6:
 
+/usr/lib/gcc/x86_64-linux-gnu/13/libgomp.so:
+
 /usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o:
 
+/usr/lib/x86_64-linux-gnu/libumfpack.so:
+
+/usr/lib/x86_64-linux-gnu/libsuitesparseconfig.so.7:
+
 /usr/lib/x86_64-linux-gnu/libm.so:
+
+/usr/lib/x86_64-linux-gnu/libcolamd.so.3:
+
+/usr/lib/x86_64-linux-gnu/libcholmod.so.5:
+
+/usr/lib/x86_64-linux-gnu/libccolamd.so.3:
+
+/usr/lib/x86_64-linux-gnu/libcamd.so.3:
+
+/usr/lib/x86_64-linux-gnu/libamd.so.3:
 
 /usr/lib/x86_64-linux-gnu/crtn.o:
 
@@ -5595,9 +6176,17 @@ CMakeFiles/runThis.dir/external/imgui/imgui_draw.cpp.o:
 
 /usr/local/include/SFML/Graphics.hpp:
 
+/usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h:
+
 /lib/i386-linux-gnu/libXext.so.6:
 
 /usr/include/x86_64-linux-gnu/sys/time.h:
+
+/usr/include/suitesparse/amd.h:
+
+/usr/include/suitesparse/SuiteSparse_config.h:
+
+/usr/include/eigen3/Eigen/src/UmfPackSupport/UmfPackSupport.h:
 
 /usr/include/c++/13/semaphore:
 
@@ -5616,6 +6205,8 @@ CMakeFiles/runThis.dir/external/imgui/imgui_draw.cpp.o:
 /usr/include/c++/13/bits/atomic_timed_wait.h:
 
 /usr/include/c++/13/bits/atomic_futex.h:
+
+/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/profiling.hpp:
 
 /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/mesh.hpp:
 
@@ -5955,6 +6546,12 @@ CMakeFiles/runThis.dir/src/renderer.cpp.o:
 
 /usr/include/eigen3/Eigen/Jacobi:
 
+/usr/include/eigen3/Eigen/Householder:
+
+/usr/include/eigen3/Eigen/Geometry:
+
+/usr/include/eigen3/Eigen/Eigenvalues:
+
 /usr/include/eigen3/Eigen/src/Core/arch/Default/ConjHelper.h:
 
 /usr/include/eigen3/Eigen/src/Core/PartialReduxEvaluator.h:
@@ -6255,6 +6852,8 @@ CMakeFiles/runThis.dir/src/renderer.cpp.o:
 
 /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h:
 
+/lib/x86_64-linux-gnu/libgfortran.so.5:
+
 /usr/include/c++/13/bits/streambuf_iterator.h:
 
 /usr/include/c++/13/bits/localefwd.h:
@@ -6331,6 +6930,12 @@ CMakeFiles/runThis.dir/src/renderer.cpp.o:
 
 /usr/include/c++/13/ostream:
 
+/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/implot/implot_internal.h:
+
+/usr/include/eigen3/Eigen/IterativeLinearSolvers:
+
+/usr/include/x86_64-linux-gnu/asm/errno.h:
+
 /usr/include/eigen3/Eigen/src/plugins/IndexedViewMethods.h:
 
 /usr/include/KHR/khrplatform.h:
@@ -6369,9 +6974,9 @@ CMakeFiles/runThis.dir/src/renderer.cpp.o:
 
 /usr/include/c++/13/bits/stl_vector.h:
 
-/usr/include/assert.h:
+/usr/lib/gcc/x86_64-linux-gnu/13/include/omp.h:
 
-/usr/include/eigen3/Eigen/Householder:
+/usr/include/assert.h:
 
 /usr/include/c++/13/backward/auto_ptr.h:
 
@@ -6382,6 +6987,8 @@ CMakeFiles/runThis.dir/src/renderer.cpp.o:
 /usr/include/eigen3/Eigen/src/Geometry/Rotation2D.h:
 
 /usr/include/c++/13/backward/binders.h:
+
+/usr/include/suitesparse/umfpack.h:
 
 /usr/include/c++/13/bits/stream_iterator.h:
 
@@ -6683,6 +7290,8 @@ CMakeFiles/runThis.dir/external/imgui/imgui_tables.cpp.o:
 
 /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512vbmi2vlintrin.h:
 
+/usr/lib/x86_64-linux-gnu/liblapack.so.3:
+
 /usr/include/c++/13/filesystem:
 
 /usr/include/c++/13/bits/stl_uninitialized.h:
@@ -6740,10 +7349,6 @@ CMakeFiles/runThis.dir/external/imgui/imgui_tables.cpp.o:
 /usr/local/include/SFML/System/Time.inl:
 
 /usr/include/x86_64-linux-gnu/bits/types/struct_tm.h:
-
-/lib/x86_64-linux-gnu/libXrender.so.1:
-
-/usr/include/c++/13/cctype:
 
 /usr/include/eigen3/Eigen/src/Core/products/SelfadjointRank2Update.h:
 
@@ -6839,8 +7444,6 @@ CMakeFiles/runThis.dir/external/imgui/imgui_widgets.cpp.o:
 
 /usr/include/c++/13/bits/hashtable.h:
 
-/usr/include/eigen3/Eigen/Eigenvalues:
-
 /usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o:
 
 /usr/include/c++/13/bits/list.tcc:
@@ -6876,10 +7479,6 @@ CMakeFiles/runThis.dir/external/imgui/imgui_widgets.cpp.o:
 /usr/include/x86_64-linux-gnu/bits/signum-generic.h:
 
 /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512fintrin.h:
-
-/usr/include/x86_64-linux-gnu/asm/errno.h:
-
-/usr/include/eigen3/Eigen/IterativeLinearSolvers:
 
 /usr/include/x86_64-linux-gnu/bits/unistd_ext.h:
 
@@ -6937,6 +7536,8 @@ CMakeFiles/runThis.dir/external/imgui/imgui_widgets.cpp.o:
 
 /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512cdintrin.h:
 
+/usr/include/eigen3/Eigen/UmfPackSupport:
+
 /usr/include/x86_64-linux-gnu/bits/types/FILE.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/time_t.h:
@@ -6992,6 +7593,8 @@ CMakeFiles/runThis.dir/external/imgui/imgui_widgets.cpp.o:
 /usr/local/include/SFML/Graphics/Color.inl:
 
 /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512fp16vlintrin.h:
+
+/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/implot/implot.cpp:
 
 /usr/include/eigen3/Eigen/src/Core/CwiseUnaryView.h:
 
@@ -7165,6 +7768,8 @@ CMakeFiles/runThis.dir/external/imgui/imgui_widgets.cpp.o:
 
 /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512vp2intersectintrin.h:
 
+/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/implot/implot_items.cpp:
+
 /usr/include/eigen3/Eigen/src/Core/util/XprHelper.h:
 
 /usr/lib/gcc/x86_64-linux-gnu/13/include/avxintrin.h:
@@ -7293,6 +7898,12 @@ CMakeFiles/runThis.dir/src/main.cpp.o:
 
 /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/imgui/imstb_truetype.h:
 
+/lib/x86_64-linux-gnu/libXrender.so.1:
+
+/usr/include/c++/13/cctype:
+
+/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/implot/implot.h:
+
 /usr/include/eigen3/Eigen/src/plugins/ReshapedMethods.h:
 
 /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/constants.hpp:
@@ -7325,6 +7936,8 @@ CMakeFiles/runThis.dir/src/main.cpp.o:
 
 /usr/local/lib/libsfml-window.so.3.0.0:
 
+/usr/lib/x86_64-linux-gnu/libblas.so.3:
+
 /usr/include/c++/13/functional:
 
 /lib/i386-linux-gnu/libbsd.so.0:
@@ -7336,5 +7949,3 @@ CMakeFiles/runThis.dir/src/main.cpp.o:
 /usr/include/c++/13/bits/functexcept.h:
 
 /usr/include/eigen3/Eigen/Core:
-
-/usr/include/eigen3/Eigen/Geometry:

@@ -268,9 +268,10 @@ void Mesh::createEdges(const unsigned int K, const double distanceTheshold)
             EdgeKey edge(node1Idx, node2Idx);
             if (!(edgeSet.insert(edge).second)) continue;
             edges.edgesConnection.push_back({edge.a, edge.b});
+            const double naturalLength = (nodes.nodesPos.at(edge.a)  - nodes.nodesPos.at(edge.b)).norm();
             edges.edgesProperty.push_back({
-                .natural_length = (nodes.nodesPos.at(edge.a)  - nodes.nodesPos.at(edge.b)).norm(),
-                .stiffness = DEFAULT_EDGE_STIFFNESS,
+                .natural_length = naturalLength,
+                .stiffness = DEFAULT_EDGE_STIFFNESS/naturalLength,
                 .cached_extension = 0.0
             });
             edges.numEdges++;
