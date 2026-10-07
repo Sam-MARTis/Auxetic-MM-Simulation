@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <cmath>
 #include <initializer_list>
 #include <stdexcept>
@@ -48,13 +49,13 @@ struct Vec
     }
     Vec operator+(const Vec& vec) const
     {
-        vec result(*this);
+        Vec result(*this);
         result += vec;
         return result;
     }
     Vec operator-(const Vec& vec) const
     {
-        vec result(*this);
+        Vec result(*this);
         result -= vec;
         return result;
     }
@@ -93,6 +94,11 @@ struct Vec
             sum += data[i] * data[i];
         }
         return std::sqrt(sum);
+    }
+    [[nodiscard]] Vec normalized() const
+    {
+        const T magnitude = norm();
+        return (*this) * (static_cast<T>(1) / magnitude);
     }
     constexpr static T dot(const Vec& a, const Vec& b)
     {
@@ -138,6 +144,23 @@ namespace VecMath
         return result;
     }
 
+    template <typename T, uint N>
+    T distanceSquared(const Vec<T, N>& a, const Vec<T, N>& b)
+    {
+        T sum = 0;
+        for (uint i = 0; i < N; ++i)
+        {
+            const T difference = a[i] - b[i];
+            sum += difference * difference;
+        }
+        return sum;
+    }
+
+    inline double cross2D(const Vec<double, 2>& a, const Vec<double, 2>& b)
+    {
+        return a[0] * b[1] - a[1] * b[0];
+    }
+
     inline bool orientation(const Vec<double, 2>& p, const Vec<double, 2>& q, const Vec<double, 2>& r)
     {
         double val = (q[1]-p[1])*(r[0] - q[0]) - (q[0]-p[0])*(r[1] - q[1]);
@@ -153,6 +176,3 @@ namespace VecMath
     }
 
 }
-
-
-

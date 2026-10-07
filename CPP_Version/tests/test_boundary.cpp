@@ -7,7 +7,7 @@
 void check(const std::string& name, const Boundary& b, const Vec2D& p, bool expected)
 {
     bool res = b.isInsideBoundary(p);
-    std::cout << name << ": point(" << p.x << "," << p.y << ") => " << (res?"INSIDE":"OUTSIDE")
+    std::cout << name << ": point(" << p[0] << "," << p[1] << ") => " << (res?"INSIDE":"OUTSIDE")
               << " [expected: " << (expected?"INSIDE":"OUTSIDE") << "]"
               << (res==expected?" OK":" FAIL") << std::endl;
 }

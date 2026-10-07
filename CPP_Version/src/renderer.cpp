@@ -14,8 +14,8 @@ void Renderer::rebuildParticleVertexArray()
     for (unsigned int i = 0; i < numParticles; i++)
     {
         const Vec2D screenPos = mapPhysicsToSpaceCoords(particlePositions[i]);
-        const float x = static_cast<float>(screenPos.x);
-        const float y = static_cast<float>(screenPos.y);
+        const float x = static_cast<float>(screenPos[0]);
+        const float y = static_cast<float>(screenPos[1]);
         // Triangle 1
         particleVertices[6*i + 0] = {{x - r, y - r}, particleColour, {0.f, 0.f}};
         particleVertices[6*i + 1] = {{x - r, y + r}, particleColour, {0.f, th}};
@@ -47,8 +47,8 @@ void Renderer::rebuildParticleVertexArray()
         for (unsigned int j=startIndex; j<endIndex; j++)
         {
             const Vec2D screenPos = mapPhysicsToSpaceCoords(particlePositions[j]);
-            const float x = static_cast<float>(screenPos.x);
-            const float y = static_cast<float>(screenPos.y);
+            const float x = static_cast<float>(screenPos[0]);
+            const float y = static_cast<float>(screenPos[1]);
             // Triangle 1
             particleVertices[6*j + 0] = {{x - r, y - r}, thisEdgeColour, {0.f, 0.f}};
             particleVertices[6*j + 1] = {{x - r, y + r}, thisEdgeColour, {0.f, th}};
@@ -74,7 +74,7 @@ void Renderer::rebuildEdgeVertexArray()
         const Vec2D& node1Pos = particlePositions.at(edge.node1);
         const Vec2D& node2Pos = particlePositions.at(edge.node2);
         const Vec2D edgeVec = node2Pos - node1Pos;
-        const Vec2D normal = Vec2D(edgeVec.y, -edgeVec.x).normalized();
+        const Vec2D normal = Vec2D{edgeVec[1], -edgeVec[0]}.normalized();
         const float halfThickness = 0.5f*edgeThickness;
         const Vec2D offset = normal*halfThickness;
         const Vec2D r1 = node1Pos + offset;
@@ -88,7 +88,7 @@ void Renderer::rebuildEdgeVertexArray()
         // const Vec2D screenPos1 = mapPhysicsToSpaceCoords(node1Pos);
         // const Vec2D screenPos2 = mapPhysicsToSpaceCoords(node2Pos);
         // const Vec2D edgeVector = screenPos2 - screenPos1;
-        // const Vec2D Normal = Vec2D(edgeVector.y, -edgeVector.x).normalized();
+        // const Vec2D Normal = Vec2D{edgeVector[1], -edgeVector[0]}.normalized();
         // const float halfThickness = 0.5f*edgeThickness;
         // const Vec2D offset = Normal*halfThickness;
         // const Vec2D v1 = screenPos1 + offset;
@@ -96,13 +96,13 @@ void Renderer::rebuildEdgeVertexArray()
         // const Vec2D v3 = screenPos2 + offset;
         // const Vec2D v4 = screenPos2 - offset;
         // Triangle 1
-        edgeVertices[6*i + 0] = {{static_cast<float>(v1.x), static_cast<float>(v1.y)}, edgeColour, {0.4f*tw, 0.4f*th}};
-        edgeVertices[6*i + 1] = {{static_cast<float>(v2.x), static_cast<float>(v2.y)}, edgeColour, {0.4f*tw, 0.6f*th}};
-        edgeVertices[6*i + 2] = {{static_cast<float>(v3.x), static_cast<float>(v3.y)}, edgeColour, {0.6f*tw, 0.4f*th}};
+        edgeVertices[6*i + 0] = {{static_cast<float>(v1[0]), static_cast<float>(v1[1])}, edgeColour, {0.4f*tw, 0.4f*th}};
+        edgeVertices[6*i + 1] = {{static_cast<float>(v2[0]), static_cast<float>(v2[1])}, edgeColour, {0.4f*tw, 0.6f*th}};
+        edgeVertices[6*i + 2] = {{static_cast<float>(v3[0]), static_cast<float>(v3[1])}, edgeColour, {0.6f*tw, 0.4f*th}};
         // Triangle 2
-        edgeVertices[6*i + 3] = {{static_cast<float>(v2.x), static_cast<float>(v2.y)}, edgeColour, {0.4f*tw, 0.6f*th}};
-        edgeVertices[6*i + 4] = {{static_cast<float>(v4.x), static_cast<float>(v4.y)}, edgeColour, {0.6f*tw, 0.6f*th}};
-        edgeVertices[6*i + 5] = {{static_cast<float>(v3.x), static_cast<float>(v3.y)}, edgeColour, {0.6f*tw, 0.4f*th}};
+        edgeVertices[6*i + 3] = {{static_cast<float>(v2[0]), static_cast<float>(v2[1])}, edgeColour, {0.4f*tw, 0.6f*th}};
+        edgeVertices[6*i + 4] = {{static_cast<float>(v4[0]), static_cast<float>(v4[1])}, edgeColour, {0.6f*tw, 0.6f*th}};
+        edgeVertices[6*i + 5] = {{static_cast<float>(v3[0]), static_cast<float>(v3[1])}, edgeColour, {0.6f*tw, 0.4f*th}};
     }
 }
 
@@ -195,16 +195,16 @@ void Renderer::updateRenderInformation(const RendererUpdateData& updateInfo)
 
 Vec2D Renderer::mapPhysicsToSpaceCoords(const Vec2D& physicsIn) const
 {
-    return Vec2D(renderSpacePhysicsOrigin.x + renderScaleFromPhysics*physicsIn.x, renderSpacePhysicsOrigin.y - renderScaleFromPhysics* physicsIn.y);
+    return Vec2D{renderSpacePhysicsOrigin[0] + renderScaleFromPhysics*physicsIn[0], renderSpacePhysicsOrigin[1] - renderScaleFromPhysics* physicsIn[1]};
 }
 
 Vec2D Renderer::mapPhysicsToSpaceCoords(const double& physicsInX, const double& physicsInY) const
 {
-    return  {renderSpacePhysicsOrigin.x + renderScaleFromPhysics*physicsInX, renderSpacePhysicsOrigin.y - renderScaleFromPhysics* physicsInY};
+    return  {renderSpacePhysicsOrigin[0] + renderScaleFromPhysics*physicsInX, renderSpacePhysicsOrigin[1] - renderScaleFromPhysics* physicsInY};
 }
 Vec2D Renderer::mapPhysicsToSpaceCoords(const float& physicsInX, const float& physicsInY) const
 {
-    return  {renderSpacePhysicsOrigin.x + renderScaleFromPhysics*physicsInX, renderSpacePhysicsOrigin.y - renderScaleFromPhysics* physicsInY};
+    return  {renderSpacePhysicsOrigin[0] + renderScaleFromPhysics*physicsInX, renderSpacePhysicsOrigin[1] - renderScaleFromPhysics* physicsInY};
 }
 
 void Renderer::draw(sf::RenderWindow& window) const

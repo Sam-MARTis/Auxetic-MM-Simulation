@@ -19,32 +19,32 @@ void Boundary::printBoundaryPoints() const
     for (unsigned int i = 0; i < numBoundaryPoints; i++)
     {
         const Vec2D& vec = boundaryPointsPos.at(i);
-        std::cout << vec.x << " " << vec.y << std::endl;
+        std::cout << vec[0] << " " << vec[1] << std::endl;
     }
 }
 
 void Boundary::testPoint(const Vec2D& testPoint) const
 {
     bool isInside = isInsideBoundary(testPoint);
-    std::cout<<testPoint.x << " "<< testPoint.y<<std::endl;
+    std::cout<<testPoint[0] << " "<< testPoint[1]<<std::endl;
     std::cout << isInside << std::endl;
     std::cout<<std::endl;
 }
 
 bool Boundary::isInsideBoundary(const Vec2D& testPoint) const
 {
-    const Vec2D rayDirection = Vec2D(1.0, 0.0);
+    const Vec2D rayDirection = Vec2D{1.0, 0.0};
     unsigned int numIntersections = 0;
     for (unsigned int i = 0; i < numBoundaryPoints; i++)
     {
         const Vec2D& boundaryPoint = boundaryPointsPos[i];
         const Vec2D segmentDirection = boundaryPointsPos[(i+1)%numBoundaryPoints] - boundaryPointsPos[i];
         // const double denom = rayDirection.x*segmentDirection.y - rayDirection.y*segmentDirection.x;
-        const double denom = crossVec2D(rayDirection, segmentDirection);
+        const double denom = VecMath::cross2D(rayDirection, segmentDirection);
         if (std::abs(denom) <= EPSILON) continue;
-        const double t = crossVec2D(boundaryPoint - testPoint, segmentDirection)/denom;
+        const double t = VecMath::cross2D(boundaryPoint - testPoint, segmentDirection)/denom;
         if (t < 0.0) continue;
-        const double u = crossVec2D(boundaryPoint - testPoint, rayDirection)/denom;
+        const double u = VecMath::cross2D(boundaryPoint - testPoint, rayDirection)/denom;
         if (u>=0.0 && u < 1.0) numIntersections++;
 
     }
@@ -100,7 +100,7 @@ Loader::Loader(const std::string& dxfFilepath)
     {
         double x1, y1;
         stream >> x1 >> y1;
-        boundaryNodesPos.emplace_back(x1, y1);
+        boundaryNodesPos.emplace_back(Vec2D{x1, y1});
     }
 
 
@@ -109,38 +109,38 @@ Loader::Loader(const std::string& dxfFilepath)
     for(unsigned int i =0; i<numCutPairs; i++){
         double x1, y1, x2, y2;
         stream >> x1 >> y1 >> x2 >> y2;
-        internalEdgesNodesPos.emplace_back(Vec2D(x1, y1), Vec2D(x2, y2));
+        internalEdgesNodesPos.emplace_back(Vec2D{x1, y1}, Vec2D{x2, y2});
     }
 }
 
 
 void Loader::alignPoints()
 {
-    double min_x = boundaryNodesPos.at(0).x;
-    double min_y = boundaryNodesPos.at(0).y;
-    double max_x = boundaryNodesPos.at(0).x;
-    double max_y = boundaryNodesPos.at(0).y;
+    double min_x = boundaryNodesPos.at(0)[0];
+    double min_y = boundaryNodesPos.at(0)[1];
+    double max_x = boundaryNodesPos.at(0)[0];
+    double max_y = boundaryNodesPos.at(0)[1];
     // std::cout<<"Aligning"<<std::endl;
     for (unsigned int i = 0; i < numBoundaryPoints; i++)
     {
         const Vec2D& nodePos = boundaryNodesPos.at(i);
-        if (nodePos.x < min_x) min_x = nodePos.x;
-        if (nodePos.y < min_y) min_y = nodePos.y;
-        if (nodePos.x > max_x) max_x = nodePos.x;
-        if (nodePos.y > max_y) max_y = nodePos.y;
+        if (nodePos[0] < min_x) min_x = nodePos[0];
+        if (nodePos[1] < min_y) min_y = nodePos[1];
+        if (nodePos[0] > max_x) max_x = nodePos[0];
+        if (nodePos[1] > max_y) max_y = nodePos[1];
     }
     for (unsigned int i = 0; i < numCutPairs; i++)
     {
         const Vec2D& nodePos1 = std::get<0>(internalEdgesNodesPos.at(i));
         const Vec2D& nodePos2 = std::get<1>(internalEdgesNodesPos.at(i));
-        if (nodePos1.x < min_x) min_x = nodePos1.x;
-        if (nodePos1.y < min_y) min_y = nodePos1.y;
-        if (nodePos2.x < min_x) min_x = nodePos2.x;
-        if (nodePos2.y < min_y) min_y = nodePos2.y;
-        if (nodePos1.x > max_x) max_x = nodePos1.x;
-        if (nodePos1.y > max_y) max_y = nodePos1.y;
-        if (nodePos2.x > max_x) max_x = nodePos2.x;
-        if (nodePos2.y > max_y) max_y = nodePos2.y;
+        if (nodePos1[0] < min_x) min_x = nodePos1[0];
+        if (nodePos1[1] < min_y) min_y = nodePos1[1];
+        if (nodePos2[0] < min_x) min_x = nodePos2[0];
+        if (nodePos2[1] < min_y) min_y = nodePos2[1];
+        if (nodePos1[0] > max_x) max_x = nodePos1[0];
+        if (nodePos1[1] > max_y) max_y = nodePos1[1];
+        if (nodePos2[0] > max_x) max_x = nodePos2[0];
+        if (nodePos2[1] > max_y) max_y = nodePos2[1];
     }
     // std::cout<<"Align factors computed"<<std::endl;
     double x_offset = (max_x + min_x)/2.0;
@@ -148,7 +148,7 @@ void Loader::alignPoints()
     double x_scaling = 2.0/(max_x - min_x);
     double y_scaling = 2.0/(max_y - min_y);
     double scaling = y_scaling>x_scaling?x_scaling:y_scaling;
-    const Vec2D offset = Vec2D(x_offset, y_offset);
+    const Vec2D offset = Vec2D{x_offset, y_offset};
     for (unsigned int i = 0; i < numBoundaryPoints; i++)
     {
         Vec2D& nodePos = boundaryNodesPos.at(i);

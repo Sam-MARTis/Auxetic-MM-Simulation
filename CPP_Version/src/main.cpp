@@ -30,11 +30,11 @@ int main()
     // std::vector<Vec2D> boundaryNodes;
     //
     // for (double angle = 0; angle < 1.5*M_PI; angle += 0.1)
-    //     boundaryNodes.push_back(Vec2D(cos(angle), sin(angle)));
+    //     boundaryNodes.push_back(Vec2D{cos(angle), sin(angle)});
     //
     // std::vector<std::pair<Vec2D, Vec2D>> internalEdges;
-    // internalEdges.push_back(std::make_pair(Vec2D(0, 0), Vec2D(0.5, 0.6)));
-    // internalEdges.push_back(std::make_pair(Vec2D(-0.5, 0.5), Vec2D(0.4, 0.7)));
+    // internalEdges.push_back(std::make_pair(Vec2D{0, 0}, Vec2D{0.5, 0.6}));
+    // internalEdges.push_back(std::make_pair(Vec2D{-0.5, 0.5}, Vec2D{0.4, 0.7}));
     //
     // std::string dxfFilepath = std::string(DXFS_DIRECTORY_PATH)+ "/pattern_1x1_edge-gap_0.04.dxf";
     std::string dxfFilepath = std::string(DXFS_DIRECTORY_PATH)+ "/cell2.dxf";
@@ -73,7 +73,7 @@ int main()
     // std::vector<EdgesConnection> testEdges{testEdge1, testEdge2};
     std::cout <<"Edges initialized"<<std::endl;
     RendererSetupInformation setupInfo{.nodePositions = mesh.nodes.nodesPos, .edgesConnections = mesh.edges.edgesConnection, .boundaryEdgeInfo = mesh.boundaryEdgeInfo};
-    setupInfo.renderOrigin = Vec2D(DEFAULT_SCREEN_WIDTH/2.0, DEFAULT_SCREEN_HEIGHT/2.0);
+    setupInfo.renderOrigin = Vec2D{DEFAULT_SCREEN_WIDTH/2.0, DEFAULT_SCREEN_HEIGHT/2.0};
     RendererUpdateData renderUpdateInfo{
         .propertyUpdated = StateUpdateFlags::NONE,
         .info = setupInfo,

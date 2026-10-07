@@ -19,7 +19,7 @@ struct PointCloud
 {
     std::vector<Vec2D>& pointsPos;
     size_t kdtree_get_point_count() const { return pointsPos.size(); };
-    double kdtree_get_pt(const size_t idx, int dim) const { return dim==0?pointsPos[idx].x:pointsPos[idx].y; };
+    double kdtree_get_pt(const size_t idx, int dim) const { return dim==0?pointsPos[idx][0]:pointsPos[idx][1]; };
     template <class BBOX>
     bool kdtree_get_bbox(BBOX&) const { return false;}
 };
@@ -109,7 +109,7 @@ class Mesh{
         bool doesEdgeIntersectDiscontinuity(const unsigned int node1Idx, unsigned int node2Idx);
     public:
         Nodes nodes;
-        Vec nodePosFlat;
+        VecXd nodePosFlat;
         Edges edges;
         double areaOfDxf = 4.0;
         unsigned int highestBoundaryID = 0;

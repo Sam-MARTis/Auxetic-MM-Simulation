@@ -35,6 +35,6 @@ constexpr double VELOCITY_CONSTRAINTS_EVOLUTION = 2e-2;
 constexpr double DEFAULT_TIME_STEP = 2.0e-1;
 
 using SpMat = Eigen::SparseMatrix<double>;
-using Vec   = Eigen::VectorXd;
+using VecXd = Eigen::VectorXd;
 using Mat22 = Eigen::Matrix2d;
 using Vec2  = Eigen::Vector2d;

@@ -17,8 +17,8 @@ void Solid::assembleConstraintMatrix()
 
         for (unsigned int i=startingIdx; i<endingIdx; i++)
         {
-            triplets.emplace_back(row, 2*i, con.nVec.x);
-            triplets.emplace_back(row, 2*i+1, con.nVec.y);
+            triplets.emplace_back(row, 2*i, con.nVec[0]);
+            triplets.emplace_back(row, 2*i+1, con.nVec[1]);
             assert(row < (int)M);
             assert(2*i+1 < 2*mesh.nodes.numNodes);
             row++;
@@ -32,7 +32,7 @@ void Solid::buildConstraintRHS()
 {
     PROFILE_SCOPE("Solid::buildConstraintRHS");
     const unsigned M = mesh.numBoundaryPoints;
-    c = Vec(M);
+    c = VecXd(M);
     int row = 0;
     for (const BoundaryConstraint& con : constraints)
     {
@@ -51,10 +51,10 @@ void Solid::assembleGradientAndHessian()
     const int N   = mesh.nodes.numNodes;
     const int DOF = 2 * N;
 
-    g = Vec::Zero(DOF);
+    g = VecXd::Zero(DOF);
 
     const int nThreads = omp_get_max_threads();
-    std::vector<Vec> g_local(nThreads, Vec::Zero(DOF));
+    std::vector<VecXd> g_local(nThreads, VecXd::Zero(DOF));
     std::vector<std::vector<Eigen::Triplet<double>>> triplets_local(nThreads);
     for (int t = 0; t < nThreads; t++)
         triplets_local[t].reserve((mesh.edges.numEdges / nThreads + 1) * 16);
@@ -139,7 +139,7 @@ void Solid::solve()
     const int M     = A.rows();
     const int total = DOF + M;
 
-    Vec lambda = Vec::Zero(M);
+    VecXd lambda = VecXd::Zero(M);
 
     for (int iter = 0; iter < MAX_SOLVER_INTERNAL_ITER; iter++)
     {
@@ -148,7 +148,7 @@ void Solid::solve()
             assembleGradientAndHessian();
         }
 
-        Vec violation;
+        VecXd violation;
         {
             PROFILE_SCOPE("Solid::solve / constraintViolation");
             violation = A * mesh.nodePosFlat - c;
@@ -194,11 +194,11 @@ void Solid::solve()
             break;
         }
 
-        Vec rhs(total);
+        VecXd rhs(total);
         rhs.head(DOF) = -g;
         rhs.tail(M)   = -violation;
 
-        Vec sol;
+        VecXd sol;
         {
             PROFILE_SCOPE("Solid::solve / solveLinearSystem");
             sol = solver.solve(rhs);
@@ -239,9 +239,9 @@ Solid::Solid(Mesh& solidMesh): mesh(solidMesh)
         const Vec2D& node1Pos = nodesPos.at(std::get<0>(edgeInfo.at(i).boundsIndices));
         const Vec2D& node2Pos = nodesPos.at(std::get<1>(edgeInfo.at(i).boundsIndices)-1);
         const Vec2D edgeVector = node2Pos - node1Pos;
-        const Vec2D normalVec = Vec2D(-edgeVector.y, edgeVector.x).normalized();
-        const double thisC = normalVec.x * node1Pos.x + normalVec.y * node1Pos.y;
-        assert(std::abs(normalVec.x * node2Pos.x + normalVec.y * node2Pos.y - thisC) < TOL);
+        const Vec2D normalVec = Vec2D{-edgeVector[1], edgeVector[0]}.normalized();
+        const double thisC = normalVec[0] * node1Pos[0] + normalVec[1] * node1Pos[1];
+        assert(std::abs(normalVec[0] * node2Pos[0] + normalVec[1] * node2Pos[1] - thisC) < TOL);
         BoundaryConstraint constraint;
         constraint.c = thisC;
         constraint.boundaryId = edgeInfo.at(i).id;

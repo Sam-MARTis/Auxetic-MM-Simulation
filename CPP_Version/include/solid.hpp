@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include "vec.hpp"
 #include "mesh.hpp"
 #include <Eigen/Dense>
 #include "profiling.hpp"
@@ -22,9 +23,9 @@ struct BoundaryConstraint
 class Solid
 {
     SpMat A;
-    Vec c;
+    VecXd c;
     SpMat K;
-    Vec g;
+    VecXd g;
     SpMat K_aug;
     std::vector<Eigen::Triplet<double>> triplets;
 private:

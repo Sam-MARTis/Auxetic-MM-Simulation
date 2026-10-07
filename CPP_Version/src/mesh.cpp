@@ -98,7 +98,7 @@ void Mesh::initializeInternalEdgesNodes(const InternalEdgesMeshBuildInformation 
         const Vec2D corner1 = std::get<0>(edgeCurrent);
         const Vec2D corner2 = std::get<1>(edgeCurrent);
         const Vec2D direction = corner2 - corner1;
-        const Vec2D normal = Vec2D(-direction.y, direction.x).normalized();
+        const Vec2D normal = Vec2D{-direction[1], direction[0]}.normalized();
         double distance = direction.norm();
         if (!shouldIncludeCorner) distance -= 2*DEFAULT_DISTANCE_FROM_CORNER;
         const unsigned int numNodesToInsert = static_cast<unsigned int>(std::ceil(distance * internalEdgeBuildInfo.targetDensity))+1;
@@ -148,8 +148,8 @@ void Mesh::addInternalNodes_Random(const unsigned int numNodesToAdd)
         Vec2D randPos;
         for (unsigned int iter = 0; iter< 1; iter++)
         {
-            randPos.x = randValueMine(-1.0, 1.0);
-            randPos.y = randValueMine(-1.0, 1.0);
+            randPos[0] = randValueMine(-1.0, 1.0);
+            randPos[1] = randValueMine(-1.0, 1.0);
             bool pointSatisfied = true;
             for (unsigned int boundaryIdx = 0; boundaryIdx < numBoundaries; boundaryIdx++)
             {
@@ -181,8 +181,8 @@ double Mesh::calculateAreaOfMeshObject(const unsigned int numSamples)
         bool isValid = true;
         for (unsigned int boundaryIdx = 0; boundaryIdx < numBoundaries; boundaryIdx++)
         {
-            const Vec2D randPos = Vec2D(randValueMine(-1.0, 1.0), randValueMine(-1.0, 1.0));
-            if (boundaries.at(boundaryIdx).isInsideBoundary(Vec2D(randPos)) != boundaryIncludeExclude.at(boundaryIdx))
+            const Vec2D randPos = Vec2D{randValueMine(-1.0, 1.0), randValueMine(-1.0, 1.0)};
+            if (boundaries.at(boundaryIdx).isInsideBoundary(randPos) != boundaryIncludeExclude.at(boundaryIdx))
             {
                 isValid = false;
                 break;
@@ -216,7 +216,7 @@ void Mesh::addInternalNodes_Uniform(const int numNodesToTargetAdd)
         for (unsigned int j = 0; j<numNodesWillAddPerDim; j++)
         {
             double y = y_start + j*ds;
-            const Vec2D pointTest = Vec2D(x,y);
+            const Vec2D pointTest = Vec2D{x,y};
 
             bool isValidPoint = true;
             for (unsigned int boundaryIdx = 0; boundaryIdx < numBoundaries; boundaryIdx++)
@@ -242,7 +242,7 @@ void Mesh::findNearestNeighbours(const KDTree& tree, const Vec2D& queryPoint, un
     distances.resize(K);
     nanoflann::KNNResultSet<double> result(K);
     result.init(indices.data(), distances.data());
-    tree.findNeighbors(result, &queryPoint.x);
+    tree.findNeighbors(result, queryPoint.data.data());
 }
 
 void Mesh::createEdges(const unsigned int K, const double distanceTheshold)
@@ -284,7 +284,7 @@ bool Mesh::doesEdgeIntersectDiscontinuity(const unsigned int node1Idx, unsigned 
     for (unsigned int segmentIdx = 0; segmentIdx < numSegmentDiscontinuities; segmentIdx++)
     {
         const std::pair<Vec2D, Vec2D>& segment = segmentDiscontinuities.at(segmentIdx);
-        if (segmentsIntersects2D(nodes.nodesPos.at(node1Idx), nodes.nodesPos.at(node2Idx), std::get<0>(segment), std::get<1>(segment)))
+        if (VecMath::segmentsIntersects2D(nodes.nodesPos.at(node1Idx), nodes.nodesPos.at(node2Idx), std::get<0>(segment), std::get<1>(segment)))
         {
             return true;
         }
@@ -294,12 +294,12 @@ bool Mesh::doesEdgeIntersectDiscontinuity(const unsigned int node1Idx, unsigned 
 
 void Mesh::createFlatVec()
 {
-    nodePosFlat = Vec(nodes.numNodes*2);
+    nodePosFlat = VecXd(nodes.numNodes*2);
     const std::vector<Vec2D> nodesPos = nodes.nodesPos;
     for (unsigned int nodeIdx=0; nodeIdx<nodes.numNodes; nodeIdx++)
     {
-        nodePosFlat[2*nodeIdx] = nodesPos.at(nodeIdx).x;
-        nodePosFlat[2*nodeIdx+1] = nodesPos.at(nodeIdx).y;
+        nodePosFlat[2*nodeIdx] = nodesPos.at(nodeIdx)[0];
+        nodePosFlat[2*nodeIdx+1] = nodesPos.at(nodeIdx)[1];
     }
 }
 
@@ -321,7 +321,7 @@ void Mesh::syncVecWithFlatVecData()
 {
     for (unsigned int i=0; i<nodes.numNodes; i++)
     {
-        nodes.nodesPos.at(i).x = nodePosFlat[2*i];
-        nodes.nodesPos.at(i).y = nodePosFlat[2*i+1];
+        nodes.nodesPos.at(i)[0] = nodePosFlat[2*i];
+        nodes.nodesPos.at(i)[1] = nodePosFlat[2*i+1];
     }
 }
