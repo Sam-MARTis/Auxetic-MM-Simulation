@@ -23,8 +23,8 @@
 int main()
 {
 
-    omp_set_num_threads(1);
-    Eigen::setNbThreads(1);
+    omp_set_num_threads(19);
+    Eigen::setNbThreads(19);
     sf::Clock clock;
     std::cout<<"Hello World!"<<std::endl;
     // std::vector<Vec2D> boundaryNodes;

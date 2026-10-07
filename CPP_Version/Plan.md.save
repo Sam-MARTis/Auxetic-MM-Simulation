@@ -1,0 +1,10 @@
+Okay so, the current model is doing quite good. 
+Despite no parallelization, we have good performance. 
+The meshing is still a bit of a problem. 
+
+So we have a couple of things we could do. 
+We could, for now atleast, offload the mesh generation to gmsh. This will save us a good amount of time and can let us focus on improving the system directly. 
+
+We alredy have the dxf files and generation programs so we have the complete desciption of the metasurface. So moving to the gmsh api would still allow us to construct a mesh and save in .su format. 
+
+We can get the code from the FVM solver for the cell edge description. I already wrote a file reader for the .su format so can reuse that. 
