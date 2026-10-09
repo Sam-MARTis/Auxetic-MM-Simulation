@@ -6,6 +6,7 @@
 
 #include "utils.hpp"
 #include "loader.hpp"
+#include "domains.hpp"
 
 #include <iostream>
 #include <nanoflann.hpp>
@@ -117,7 +118,8 @@ class Mesh{
         std::vector<BoundaryEdgeInformation> boundaryEdgeInfo;
         unsigned int numBoundaries = 0;
         unsigned int numBoundaryPoints = 0;
-        std::vector<Boundary> boundaries;
+
+        std::vector<const Domain*> boundaries;
         std::vector<bool> boundaryIncludeExclude;
         void insertNodesAtPositions(const std::vector<Vec2D> nodePos);
         void initializeBoundaryNodes(const BoundaryMeshBuildInformation& boundaryBuildInfo);

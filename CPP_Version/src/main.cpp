@@ -24,14 +24,14 @@ int main()
     Loader dxfLoader{dxfFilepath};
 
     dxfLoader.alignPoints();
-    Mesh mesh;
 
     BoundaryMeshBuildInformation boundaryInfo{
         .targetDensity = TARGET_BOUNDARY_NODE_DENSITY,
         .boundary = dxfLoader.boundaryNodesPos,
     };
-    const Boundary& bound = boundaryInfo.boundary;
-    bound.printBoundaryPoints();
+    boundaryInfo.boundary.printPoints();
+
+    Mesh mesh;
 
     InternalEdgesMeshBuildInformation internalEdgeInfo{
         .targetDensity = TARGET_INTERNAL_EDGE_NODE_DENSITY,

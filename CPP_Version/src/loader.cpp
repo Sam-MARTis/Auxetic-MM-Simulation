@@ -6,55 +6,6 @@
 #include "utils.hpp"
 #include <sstream>
 #include <cassert>
-Boundary::Boundary(const std::vector<Vec2D>& points)
-{
-    // Copy points and set the count used by isInsideBoundary
-    this->boundaryPointsPos = points;
-    this->numBoundaryPoints = static_cast<unsigned int>(points.size());
-}
-
-void Boundary::printBoundaryPoints() const
-{
-    assert(numBoundaryPoints == boundaryPointsPos.size());
-    for (unsigned int i = 0; i < numBoundaryPoints; i++)
-    {
-        const Vec2D& vec = boundaryPointsPos.at(i);
-        std::cout << vec[0] << " " << vec[1] << std::endl;
-    }
-}
-
-void Boundary::testPoint(const Vec2D& testPoint) const
-{
-    assert(false && "This function is deprecaed.");\
-    exit(1);
-    bool isInside = isInsideBoundary(testPoint);
-    std::cout<<testPoint[0] << " "<< testPoint[1]<<std::endl;
-    std::cout << isInside << std::endl;
-    std::cout<<std::endl;
-}
-
-bool Boundary::isInsideBoundary(const Vec2D& testPoint) const
-{
-    const Vec2D rayDirection = Vec2D{1.0, 0.0};
-    unsigned int numIntersections = 0;
-    for (unsigned int i = 0; i < numBoundaryPoints; i++)
-    {
-        const Vec2D& boundaryPoint = boundaryPointsPos[i];
-        const Vec2D segmentDirection = boundaryPointsPos[(i+1)%numBoundaryPoints] - boundaryPointsPos[i];
-        // const double denom = rayDirection.x*segmentDirection.y - rayDirection.y*segmentDirection.x;
-        const double denom = VecMath::cross2D(rayDirection, segmentDirection);
-        if (std::abs(denom) <= EPSILON) continue;
-        const double t = VecMath::cross2D(boundaryPoint - testPoint, segmentDirection)/denom;
-        if (t < 0.0) continue;
-        const double u = VecMath::cross2D(boundaryPoint - testPoint, rayDirection)/denom;
-        if (u>=0.0 && u < 1.0) numIntersections++;
-
-    }
-    if (numIntersections%2 == 0) return false;
-    return true;
-}
-
-
 InternalEdgesDescription::InternalEdgesDescription(const std::vector<std::pair<Vec2D, Vec2D>>& points)
 {
     this->internalEdgesPointsPos = points;
