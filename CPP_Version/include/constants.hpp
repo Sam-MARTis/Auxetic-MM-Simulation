@@ -34,6 +34,23 @@ constexpr double DEFAULT_INTERNAL_EDGE_EXPANSIVE_FACTOR = 1.000001;
 constexpr double VELOCITY_CONSTRAINTS_EVOLUTION = 2e-2;
 constexpr double DEFAULT_TIME_STEP = 2.0e-1;
 
+// Simulation loop defaults
+constexpr unsigned int DEFAULT_NUM_THREADS = 19;
+constexpr double DEFAULT_SIMULATION_END_TIME = 14.0;
+constexpr unsigned int DEFAULT_SIM_STEPS_PER_FRAME = 5;
+constexpr unsigned int DEFAULT_TARGET_FRAMERATE = 60;
+constexpr unsigned int DEFAULT_ANTIALIASING_LEVEL = 16;
+
+// Recording defaults
+constexpr unsigned int DEFAULT_RECORDING_FRAME_RATE = 20;
+constexpr const char* DEFAULT_RECORDING_FRAMES_DIR = "recorded_structure_frames";
+constexpr const char* DEFAULT_RECORDING_FRAME_PREFIX = "frame_";
+constexpr const char* DEFAULT_ENERGY_LOG_FILENAME = "energy_log.csv";
+constexpr const char* DEFAULT_ENERGY_SNAPSHOT_FILENAME = "energy_log_snapshot.png";
+constexpr const char* DEFAULT_STRUCTURE_VIDEO_FILENAME = "structure_evolution.mp4";
+constexpr const char* ENERGY_PLOT_SCRIPT_FILENAME = "plot_energy_log.py";
+constexpr const char* DEFAULT_PYTHON_INTERPRETER = "/bin/python3";
+
 using SpMat = Eigen::SparseMatrix<double>;
 using VecXd = Eigen::VectorXd;
 using Mat22 = Eigen::Matrix2d;

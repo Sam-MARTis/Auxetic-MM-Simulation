@@ -1,6 +1,10 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
+#include <filesystem>
+#include <string>
+#include <vector>
+
 #include "utils.hpp"
 #include "constants.hpp"
 #include "flag.hpp"
@@ -61,4 +65,37 @@ class Renderer
     Vec2D mapPhysicsToSpaceCoords(const float& physicsInX, const float& physicsInY) const;
     void draw(sf::RenderWindow& window) const;
     void updateNodePositionsFromMesh(Mesh& mesh);
+};
+
+struct RecorderSetupInformation
+{
+    bool recordStructureEvolution = true;
+    bool snapshotEnergyLog = true;
+    unsigned int videoFrameRate = DEFAULT_RECORDING_FRAME_RATE;
+    std::filesystem::path framesDirectory = DEFAULT_RECORDING_FRAMES_DIR;
+    std::filesystem::path videosDirectory = OUTPUT_VIDEOS_DIR;
+    std::filesystem::path imagesDirectory = OUTPUT_IMAGES_DIR;
+    std::filesystem::path subroutinesDirectory = SUBROUTINES_PATH;
+};
+
+// Captures simulation frames, energy history, the energy log snapshot and the
+// assembled structure-evolution video. Everything it writes lives under the
+// directories configured in RecorderSetupInformation.
+class Recorder
+{
+    RecorderSetupInformation setup;
+    std::vector<double> times;
+    std::vector<double> energies;
+    unsigned int recordedFrameCount = 0;
+
+    void writeEnergyLog() const;
+    void createEnergySnapshot() const;
+    void encodeVideo() const;
+public:
+    explicit Recorder(const RecorderSetupInformation& setupInfo = {});
+    void recordFrame(sf::RenderWindow& window);
+    void logEnergy(double time, double energy);
+    void finalize();
+    [[nodiscard]] const std::vector<double>& timeLog() const;
+    [[nodiscard]] const std::vector<double>& energyLog() const;
 };

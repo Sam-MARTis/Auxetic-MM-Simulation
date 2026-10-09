@@ -2,7 +2,13 @@
 #include "renderer.hpp"
 #include "solid.hpp"
 
+#include <SFML/OpenGL.hpp>
+
+#include <cstdint>
+#include <cstdlib>
+#include <fstream>
 #include <iostream>
+#include <string>
 
 #include "utils.hpp"
 
@@ -221,4 +227,112 @@ void Renderer::updateNodePositionsFromMesh(Mesh& mesh)
     particlePositions = mesh.nodes.nodesPos;
     rebuildParticleVertexArray();
     rebuildEdgeVertexArray();
+}
+
+Recorder::Recorder(const RecorderSetupInformation& setupInfo)
+: setup(setupInfo)
+{
+    PROFILE_SCOPE("Recorder::Recorder");
+    if (setup.recordStructureEvolution)
+    {
+        std::filesystem::remove_all(setup.framesDirectory);
+        std::filesystem::create_directories(setup.framesDirectory);
+        std::filesystem::create_directories(setup.videosDirectory);
+    }
+    if (setup.recordStructureEvolution || setup.snapshotEnergyLog)
+    {
+        std::filesystem::create_directories(setup.imagesDirectory);
+    }
+}
+
+void Recorder::recordFrame(sf::RenderWindow& window)
+{
+    PROFILE_SCOPE("Recorder::recordFrame");
+    if (!setup.recordStructureEvolution) return;
+
+    const sf::Vector2u windowSize = window.getSize();
+    std::vector<std::uint8_t> pixels(windowSize.x * windowSize.y * 4);
+    glReadPixels(0, 0,
+                 static_cast<GLsizei>(windowSize.x),
+                 static_cast<GLsizei>(windowSize.y),
+                 GL_RGBA,
+                 GL_UNSIGNED_BYTE,
+                 pixels.data());
+
+    sf::Image frameImage({windowSize.x, windowSize.y}, pixels.data());
+    frameImage.flipVertically();
+
+    const auto framePath = setup.framesDirectory /
+        (std::string(DEFAULT_RECORDING_FRAME_PREFIX) + std::to_string(recordedFrameCount) + ".png");
+    if (!frameImage.saveToFile(framePath))
+        std::cerr << "Failed to save recording frame: " << framePath << std::endl;
+    else
+        recordedFrameCount++;
+}
+
+void Recorder::logEnergy(const double time, const double energy)
+{
+    times.push_back(time);
+    energies.push_back(energy);
+}
+
+void Recorder::writeEnergyLog() const
+{
+    const auto energyLogCsvPath = setup.imagesDirectory / DEFAULT_ENERGY_LOG_FILENAME;
+    std::ofstream energyLogCsvFile(energyLogCsvPath);
+    if (!energyLogCsvFile)
+    {
+        std::cerr << "Failed to open energy log CSV for writing: " << energyLogCsvPath << std::endl;
+        return;
+    }
+
+    energyLogCsvFile << "time,energy\n";
+    for (std::size_t i = 0; i < times.size() && i < energies.size(); ++i)
+        energyLogCsvFile << times[i] << ',' << energies[i] << '\n';
+}
+
+void Recorder::createEnergySnapshot() const
+{
+    const auto snapshotPath = setup.imagesDirectory / DEFAULT_ENERGY_SNAPSHOT_FILENAME;
+    const auto energyLogCsvPath = setup.imagesDirectory / DEFAULT_ENERGY_LOG_FILENAME;
+    const std::string pythonCommand =
+        std::string(DEFAULT_PYTHON_INTERPRETER) + " \"" +
+        (setup.subroutinesDirectory / ENERGY_PLOT_SCRIPT_FILENAME).string() +
+        "\" \"" + energyLogCsvPath.string() + "\" \"" + snapshotPath.string() + "\"";
+    std::system(pythonCommand.c_str());
+}
+
+void Recorder::encodeVideo() const
+{
+    const auto outputVideoPath = setup.videosDirectory / DEFAULT_STRUCTURE_VIDEO_FILENAME;
+    const std::string framePattern =
+        (setup.framesDirectory / (std::string(DEFAULT_RECORDING_FRAME_PREFIX) + "%d.png")).string();
+    const std::string ffmpegCommand =
+        "ffmpeg -y -framerate " + std::to_string(setup.videoFrameRate) + " -i \"" + framePattern +
+        "\" -c:v libx264 -pix_fmt yuv420p \"" + outputVideoPath.string() + "\"";
+    std::system(ffmpegCommand.c_str());
+}
+
+void Recorder::finalize()
+{
+    PROFILE_SCOPE("Recorder::finalize");
+    if (setup.snapshotEnergyLog)
+    {
+        writeEnergyLog();
+        createEnergySnapshot();
+    }
+    if (setup.recordStructureEvolution)
+    {
+        encodeVideo();
+    }
+}
+
+const std::vector<double>& Recorder::timeLog() const
+{
+    return times;
+}
+
+const std::vector<double>& Recorder::energyLog() const
+{
+    return energies;
 }
