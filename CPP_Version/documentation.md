@@ -28,6 +28,7 @@ Ok but where is the boundaryNodes array though.
 Dear past me... you idiot. 
 Why are you storing boundary vec positions directly in the boundary struct. 
 Why not refer by indices???
+Okay okay, i don't think I store all boundary points, just ones needed to define the boundary shape. 
 
 
 

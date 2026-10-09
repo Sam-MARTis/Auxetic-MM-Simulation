@@ -25,6 +25,8 @@ void Boundary::printBoundaryPoints() const
 
 void Boundary::testPoint(const Vec2D& testPoint) const
 {
+    assert(false && "This function is deprecaed.");\
+    exit(1);
     bool isInside = isInsideBoundary(testPoint);
     std::cout<<testPoint[0] << " "<< testPoint[1]<<std::endl;
     std::cout << isInside << std::endl;
@@ -53,7 +55,7 @@ bool Boundary::isInsideBoundary(const Vec2D& testPoint) const
 }
 
 
-InternalEdges::InternalEdges(const std::vector<std::pair<Vec2D, Vec2D>>& points)
+InternalEdgesDescription::InternalEdgesDescription(const std::vector<std::pair<Vec2D, Vec2D>>& points)
 {
     this->internalEdgesPointsPos = points;
     this->numInternalEdges = static_cast<unsigned int>(points.size());

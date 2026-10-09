@@ -41,6 +41,7 @@ struct EdgeProperties{
     double stiffness;
     double cached_extension;
 };
+
 class Mesh{
     private:
         struct ConstraintParameter{

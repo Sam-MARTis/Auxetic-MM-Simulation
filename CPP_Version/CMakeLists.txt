@@ -29,6 +29,7 @@ add_executable(${PROJECT_NAME} ${SOURCES}
         include/flag.hpp
         include/profiling.hpp
         include/vec.hpp
+        include/domains.hpp
 )
 # find_package(OpenGL REQUIRED)
 # find_package(glfw3 3.3 REQUIRED)
