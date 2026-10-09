@@ -1,26 +1,27 @@
 #pragma once
+#include "utils.hpp"
 #include "vec.hpp"
 
 
 
-template <typename T, uint N>
+
 class Domain
 {
 public:
     virtual ~Domain() = default;
-    virtual bool isInside(const Vec<T, N>& p) const =0;
+    [[nodiscard]] virtual bool isInside(const Vec2D& p) const =0;
 };
 
-template <typename T, uint N>
-class HyperCuboid:  public Domain< T, N >
+
+class Cuboid:  public Domain
 {
 public:
-    HyperCuboid(const Vec<T, N>& lower, const Vec<T, N>& upper)
+    Cuboid(const Vec2D& lower, const Vec2D& upper)
         : lowerBounds(lower), upperBounds(upper) {}
 
-    bool isInside(const Vec<T, N>& p) const override
+    [[nodiscard]] bool isInside(const Vec2D& p) const override
     {
-        for (uint i = 0; i < N; ++i)
+        for (uint i = 0; i < 2; ++i)
         {
             if (p[i] < lowerBounds[i] || p[i] > upperBounds[i])
             {
@@ -31,44 +32,44 @@ public:
     }
 
 private:
-    Vec<T, N> lowerBounds;
-    Vec<T, N> upperBounds;
+    Vec2D lowerBounds;
+    Vec2D upperBounds;
 };
 
-template<typename T, uint N>
-class HyperSphere: public Domain< T, N >
+
+class HyperSphere: public Domain
 {
 public:
-    HyperSphere(const Vec<T, N>& center, T radius)
+    HyperSphere(const Vec2D& center, double radius)
         : center(center), radius(radius) {}
 
-    bool isInside(const Vec<T, N>& p) const override
+    [[nodiscard]] bool isInside(const Vec2D& p) const override
     {
-        T distanceSquared = 0;
-        for (uint i = 0; i < N; ++i)
+        double distanceSquared = 0;
+        for (uint i = 0; i < 2; ++i)
         {
-            T diff = p[i] - center[i];
+            double diff = p[i] - center[i];
             distanceSquared += diff * diff;
         }
         return distanceSquared <= radius * radius;
     }
 
 private:
-    Vec<T, N> center;
-    T radius;
+    Vec2D center;
+    double radius;
 };
 
 
 
 
 
-template <typename T, uint N>
-class IntersectionDomain: public Domain< T, N >
+
+class IntersectionDomain: public Domain
 {
-    const std::vector<std::pair<Domain<T, N>&, bool>>& regionsAndParities;
+    const std::vector<std::pair<Domain&, bool>>& regionsAndParities;
 public:
-    IntersectionDomain(std::vector<std::pair<Domain<T, N>&, bool>>& _regionsAndParities): regionsAndParities(_regionsAndParities) {}
-    bool isInside(const Vec<T, N>& p) const override
+    IntersectionDomain(std::vector<std::pair<Domain&, bool>>& _regionsAndParities): regionsAndParities(_regionsAndParities) {}
+    [[nodiscard]] bool isInside(const Vec2D& p) const override
     {
         for (const auto& [region, parity] : regionsAndParities)
         {
