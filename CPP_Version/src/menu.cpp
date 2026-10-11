@@ -26,5 +26,9 @@ void Menu::processMenu(Renderer& renderer)
     }
     ImGui::Checkbox("Render", &menuData.renderInfo.shouldRender);
 
-
+    bool showNormals = renderer.showBoundaryNormalsEnabled();
+    if (ImGui::Checkbox("Boundary normals", &showNormals))
+    {
+        renderer.setShowBoundaryNormals(showNormals);
+    }
 }

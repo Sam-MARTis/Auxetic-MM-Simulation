@@ -1,9 +1,17 @@
 #pragma once
 
+#include <limits>
 #include <string>
 #include <Eigen/Sparse>
 #include <Eigen/Dense>
 // #define NDEBUG
+
+// Index type used for every mesh indirection (nodes, edges, boundaries).
+// Matches the FVM reference so the two code bases read the same way.
+using Index = unsigned int;
+
+// Sentinel written into a tag slot that carries no boundary.
+constexpr Index NO_BOUNDARY = std::numeric_limits<Index>::max();
 
 // #define SHOULD_PROFILE
 
@@ -24,6 +32,7 @@ constexpr unsigned int DEFAULT_NUM_NEIGHBOURS_FOR_EDGES = 15;
 constexpr double DEFAULT_DISTANCE_THRESHOLD_FOR_EDGES = 12e-2;
 constexpr double DEFAULT_EDGE_RENDER_THICKNESS = 4e-3;
 constexpr double DEFAULT_EDGE_STIFFNESS = 1.0;
+constexpr double DEFAULT_BOUNDARY_NORMAL_RENDER_LENGTH = 4e-2;
 
 static constexpr int    MAX_SOLVER_INTERNAL_ITER = 5;
 static constexpr double TOL      = 1e-2;
@@ -33,6 +42,12 @@ constexpr double DEFAULT_INTERNAL_EDGE_EXPANSIVE_FACTOR = 1.000001;
 
 constexpr double VELOCITY_CONSTRAINTS_EVOLUTION = 2e-2;
 constexpr double DEFAULT_TIME_STEP = 2.0e-1;
+
+// Demo split of the DXF outline used by main(): a Cuboid spanning the left half
+// of the normalised [-1, 1] design space produced by Loader::alignPoints().
+constexpr double DEFAULT_TAG_REGION_MIN = -1.1;
+constexpr double DEFAULT_TAG_REGION_SPLIT = 0.0;
+constexpr double DEFAULT_TAG_REGION_MAX = 1.1;
 
 // Simulation loop defaults
 constexpr unsigned int DEFAULT_NUM_THREADS = 19;

@@ -42,31 +42,44 @@ void Renderer::rebuildParticleVertexArray()
         sf::Color::Cyan,
         // sf::Color::Black
     };
-    const unsigned int numBoundaries = boundaryEdgeInfos.size();
-    for (unsigned int i=0; i<numBoundaries; i++)
+    assert(nodeBoundaryIds.size() == numParticles);
+    for (unsigned int i = 0; i < numParticles; i++)
     {
-        const BoundaryEdgeInformation& boundaryInfo = boundaryEdgeInfos.at(i);
-        const unsigned int startIndex = std::get<0>(boundaryInfo.boundsIndices);
-        // std::cout<<startIndex<<std::endl;
-        const unsigned int endIndex = std::get<1>(boundaryInfo.boundsIndices);
-        const sf::Color thisEdgeColour = colours.at(i);
-        for (unsigned int j=startIndex; j<endIndex; j++)
-        {
-            const Vec2D screenPos = mapPhysicsToSpaceCoords(particlePositions[j]);
-            const float x = static_cast<float>(screenPos[0]);
-            const float y = static_cast<float>(screenPos[1]);
-            // Triangle 1
-            particleVertices[6*j + 0] = {{x - r, y - r}, thisEdgeColour, {0.f, 0.f}};
-            particleVertices[6*j + 1] = {{x - r, y + r}, thisEdgeColour, {0.f, th}};
-            particleVertices[6*j + 2] = {{x + r, y - r}, thisEdgeColour, {tw, 0.f}};
+        const Index boundaryId = nodeBoundaryIds.at(i);
+        if (boundaryId == NO_BOUNDARY) continue;
+        const sf::Color thisEdgeColour = colours.at(boundaryId % colours.size());
+        const Vec2D screenPos = mapPhysicsToSpaceCoords(particlePositions[i]);
+        const float x = static_cast<float>(screenPos[0]);
+        const float y = static_cast<float>(screenPos[1]);
+        // Triangle 1
+        particleVertices[6*i + 0] = {{x - r, y - r}, thisEdgeColour, {0.f, 0.f}};
+        particleVertices[6*i + 1] = {{x - r, y + r}, thisEdgeColour, {0.f, th}};
+        particleVertices[6*i + 2] = {{x + r, y - r}, thisEdgeColour, {tw, 0.f}};
 
-            // Triangle 2
-            particleVertices[6*j + 3] = {{x - r, y + r}, thisEdgeColour, {0.f, th}};
-            particleVertices[6*j + 4] = {{x + r, y + r}, thisEdgeColour, {tw, th}};
-            particleVertices[6*j + 5] = {{x + r, y - r}, thisEdgeColour, {tw, 0.f}};
-        }
+        // Triangle 2
+        particleVertices[6*i + 3] = {{x - r, y + r}, thisEdgeColour, {0.f, th}};
+        particleVertices[6*i + 4] = {{x + r, y + r}, thisEdgeColour, {tw, th}};
+        particleVertices[6*i + 5] = {{x + r, y - r}, thisEdgeColour, {tw, 0.f}};
     }
 
+}
+
+void Renderer::rebuildNormalVertexArray()
+{
+    PROFILE_SCOPE("Renderer::rebuildNormalVertexArray");
+    if (normalVertices.getVertexCount() == 0) return;
+    for (unsigned int i = 0; i < numParticles; i++)
+    {
+        const Vec2D& position = particlePositions[i];
+        const Vec2D& normal = nodeNormals[i];
+        // Zero normal collapses the segment, so it draws nothing.
+        const Vec2D tip = position + normal * static_cast<double>(normalLength);
+        const Vec2D from = mapPhysicsToSpaceCoords(position);
+        const Vec2D to = mapPhysicsToSpaceCoords(tip);
+        // Texcoords address the 1x1 opaque texture.
+        normalVertices[2*i + 0] = {sf::Vector2f(static_cast<float>(from[0]), static_cast<float>(from[1])), normalColour, {0.f, 0.f}};
+        normalVertices[2*i + 1] = {sf::Vector2f(static_cast<float>(to[0]), static_cast<float>(to[1])), normalColour, {0.f, 0.f}};
+    }
 }
 
 
@@ -91,16 +104,6 @@ void Renderer::rebuildEdgeVertexArray()
         const Vec2D v2 = mapPhysicsToSpaceCoords(r2);
         const Vec2D v3 = mapPhysicsToSpaceCoords(r3);
         const Vec2D v4 = mapPhysicsToSpaceCoords(r4);
-        // const Vec2D screenPos1 = mapPhysicsToSpaceCoords(node1Pos);
-        // const Vec2D screenPos2 = mapPhysicsToSpaceCoords(node2Pos);
-        // const Vec2D edgeVector = screenPos2 - screenPos1;
-        // const Vec2D Normal = Vec2D{edgeVector[1], -edgeVector[0]}.normalized();
-        // const float halfThickness = 0.5f*edgeThickness;
-        // const Vec2D offset = Normal*halfThickness;
-        // const Vec2D v1 = screenPos1 + offset;
-        // const Vec2D v2 = screenPos1 - offset;
-        // const Vec2D v3 = screenPos2 + offset;
-        // const Vec2D v4 = screenPos2 - offset;
         // Triangle 1
         edgeVertices[6*i + 0] = {{static_cast<float>(v1[0]), static_cast<float>(v1[1])}, edgeColour, {0.4f*tw, 0.4f*th}};
         edgeVertices[6*i + 1] = {{static_cast<float>(v2[0]), static_cast<float>(v2[1])}, edgeColour, {0.4f*tw, 0.6f*th}};
@@ -113,7 +116,6 @@ void Renderer::rebuildEdgeVertexArray()
 }
 
 Renderer::Renderer(const RendererSetupInformation& setupInfo)
-: boundaryEdgeInfos(setupInfo.boundaryEdgeInfo)
 {
     PROFILE_SCOPE("Renderer::Renderer");
     particleRadius = setupInfo.pRadius;
@@ -123,16 +125,29 @@ Renderer::Renderer(const RendererSetupInformation& setupInfo)
     edgeColour = setupInfo.edgeColour;
     renderScaleFromPhysics = setupInfo.renderScale;
     renderSpacePhysicsOrigin = setupInfo.renderOrigin;
+    normalLength = setupInfo.normalLength;
+    normalColour = setupInfo.normalColour;
+    showBoundaryNormals = setupInfo.showBoundaryNormals;
 
     numParticles = setupInfo.nodePositions.size();
     numEdges = setupInfo.edgesConnections.size();
     particleVertices = sf::VertexArray(sf::PrimitiveType::Triangles, 6*numParticles);
     edgeVertices = sf::VertexArray(sf::PrimitiveType::Triangles, 6*numEdges);
+    normalVertices = sf::VertexArray(sf::PrimitiveType::Lines, 2*numParticles);
     const sf::Vector2u texSize = particleTexture.getSize();
     tw = static_cast<float>(texSize.x);
     th = static_cast<float>(texSize.y);
 
     renderState.texture = &particleTexture;
+
+    // Never draw with a null texture: it breaks SFML's cached texture state for
+    // later frames and blanks the mesh. See DeveloperReference.md section 4.1.
+    const sf::Image opaqueImage(sf::Vector2u{1u, 1u}, sf::Color::White);
+    if (!opaqueTexture.loadFromImage(opaqueImage))
+    {
+        std::cerr << "Renderer: failed to create the 1x1 opaque texture." << std::endl;
+    }
+    opaqueRenderState.texture = &opaqueTexture;
 
     const std::vector<Vec2D>& pos = setupInfo.nodePositions;
     const std::vector<EdgesConnection>& edgeCon = setupInfo.edgesConnections;
@@ -141,8 +156,15 @@ Renderer::Renderer(const RendererSetupInformation& setupInfo)
 
     edgeConnections.reserve(numEdges);
     edgeConnections.insert(edgeConnections.end(), edgeCon.begin(), edgeCon.end());
+
+    nodeBoundaryIds.clear();
+    nodeBoundaryIds.insert(nodeBoundaryIds.end(), setupInfo.nodeBoundaryIds.begin(), setupInfo.nodeBoundaryIds.end());
+    nodeNormals.clear();
+    nodeNormals.insert(nodeNormals.end(), setupInfo.nodeNormals.begin(), setupInfo.nodeNormals.end());
+
     rebuildParticleVertexArray();
     rebuildEdgeVertexArray();
+    rebuildNormalVertexArray();
 
 }
 
@@ -195,7 +217,7 @@ void Renderer::updateRenderInformation(const RendererUpdateData& updateInfo)
     if ((flags & StateUpdateFlags::SHOULD_REBUILD_VERTICES) != StateUpdateFlags::NONE)
     {
         rebuildParticleVertexArray();
-
+        rebuildNormalVertexArray();
     }
 }
 
@@ -216,17 +238,34 @@ Vec2D Renderer::mapPhysicsToSpaceCoords(const float& physicsInX, const float& ph
 void Renderer::draw(sf::RenderWindow& window) const
 {
     PROFILE_SCOPE("Renderer::draw");
+    // Every draw carries a texture; do not add an untextured one (4.1).
     window.draw(edgeVertices, renderState);
     window.draw(particleVertices, renderState);
-    // std::cout<<numEdges<<std::endl;
+    if (showBoundaryNormals)
+    {
+        window.draw(normalVertices, opaqueRenderState);
+    }
+}
+
+void Renderer::setShowBoundaryNormals(const bool show)
+{
+    showBoundaryNormals = show;
+}
+
+bool Renderer::showBoundaryNormalsEnabled() const
+{
+    return showBoundaryNormals;
 }
 
 void Renderer::updateNodePositionsFromMesh(Mesh& mesh)
 {
     PROFILE_SCOPE("Renderer::updateNodePositionsFromMesh");
     particlePositions = mesh.nodes.nodesPos;
+    nodeBoundaryIds = mesh.nodes.boundaryId;
+    nodeNormals = mesh.nodes.normals;
     rebuildParticleVertexArray();
     rebuildEdgeVertexArray();
+    rebuildNormalVertexArray();
 }
 
 Recorder::Recorder(const RecorderSetupInformation& setupInfo)

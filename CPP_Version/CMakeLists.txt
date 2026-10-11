@@ -31,8 +31,6 @@ add_executable(${PROJECT_NAME} ${SOURCES}
         include/vec.hpp
         include/domains.hpp
 )
-# find_package(OpenGL REQUIRED)
-# find_package(glfw3 3.3 REQUIRED)
 target_compile_definitions(${PROJECT_NAME} PRIVATE
         PARTICLE_TEXTURE_PATH="${CMAKE_SOURCE_DIR}/resources/textures/circle.png"
         DXFS_DIRECTORY_PATH="${CMAKE_SOURCE_DIR}/resources/DXFs"
@@ -48,10 +46,6 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 find_package(SFML 3 COMPONENTS Graphics REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(OpenMP REQUIRED)
-
-# find_package(PkgConfig REQUIRED)
-# pkg_check_modules(UMFPACK REQUIRED umfpack)
-
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         include/
@@ -75,3 +69,40 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 find_package(OpenGL REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL::GL)
 
+# Headless, no SFML: runs without a display.
+option(BUILD_TESTS "Build the host-only unit tests" ON)
+if(BUILD_TESTS)
+    add_executable(boundary_tests
+            tests/test_boundary.cpp
+            src/mesh.cpp
+            src/solid.cpp)
+    target_include_directories(boundary_tests PRIVATE
+            include/
+            /usr/include/suitesparse)
+    target_link_libraries(boundary_tests PRIVATE
+            Eigen3::Eigen
+            OpenMP::OpenMP_CXX
+            umfpack)
+    target_compile_definitions(boundary_tests PRIVATE
+            $<$<BOOL:${SHOULD_PROFILE}>:SHOULD_PROFILE>)
+endif()
+
+# Opt-in: needs python3 and resources/DXFs/cell2.dxf.
+option(BUILD_DXF_DIAGNOSTICS "Build the headless real-DXF diagnostics" OFF)
+if(BUILD_DXF_DIAGNOSTICS)
+    add_executable(dxf_diagnostics
+            tests/dxf_diagnostics.cpp
+            src/mesh.cpp
+            src/solid.cpp
+            src/loader.cpp)
+    target_include_directories(dxf_diagnostics PRIVATE
+            include/
+            /usr/include/suitesparse)
+    target_compile_definitions(dxf_diagnostics PRIVATE
+            SUBROUTINES_PATH="${CMAKE_SOURCE_DIR}/src/subroutines"
+            DXFS_DIRECTORY_PATH="${CMAKE_SOURCE_DIR}/resources/DXFs")
+    target_link_libraries(dxf_diagnostics PRIVATE
+            Eigen3::Eigen
+            OpenMP::OpenMP_CXX
+            umfpack)
+endif()

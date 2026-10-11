@@ -14,6 +14,15 @@
 # EXTERNAL cache entries
 ########################
 
+//Build the headless real-DXF diagnostics
+BUILD_DXF_DIAGNOSTICS:BOOL=ON
+
+//Build the headless real-DXF smoke check
+BUILD_DXF_SMOKE:BOOL=OFF
+
+//Build the host-only unit tests
+BUILD_TESTS:BOOL=ON
+
 //Path to a program.
 CMAKE_ADDR2LINE:FILEPATH=/usr/bin/addr2line
 

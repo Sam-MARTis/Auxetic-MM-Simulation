@@ -47,12 +47,26 @@ int main()
     mesh.createEdges(DEFAULT_NUM_NEIGHBOURS_FOR_EDGES, DEFAULT_DISTANCE_THRESHOLD_FOR_EDGES);
     std::cout << "Edges initialized" << std::endl;
 
+    // boundary 0 is the auto-tagged outline. Uniform expansion is the stable
+    // configuration; see DeveloperReference.md section 4.5.
+    mesh.setBoundaryCondition(0, BoundaryCondition::displaceNormal(VELOCITY_CONSTRAINTS_EVOLUTION));
+
+    // CAUTION: freezing part of the outline while driving another part outward
+    // collapses the springs and diverges the solve (DeveloperReference.md 4.5).
+    // const Index patch = mesh.tagNodesByDomain(
+    //     Cuboid(Vec2D{DEFAULT_TAG_REGION_MIN, DEFAULT_TAG_REGION_MIN},
+    //            Vec2D{DEFAULT_TAG_REGION_SPLIT, DEFAULT_TAG_REGION_MAX}));
+    // mesh.setBoundaryCondition(patch, BoundaryCondition::fixedNormal());
+
+    mesh.logBoundarySummary();
+
     RendererSetupInformation setupInfo{
+        .renderOrigin = Vec2D{DEFAULT_SCREEN_WIDTH / 2.0, DEFAULT_SCREEN_HEIGHT / 2.0},
         .nodePositions = mesh.nodes.nodesPos,
         .edgesConnections = mesh.edges.edgesConnection,
-        .boundaryEdgeInfo = mesh.boundaryEdgeInfo
+        .nodeBoundaryIds = mesh.nodes.boundaryId,
+        .nodeNormals = mesh.nodes.normals
     };
-    setupInfo.renderOrigin = Vec2D{DEFAULT_SCREEN_WIDTH / 2.0, DEFAULT_SCREEN_HEIGHT / 2.0};
 
     RendererUpdateData renderUpdateInfo{
         .propertyUpdated = StateUpdateFlags::NONE,
@@ -68,7 +82,7 @@ int main()
         .simInfo = simInfo
     };
 
-    Renderer testRenderer{setupInfo};
+    // The GL context must exist before the Renderer builds its sf::Texture.
     sf::ContextSettings contextSettings;
     contextSettings.antiAliasingLevel = DEFAULT_ANTIALIASING_LEVEL;
     sf::RenderWindow window = sf::RenderWindow(
@@ -80,12 +94,15 @@ int main()
     ImPlot::CreateContext();
     window.setFramerateLimit(DEFAULT_TARGET_FRAMERATE);
 
+    Renderer testRenderer{setupInfo};
+
     Recorder recorder;
     Menu renderMenu(menuData);
 
     double time = 0;
     double dt = DEFAULT_TIME_STEP;
     Solid solid(mesh);
+    solid.logBoundaryConditionSummary();
     recorder.logEnergy(time, 0.0);
 
     while (window.isOpen())

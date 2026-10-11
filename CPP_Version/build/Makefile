@@ -129,6 +129,32 @@ runThis/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/runThis.dir/build.make CMakeFiles/runThis.dir/build
 .PHONY : runThis/fast
 
+#=============================================================================
+# Target rules for targets named boundary_tests
+
+# Build rule for target.
+boundary_tests: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 boundary_tests
+.PHONY : boundary_tests
+
+# fast build rule for target.
+boundary_tests/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/boundary_tests.dir/build.make CMakeFiles/boundary_tests.dir/build
+.PHONY : boundary_tests/fast
+
+#=============================================================================
+# Target rules for targets named dxf_diagnostics
+
+# Build rule for target.
+dxf_diagnostics: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 dxf_diagnostics
+.PHONY : dxf_diagnostics
+
+# fast build rule for target.
+dxf_diagnostics/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/dxf_diagnostics.dir/build.make CMakeFiles/dxf_diagnostics.dir/build
+.PHONY : dxf_diagnostics/fast
+
 external/imgui-sfml/imgui-SFML.o: external/imgui-sfml/imgui-SFML.cpp.o
 .PHONY : external/imgui-sfml/imgui-SFML.o
 
@@ -327,6 +353,7 @@ src/loader.o: src/loader.cpp.o
 # target to build an object file
 src/loader.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/runThis.dir/build.make CMakeFiles/runThis.dir/src/loader.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/dxf_diagnostics.dir/build.make CMakeFiles/dxf_diagnostics.dir/src/loader.cpp.o
 .PHONY : src/loader.cpp.o
 
 src/loader.i: src/loader.cpp.i
@@ -335,6 +362,7 @@ src/loader.i: src/loader.cpp.i
 # target to preprocess a source file
 src/loader.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/runThis.dir/build.make CMakeFiles/runThis.dir/src/loader.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/dxf_diagnostics.dir/build.make CMakeFiles/dxf_diagnostics.dir/src/loader.cpp.i
 .PHONY : src/loader.cpp.i
 
 src/loader.s: src/loader.cpp.s
@@ -343,6 +371,7 @@ src/loader.s: src/loader.cpp.s
 # target to generate assembly for a file
 src/loader.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/runThis.dir/build.make CMakeFiles/runThis.dir/src/loader.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/dxf_diagnostics.dir/build.make CMakeFiles/dxf_diagnostics.dir/src/loader.cpp.s
 .PHONY : src/loader.cpp.s
 
 src/main.o: src/main.cpp.o
@@ -399,6 +428,8 @@ src/mesh.o: src/mesh.cpp.o
 # target to build an object file
 src/mesh.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/runThis.dir/build.make CMakeFiles/runThis.dir/src/mesh.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/boundary_tests.dir/build.make CMakeFiles/boundary_tests.dir/src/mesh.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/dxf_diagnostics.dir/build.make CMakeFiles/dxf_diagnostics.dir/src/mesh.cpp.o
 .PHONY : src/mesh.cpp.o
 
 src/mesh.i: src/mesh.cpp.i
@@ -407,6 +438,8 @@ src/mesh.i: src/mesh.cpp.i
 # target to preprocess a source file
 src/mesh.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/runThis.dir/build.make CMakeFiles/runThis.dir/src/mesh.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/boundary_tests.dir/build.make CMakeFiles/boundary_tests.dir/src/mesh.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/dxf_diagnostics.dir/build.make CMakeFiles/dxf_diagnostics.dir/src/mesh.cpp.i
 .PHONY : src/mesh.cpp.i
 
 src/mesh.s: src/mesh.cpp.s
@@ -415,6 +448,8 @@ src/mesh.s: src/mesh.cpp.s
 # target to generate assembly for a file
 src/mesh.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/runThis.dir/build.make CMakeFiles/runThis.dir/src/mesh.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/boundary_tests.dir/build.make CMakeFiles/boundary_tests.dir/src/mesh.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/dxf_diagnostics.dir/build.make CMakeFiles/dxf_diagnostics.dir/src/mesh.cpp.s
 .PHONY : src/mesh.cpp.s
 
 src/renderer.o: src/renderer.cpp.o
@@ -447,6 +482,8 @@ src/solid.o: src/solid.cpp.o
 # target to build an object file
 src/solid.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/runThis.dir/build.make CMakeFiles/runThis.dir/src/solid.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/boundary_tests.dir/build.make CMakeFiles/boundary_tests.dir/src/solid.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/dxf_diagnostics.dir/build.make CMakeFiles/dxf_diagnostics.dir/src/solid.cpp.o
 .PHONY : src/solid.cpp.o
 
 src/solid.i: src/solid.cpp.i
@@ -455,6 +492,8 @@ src/solid.i: src/solid.cpp.i
 # target to preprocess a source file
 src/solid.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/runThis.dir/build.make CMakeFiles/runThis.dir/src/solid.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/boundary_tests.dir/build.make CMakeFiles/boundary_tests.dir/src/solid.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/dxf_diagnostics.dir/build.make CMakeFiles/dxf_diagnostics.dir/src/solid.cpp.i
 .PHONY : src/solid.cpp.i
 
 src/solid.s: src/solid.cpp.s
@@ -463,7 +502,57 @@ src/solid.s: src/solid.cpp.s
 # target to generate assembly for a file
 src/solid.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/runThis.dir/build.make CMakeFiles/runThis.dir/src/solid.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/boundary_tests.dir/build.make CMakeFiles/boundary_tests.dir/src/solid.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/dxf_diagnostics.dir/build.make CMakeFiles/dxf_diagnostics.dir/src/solid.cpp.s
 .PHONY : src/solid.cpp.s
+
+tests/dxf_diagnostics.o: tests/dxf_diagnostics.cpp.o
+.PHONY : tests/dxf_diagnostics.o
+
+# target to build an object file
+tests/dxf_diagnostics.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/dxf_diagnostics.dir/build.make CMakeFiles/dxf_diagnostics.dir/tests/dxf_diagnostics.cpp.o
+.PHONY : tests/dxf_diagnostics.cpp.o
+
+tests/dxf_diagnostics.i: tests/dxf_diagnostics.cpp.i
+.PHONY : tests/dxf_diagnostics.i
+
+# target to preprocess a source file
+tests/dxf_diagnostics.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/dxf_diagnostics.dir/build.make CMakeFiles/dxf_diagnostics.dir/tests/dxf_diagnostics.cpp.i
+.PHONY : tests/dxf_diagnostics.cpp.i
+
+tests/dxf_diagnostics.s: tests/dxf_diagnostics.cpp.s
+.PHONY : tests/dxf_diagnostics.s
+
+# target to generate assembly for a file
+tests/dxf_diagnostics.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/dxf_diagnostics.dir/build.make CMakeFiles/dxf_diagnostics.dir/tests/dxf_diagnostics.cpp.s
+.PHONY : tests/dxf_diagnostics.cpp.s
+
+tests/test_boundary.o: tests/test_boundary.cpp.o
+.PHONY : tests/test_boundary.o
+
+# target to build an object file
+tests/test_boundary.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/boundary_tests.dir/build.make CMakeFiles/boundary_tests.dir/tests/test_boundary.cpp.o
+.PHONY : tests/test_boundary.cpp.o
+
+tests/test_boundary.i: tests/test_boundary.cpp.i
+.PHONY : tests/test_boundary.i
+
+# target to preprocess a source file
+tests/test_boundary.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/boundary_tests.dir/build.make CMakeFiles/boundary_tests.dir/tests/test_boundary.cpp.i
+.PHONY : tests/test_boundary.cpp.i
+
+tests/test_boundary.s: tests/test_boundary.cpp.s
+.PHONY : tests/test_boundary.s
+
+# target to generate assembly for a file
+tests/test_boundary.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/boundary_tests.dir/build.make CMakeFiles/boundary_tests.dir/tests/test_boundary.cpp.s
+.PHONY : tests/test_boundary.cpp.s
 
 # Help Target
 help:
@@ -473,6 +562,8 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... boundary_tests"
+	@echo "... dxf_diagnostics"
 	@echo "... runThis"
 	@echo "... external/imgui-sfml/imgui-SFML.o"
 	@echo "... external/imgui-sfml/imgui-SFML.i"
@@ -516,6 +607,12 @@ help:
 	@echo "... src/solid.o"
 	@echo "... src/solid.i"
 	@echo "... src/solid.s"
+	@echo "... tests/dxf_diagnostics.o"
+	@echo "... tests/dxf_diagnostics.i"
+	@echo "... tests/dxf_diagnostics.s"
+	@echo "... tests/test_boundary.o"
+	@echo "... tests/test_boundary.i"
+	@echo "... tests/test_boundary.s"
 .PHONY : help
 
 

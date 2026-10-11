@@ -82,5 +82,47 @@
   "command": "/usr/bin/c++ -DDXFS_DIRECTORY_PATH=\\\"/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/resources/DXFs\\\" -DOUTPUT_IMAGES_DIR=\\\"/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/output/images\\\" -DOUTPUT_VIDEOS_DIR=\\\"/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/output/videos\\\" -DPARTICLE_TEXTURE_PATH=\\\"/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/resources/textures/circle.png\\\" -DSHOULD_PROFILE -DSUBROUTINES_PATH=\\\"/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/subroutines\\\" -I/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include -I/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/imgui -I/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/implot -I/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/imgui-sfml -I/usr/include/suitesparse -isystem /usr/include/eigen3 -std=gnu++20 -fopenmp -o CMakeFiles/runThis.dir/external/imgui-sfml/imgui-SFML.cpp.o -c /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/imgui-sfml/imgui-SFML.cpp",
   "file": "/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/imgui-sfml/imgui-SFML.cpp",
   "output": "CMakeFiles/runThis.dir/external/imgui-sfml/imgui-SFML.cpp.o"
+},
+{
+  "directory": "/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/build",
+  "command": "/usr/bin/c++ -DSHOULD_PROFILE -I/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include -I/usr/include/suitesparse -isystem /usr/include/eigen3 -std=gnu++20 -fopenmp -o CMakeFiles/boundary_tests.dir/tests/test_boundary.cpp.o -c /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/tests/test_boundary.cpp",
+  "file": "/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/tests/test_boundary.cpp",
+  "output": "CMakeFiles/boundary_tests.dir/tests/test_boundary.cpp.o"
+},
+{
+  "directory": "/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/build",
+  "command": "/usr/bin/c++ -DSHOULD_PROFILE -I/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include -I/usr/include/suitesparse -isystem /usr/include/eigen3 -std=gnu++20 -fopenmp -o CMakeFiles/boundary_tests.dir/src/mesh.cpp.o -c /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/mesh.cpp",
+  "file": "/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/mesh.cpp",
+  "output": "CMakeFiles/boundary_tests.dir/src/mesh.cpp.o"
+},
+{
+  "directory": "/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/build",
+  "command": "/usr/bin/c++ -DSHOULD_PROFILE -I/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include -I/usr/include/suitesparse -isystem /usr/include/eigen3 -std=gnu++20 -fopenmp -o CMakeFiles/boundary_tests.dir/src/solid.cpp.o -c /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/solid.cpp",
+  "file": "/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/solid.cpp",
+  "output": "CMakeFiles/boundary_tests.dir/src/solid.cpp.o"
+},
+{
+  "directory": "/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/build",
+  "command": "/usr/bin/c++ -DDXFS_DIRECTORY_PATH=\\\"/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/resources/DXFs\\\" -DSUBROUTINES_PATH=\\\"/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/subroutines\\\" -I/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include -I/usr/include/suitesparse -isystem /usr/include/eigen3 -std=gnu++20 -fopenmp -o CMakeFiles/dxf_diagnostics.dir/tests/dxf_diagnostics.cpp.o -c /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/tests/dxf_diagnostics.cpp",
+  "file": "/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/tests/dxf_diagnostics.cpp",
+  "output": "CMakeFiles/dxf_diagnostics.dir/tests/dxf_diagnostics.cpp.o"
+},
+{
+  "directory": "/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/build",
+  "command": "/usr/bin/c++ -DDXFS_DIRECTORY_PATH=\\\"/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/resources/DXFs\\\" -DSUBROUTINES_PATH=\\\"/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/subroutines\\\" -I/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include -I/usr/include/suitesparse -isystem /usr/include/eigen3 -std=gnu++20 -fopenmp -o CMakeFiles/dxf_diagnostics.dir/src/mesh.cpp.o -c /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/mesh.cpp",
+  "file": "/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/mesh.cpp",
+  "output": "CMakeFiles/dxf_diagnostics.dir/src/mesh.cpp.o"
+},
+{
+  "directory": "/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/build",
+  "command": "/usr/bin/c++ -DDXFS_DIRECTORY_PATH=\\\"/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/resources/DXFs\\\" -DSUBROUTINES_PATH=\\\"/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/subroutines\\\" -I/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include -I/usr/include/suitesparse -isystem /usr/include/eigen3 -std=gnu++20 -fopenmp -o CMakeFiles/dxf_diagnostics.dir/src/solid.cpp.o -c /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/solid.cpp",
+  "file": "/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/solid.cpp",
+  "output": "CMakeFiles/dxf_diagnostics.dir/src/solid.cpp.o"
+},
+{
+  "directory": "/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/build",
+  "command": "/usr/bin/c++ -DDXFS_DIRECTORY_PATH=\\\"/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/resources/DXFs\\\" -DSUBROUTINES_PATH=\\\"/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/subroutines\\\" -I/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include -I/usr/include/suitesparse -isystem /usr/include/eigen3 -std=gnu++20 -fopenmp -o CMakeFiles/dxf_diagnostics.dir/src/loader.cpp.o -c /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/loader.cpp",
+  "file": "/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/loader.cpp",
+  "output": "CMakeFiles/dxf_diagnostics.dir/src/loader.cpp.o"
 }
 ]

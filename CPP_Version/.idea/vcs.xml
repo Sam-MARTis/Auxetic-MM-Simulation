@@ -2,6 +2,7 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$/.." vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/FVM-CFD_Reference" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/external/imgui-sfml" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/external/implot" vcs="Git" />
   </component>

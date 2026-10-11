@@ -71,4 +71,6 @@ set(CMAKE_MAKEFILE_PRODUCTS
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/runThis.dir/DependInfo.cmake"
+  "CMakeFiles/boundary_tests.dir/DependInfo.cmake"
+  "CMakeFiles/dxf_diagnostics.dir/DependInfo.cmake"
   )

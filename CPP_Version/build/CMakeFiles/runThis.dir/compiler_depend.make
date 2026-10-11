@@ -2057,8 +2057,10 @@ CMakeFiles/runThis.dir/external/implot/implot_items.cpp.o: /home/odin/Academic/R
 
 CMakeFiles/runThis.dir/src/loader.cpp.o: /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/loader.cpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/constants.hpp \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/domains.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/loader.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/utils.hpp \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/vec.hpp \
   /usr/include/alloca.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
@@ -2143,6 +2145,7 @@ CMakeFiles/runThis.dir/src/loader.cpp.o: /home/odin/Academic/Research/Metamateri
   /usr/include/c++/13/bits/stl_map.h \
   /usr/include/c++/13/bits/stl_multimap.h \
   /usr/include/c++/13/bits/stl_pair.h \
+  /usr/include/c++/13/bits/stl_relops.h \
   /usr/include/c++/13/bits/stl_tempbuf.h \
   /usr/include/c++/13/bits/stl_tree.h \
   /usr/include/c++/13/bits/stl_uninitialized.h \
@@ -2220,6 +2223,7 @@ CMakeFiles/runThis.dir/src/loader.cpp.o: /home/odin/Academic/Research/Metamateri
   /usr/include/c++/13/type_traits \
   /usr/include/c++/13/typeinfo \
   /usr/include/c++/13/unordered_map \
+  /usr/include/c++/13/utility \
   /usr/include/c++/13/vector \
   /usr/include/ctype.h \
   /usr/include/eigen3/Eigen/Cholesky \
@@ -2616,7 +2620,9 @@ CMakeFiles/runThis.dir/src/main.cpp.o: /home/odin/Academic/Research/Metamaterial
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/imgui/imconfig.h \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/imgui/imgui.h \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/implot/implot.h \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/boundary.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/constants.hpp \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/domains.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/flag.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/loader.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/menu.hpp \
@@ -2625,9 +2631,7 @@ CMakeFiles/runThis.dir/src/main.cpp.o: /home/odin/Academic/Research/Metamaterial
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/renderer.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/solid.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/utils.hpp \
-  /usr/include/GL/gl.h \
-  /usr/include/GL/glext.h \
-  /usr/include/KHR/khrplatform.h \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/vec.hpp \
   /usr/include/alloca.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
@@ -2670,7 +2674,6 @@ CMakeFiles/runThis.dir/src/main.cpp.o: /home/odin/Academic/Research/Metamaterial
   /usr/include/c++/13/bits/fs_fwd.h \
   /usr/include/c++/13/bits/fs_ops.h \
   /usr/include/c++/13/bits/fs_path.h \
-  /usr/include/c++/13/bits/fstream.tcc \
   /usr/include/c++/13/bits/functexcept.h \
   /usr/include/c++/13/bits/functional_hash.h \
   /usr/include/c++/13/bits/hash_bytes.h \
@@ -2789,7 +2792,6 @@ CMakeFiles/runThis.dir/src/main.cpp.o: /home/odin/Academic/Research/Metamaterial
   /usr/include/c++/13/ext/type_traits.h \
   /usr/include/c++/13/filesystem \
   /usr/include/c++/13/format \
-  /usr/include/c++/13/fstream \
   /usr/include/c++/13/functional \
   /usr/include/c++/13/future \
   /usr/include/c++/13/initializer_list \
@@ -3216,10 +3218,8 @@ CMakeFiles/runThis.dir/src/main.cpp.o: /home/odin/Academic/Research/Metamaterial
   /usr/include/x86_64-linux-gnu/bits/wordsize.h \
   /usr/include/x86_64-linux-gnu/bits/xopen_lim.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/atomic_word.h \
-  /usr/include/x86_64-linux-gnu/c++/13/bits/basic_file.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/c++allocator.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
-  /usr/include/x86_64-linux-gnu/c++/13/bits/c++io.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/c++locale.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/cpu_defines.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/ctype_base.h \
@@ -3286,7 +3286,6 @@ CMakeFiles/runThis.dir/src/main.cpp.o: /home/odin/Academic/Research/Metamaterial
   /usr/local/include/SFML/Graphics/VertexArray.hpp \
   /usr/local/include/SFML/Graphics/VertexBuffer.hpp \
   /usr/local/include/SFML/Graphics/View.hpp \
-  /usr/local/include/SFML/OpenGL.hpp \
   /usr/local/include/SFML/System.hpp \
   /usr/local/include/SFML/System/Angle.hpp \
   /usr/local/include/SFML/System/Angle.inl \
@@ -3335,13 +3334,16 @@ CMakeFiles/runThis.dir/src/menu.cpp.o: /home/odin/Academic/Research/Metamaterial
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/imgui-sfml/imgui-SFML_export.h \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/imgui/imconfig.h \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/imgui/imgui.h \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/boundary.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/constants.hpp \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/domains.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/flag.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/loader.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/menu.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/mesh.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/renderer.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/utils.hpp \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/vec.hpp \
   /usr/include/alloca.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
@@ -4032,10 +4034,13 @@ CMakeFiles/runThis.dir/src/menu.cpp.o: /home/odin/Academic/Research/Metamaterial
   /usr/local/include/SFML/Window/WindowHandle.hpp
 
 CMakeFiles/runThis.dir/src/mesh.cpp.o: /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/mesh.cpp \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/boundary.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/constants.hpp \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/domains.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/loader.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/mesh.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/utils.hpp \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/vec.hpp \
   /usr/include/alloca.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
@@ -4043,6 +4048,7 @@ CMakeFiles/runThis.dir/src/mesh.cpp.o: /home/odin/Academic/Research/Metamaterial
   /usr/include/c++/13/algorithm \
   /usr/include/c++/13/array \
   /usr/include/c++/13/atomic \
+  /usr/include/c++/13/backward/auto_ptr.h \
   /usr/include/c++/13/backward/binders.h \
   /usr/include/c++/13/bit \
   /usr/include/c++/13/bits/algorithmfwd.h \
@@ -4104,11 +4110,13 @@ CMakeFiles/runThis.dir/src/mesh.cpp.o: /home/odin/Academic/Research/Metamaterial
   /usr/include/c++/13/bits/ranges_algobase.h \
   /usr/include/c++/13/bits/ranges_base.h \
   /usr/include/c++/13/bits/ranges_cmp.h \
+  /usr/include/c++/13/bits/ranges_uninitialized.h \
   /usr/include/c++/13/bits/ranges_util.h \
   /usr/include/c++/13/bits/refwrap.h \
   /usr/include/c++/13/bits/requires_hosted.h \
   /usr/include/c++/13/bits/semaphore_base.h \
   /usr/include/c++/13/bits/shared_ptr.h \
+  /usr/include/c++/13/bits/shared_ptr_atomic.h \
   /usr/include/c++/13/bits/shared_ptr_base.h \
   /usr/include/c++/13/bits/specfun.h \
   /usr/include/c++/13/bits/sstream.tcc \
@@ -4129,6 +4137,8 @@ CMakeFiles/runThis.dir/src/mesh.cpp.o: /home/odin/Academic/Research/Metamaterial
   /usr/include/c++/13/bits/stl_map.h \
   /usr/include/c++/13/bits/stl_multimap.h \
   /usr/include/c++/13/bits/stl_pair.h \
+  /usr/include/c++/13/bits/stl_raw_storage_iter.h \
+  /usr/include/c++/13/bits/stl_relops.h \
   /usr/include/c++/13/bits/stl_tempbuf.h \
   /usr/include/c++/13/bits/stl_tree.h \
   /usr/include/c++/13/bits/stl_uninitialized.h \
@@ -4186,12 +4196,14 @@ CMakeFiles/runThis.dir/src/mesh.cpp.o: /home/odin/Academic/Research/Metamaterial
   /usr/include/c++/13/list \
   /usr/include/c++/13/map \
   /usr/include/c++/13/math.h \
+  /usr/include/c++/13/memory \
   /usr/include/c++/13/mutex \
   /usr/include/c++/13/new \
   /usr/include/c++/13/numbers \
   /usr/include/c++/13/ostream \
   /usr/include/c++/13/pstl/execution_defs.h \
   /usr/include/c++/13/pstl/glue_algorithm_defs.h \
+  /usr/include/c++/13/pstl/glue_memory_defs.h \
   /usr/include/c++/13/pstl/pstl_config.h \
   /usr/include/c++/13/ratio \
   /usr/include/c++/13/semaphore \
@@ -4220,6 +4232,7 @@ CMakeFiles/runThis.dir/src/mesh.cpp.o: /home/odin/Academic/Research/Metamaterial
   /usr/include/c++/13/typeinfo \
   /usr/include/c++/13/unordered_map \
   /usr/include/c++/13/unordered_set \
+  /usr/include/c++/13/utility \
   /usr/include/c++/13/vector \
   /usr/include/ctype.h \
   /usr/include/eigen3/Eigen/Cholesky \
@@ -4615,7 +4628,9 @@ CMakeFiles/runThis.dir/src/mesh.cpp.o: /home/odin/Academic/Research/Metamaterial
   /usr/lib/gcc/x86_64-linux-gnu/13/include/xmmintrin.h
 
 CMakeFiles/runThis.dir/src/renderer.cpp.o: /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/renderer.cpp \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/boundary.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/constants.hpp \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/domains.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/flag.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/loader.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/mesh.hpp \
@@ -4623,6 +4638,10 @@ CMakeFiles/runThis.dir/src/renderer.cpp.o: /home/odin/Academic/Research/Metamate
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/renderer.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/solid.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/utils.hpp \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/vec.hpp \
+  /usr/include/GL/gl.h \
+  /usr/include/GL/glext.h \
+  /usr/include/KHR/khrplatform.h \
   /usr/include/alloca.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
@@ -4665,6 +4684,7 @@ CMakeFiles/runThis.dir/src/renderer.cpp.o: /home/odin/Academic/Research/Metamate
   /usr/include/c++/13/bits/fs_fwd.h \
   /usr/include/c++/13/bits/fs_ops.h \
   /usr/include/c++/13/bits/fs_path.h \
+  /usr/include/c++/13/bits/fstream.tcc \
   /usr/include/c++/13/bits/functexcept.h \
   /usr/include/c++/13/bits/functional_hash.h \
   /usr/include/c++/13/bits/hash_bytes.h \
@@ -4783,6 +4803,7 @@ CMakeFiles/runThis.dir/src/renderer.cpp.o: /home/odin/Academic/Research/Metamate
   /usr/include/c++/13/ext/type_traits.h \
   /usr/include/c++/13/filesystem \
   /usr/include/c++/13/format \
+  /usr/include/c++/13/fstream \
   /usr/include/c++/13/functional \
   /usr/include/c++/13/future \
   /usr/include/c++/13/initializer_list \
@@ -5209,8 +5230,10 @@ CMakeFiles/runThis.dir/src/renderer.cpp.o: /home/odin/Academic/Research/Metamate
   /usr/include/x86_64-linux-gnu/bits/wordsize.h \
   /usr/include/x86_64-linux-gnu/bits/xopen_lim.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/atomic_word.h \
+  /usr/include/x86_64-linux-gnu/c++/13/bits/basic_file.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/c++allocator.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
+  /usr/include/x86_64-linux-gnu/c++/13/bits/c++io.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/c++locale.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/cpu_defines.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/ctype_base.h \
@@ -5276,6 +5299,7 @@ CMakeFiles/runThis.dir/src/renderer.cpp.o: /home/odin/Academic/Research/Metamate
   /usr/local/include/SFML/Graphics/VertexArray.hpp \
   /usr/local/include/SFML/Graphics/VertexBuffer.hpp \
   /usr/local/include/SFML/Graphics/View.hpp \
+  /usr/local/include/SFML/OpenGL.hpp \
   /usr/local/include/SFML/System.hpp \
   /usr/local/include/SFML/System/Angle.hpp \
   /usr/local/include/SFML/System/Angle.inl \
@@ -5320,12 +5344,15 @@ CMakeFiles/runThis.dir/src/renderer.cpp.o: /home/odin/Academic/Research/Metamate
   /usr/local/include/SFML/Window/WindowHandle.hpp
 
 CMakeFiles/runThis.dir/src/solid.cpp.o: /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/solid.cpp \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/boundary.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/constants.hpp \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/domains.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/loader.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/mesh.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/profiling.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/solid.hpp \
   /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/utils.hpp \
+  /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/vec.hpp \
   /usr/include/alloca.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
@@ -5333,6 +5360,7 @@ CMakeFiles/runThis.dir/src/solid.cpp.o: /home/odin/Academic/Research/Metamateria
   /usr/include/c++/13/algorithm \
   /usr/include/c++/13/array \
   /usr/include/c++/13/atomic \
+  /usr/include/c++/13/backward/auto_ptr.h \
   /usr/include/c++/13/backward/binders.h \
   /usr/include/c++/13/bit \
   /usr/include/c++/13/bits/algorithmfwd.h \
@@ -5400,11 +5428,13 @@ CMakeFiles/runThis.dir/src/solid.cpp.o: /home/odin/Academic/Research/Metamateria
   /usr/include/c++/13/bits/ranges_algobase.h \
   /usr/include/c++/13/bits/ranges_base.h \
   /usr/include/c++/13/bits/ranges_cmp.h \
+  /usr/include/c++/13/bits/ranges_uninitialized.h \
   /usr/include/c++/13/bits/ranges_util.h \
   /usr/include/c++/13/bits/refwrap.h \
   /usr/include/c++/13/bits/requires_hosted.h \
   /usr/include/c++/13/bits/semaphore_base.h \
   /usr/include/c++/13/bits/shared_ptr.h \
+  /usr/include/c++/13/bits/shared_ptr_atomic.h \
   /usr/include/c++/13/bits/shared_ptr_base.h \
   /usr/include/c++/13/bits/specfun.h \
   /usr/include/c++/13/bits/sstream.tcc \
@@ -5425,6 +5455,8 @@ CMakeFiles/runThis.dir/src/solid.cpp.o: /home/odin/Academic/Research/Metamateria
   /usr/include/c++/13/bits/stl_map.h \
   /usr/include/c++/13/bits/stl_multimap.h \
   /usr/include/c++/13/bits/stl_pair.h \
+  /usr/include/c++/13/bits/stl_raw_storage_iter.h \
+  /usr/include/c++/13/bits/stl_relops.h \
   /usr/include/c++/13/bits/stl_tempbuf.h \
   /usr/include/c++/13/bits/stl_tree.h \
   /usr/include/c++/13/bits/stl_uninitialized.h \
@@ -5487,6 +5519,7 @@ CMakeFiles/runThis.dir/src/solid.cpp.o: /home/odin/Academic/Research/Metamateria
   /usr/include/c++/13/locale \
   /usr/include/c++/13/map \
   /usr/include/c++/13/math.h \
+  /usr/include/c++/13/memory \
   /usr/include/c++/13/mutex \
   /usr/include/c++/13/new \
   /usr/include/c++/13/numbers \
@@ -5494,6 +5527,7 @@ CMakeFiles/runThis.dir/src/solid.cpp.o: /home/odin/Academic/Research/Metamateria
   /usr/include/c++/13/ostream \
   /usr/include/c++/13/pstl/execution_defs.h \
   /usr/include/c++/13/pstl/glue_algorithm_defs.h \
+  /usr/include/c++/13/pstl/glue_memory_defs.h \
   /usr/include/c++/13/pstl/pstl_config.h \
   /usr/include/c++/13/ratio \
   /usr/include/c++/13/semaphore \
@@ -5523,6 +5557,7 @@ CMakeFiles/runThis.dir/src/solid.cpp.o: /home/odin/Academic/Research/Metamateria
   /usr/include/c++/13/typeinfo \
   /usr/include/c++/13/unordered_map \
   /usr/include/c++/13/unordered_set \
+  /usr/include/c++/13/utility \
   /usr/include/c++/13/variant \
   /usr/include/c++/13/vector \
   /usr/include/ctype.h \
@@ -6148,6 +6183,10 @@ CMakeFiles/runThis.dir/external/imgui/imgui_draw.cpp.o:
 
 /lib/i386-linux-gnu/libXau.so.6:
 
+/usr/include/c++/13/fstream:
+
+/usr/include/c++/13/bits/fstream.tcc:
+
 /usr/local/include/SFML/Window.hpp:
 
 /usr/local/include/SFML/System/Sleep.hpp:
@@ -6198,8 +6237,6 @@ CMakeFiles/runThis.dir/external/imgui/imgui_draw.cpp.o:
 
 /usr/include/c++/13/future:
 
-/usr/include/c++/13/fstream:
-
 /usr/include/c++/13/condition_variable:
 
 /usr/include/c++/13/bits/unordered_set.h:
@@ -6208,8 +6245,6 @@ CMakeFiles/runThis.dir/external/imgui/imgui_draw.cpp.o:
 
 /usr/include/c++/13/bits/semaphore_base.h:
 
-/usr/include/c++/13/bits/fstream.tcc:
-
 /usr/include/c++/13/bits/atomic_timed_wait.h:
 
 /usr/include/c++/13/bits/atomic_futex.h:
@@ -6217,6 +6252,8 @@ CMakeFiles/runThis.dir/external/imgui/imgui_draw.cpp.o:
 /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/profiling.hpp:
 
 /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/mesh.hpp:
+
+/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/boundary.hpp:
 
 /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/src/main.cpp:
 
@@ -6464,8 +6501,6 @@ CMakeFiles/runThis.dir/external/imgui/imgui_draw.cpp.o:
 
 /usr/include/eigen3/Eigen/src/Core/Product.h:
 
-/usr/include/eigen3/Eigen/src/Core/PermutationMatrix.h:
-
 /usr/include/eigen3/Eigen/src/SparseCore/SparseSelfAdjointView.h:
 
 /usr/include/eigen3/Eigen/src/Core/NumTraits.h:
@@ -6559,6 +6594,8 @@ CMakeFiles/runThis.dir/src/renderer.cpp.o:
 /usr/include/eigen3/Eigen/Geometry:
 
 /usr/include/eigen3/Eigen/Eigenvalues:
+
+/usr/include/eigen3/Eigen/Dense:
 
 /usr/include/eigen3/Eigen/src/Core/arch/Default/ConjHelper.h:
 
@@ -7168,8 +7205,6 @@ CMakeFiles/runThis.dir/src/renderer.cpp.o:
 
 /usr/include/c++/13/compare:
 
-/usr/include/eigen3/Eigen/Dense:
-
 /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/external/imgui/imgui.h:
 
 /usr/include/eigen3/Eigen/src/Core/arch/Default/TypeCasting.h:
@@ -7287,6 +7322,10 @@ CMakeFiles/runThis.dir/external/imgui/imgui_tables.cpp.o:
 /usr/include/c++/13/bits/stl_construct.h:
 
 /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:
+
+/usr/include/eigen3/Eigen/Core:
+
+/usr/include/c++/13/bits/functexcept.h:
 
 /usr/include/c++/13/bits/atomic_lockfree_defines.h:
 
@@ -7632,6 +7671,10 @@ CMakeFiles/runThis.dir/external/imgui/imgui_widgets.cpp.o:
 
 /usr/lib/gcc/x86_64-linux-gnu/13/include/avx2intrin.h:
 
+/usr/include/eigen3/Eigen/src/Core/PermutationMatrix.h:
+
+/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/vec.hpp:
+
 /usr/include/x86_64-linux-gnu/bits/siginfo-consts.h:
 
 /usr/local/include/SFML/Graphics/RenderTexture.hpp:
@@ -7761,6 +7804,8 @@ CMakeFiles/runThis.dir/external/imgui/imgui_widgets.cpp.o:
 /usr/lib/gcc/x86_64-linux-gnu/13/include/avx5124fmapsintrin.h:
 
 /usr/lib/gcc/x86_64-linux-gnu/13/include/avx5124vnniwintrin.h:
+
+/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/include/domains.hpp:
 
 /usr/include/c++/13/bits/shared_ptr_base.h:
 
@@ -7957,7 +8002,3 @@ CMakeFiles/runThis.dir/src/main.cpp.o:
 /usr/include/asm-generic/errno.h:
 
 /usr/include/c++/13/iostream:
-
-/usr/include/c++/13/bits/functexcept.h:
-
-/usr/include/eigen3/Eigen/Core:

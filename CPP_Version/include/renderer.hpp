@@ -25,7 +25,15 @@ struct RendererSetupInformation
     std::vector<Vec2D>& nodePositions;
     std::vector<EdgesConnection>& edgesConnections;
 
-    std::vector<BoundaryEdgeInformation>& boundaryEdgeInfo;
+    // Per-node boundary tag (Mesh::nodes::boundaryId); NO_BOUNDARY means interior.
+    std::vector<Index>& nodeBoundaryIds;
+    // Per-node outward unit normal, drawn as a short segment from tagged nodes.
+    std::vector<Vec2D>& nodeNormals;
+    // Off by default: the per-node ticks are useful for checking that "outward"
+    // really is outward, but they clutter the mesh view.
+    bool showBoundaryNormals = false;
+    float normalLength = DEFAULT_BOUNDARY_NORMAL_RENDER_LENGTH;
+    sf::Color normalColour = sf::Color::Black;
 };
 
 
@@ -43,20 +51,31 @@ class Renderer
     sf::Color particleColour = sf::Color::Blue;
     sf::Color edgeColour = sf::Color::Red;
     Vec2D renderSpacePhysicsOrigin;
-    std::vector<BoundaryEdgeInformation>& boundaryEdgeInfos;
     float renderScaleFromPhysics;
     std::vector<Vec2D> particlePositions;
     std::vector<EdgesConnection> edgeConnections;
+    std::vector<Index> nodeBoundaryIds;
+    std::vector<Vec2D> nodeNormals;
     sf::VertexArray particleVertices;
     sf::VertexArray edgeVertices;
+    sf::VertexArray normalVertices;
+    float normalLength;
+    sf::Color normalColour = sf::Color::Black;
+    bool showBoundaryNormals = false;
     unsigned int numParticles;
     unsigned int numEdges;
     sf::Texture particleTexture = sf::Texture(PARTICLE_TEXTURE_PATH);
+    // A 1x1 opaque white texture used for geometry that must not sample the
+    // particle sprite. It exists so that NO draw call ever passes a null
+    // texture: see the note on Renderer::draw.
+    sf::Texture opaqueTexture;
     float tw, th;
     sf::RenderStates renderState;
+    sf::RenderStates opaqueRenderState;
 
     void rebuildParticleVertexArray();
     void rebuildEdgeVertexArray();
+    void rebuildNormalVertexArray();
     public:
     Renderer(const RendererSetupInformation& setupInfo);
     void updateRenderInformation(const RendererUpdateData& updateInfo);
@@ -65,6 +84,8 @@ class Renderer
     Vec2D mapPhysicsToSpaceCoords(const float& physicsInX, const float& physicsInY) const;
     void draw(sf::RenderWindow& window) const;
     void updateNodePositionsFromMesh(Mesh& mesh);
+    void setShowBoundaryNormals(bool show);
+    [[nodiscard]] bool showBoundaryNormalsEnabled() const;
 };
 
 struct RecorderSetupInformation

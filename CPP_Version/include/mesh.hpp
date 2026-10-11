@@ -1,20 +1,22 @@
 #pragma once
 
-
-#include <tuple>
+#include <array>
 #include <functional>
-
-#include "utils.hpp"
-#include "loader.hpp"
-#include "domains.hpp"
-
-#include <iostream>
-#include <nanoflann.hpp>
+#include <memory>
+#include <tuple>
+#include <unordered_set>
 #include <vector>
 
-#include <Eigen/Sparse>
-#include <Eigen/Dense>
+#include <nanoflann.hpp>
 
+#include <Eigen/Dense>
+#include <Eigen/Sparse>
+
+#include "boundary.hpp"
+#include "constants.hpp"
+#include "domains.hpp"
+#include "loader.hpp"
+#include "utils.hpp"
 
 struct PointCloud
 {
@@ -26,117 +28,143 @@ struct PointCloud
 };
 using KDTree = nanoflann::KDTreeSingleIndexAdaptor<nanoflann::L2_Simple_Adaptor<double, PointCloud>, PointCloud, 2>;
 
-struct BoundaryEdgeInformation
+// FVM EdgeProperty::connectingCells analogue.
+struct EdgesConnection
 {
-    unsigned int id;
-    std::pair<unsigned int, unsigned int> boundsIndices;
+    Index node1 = NO_BOUNDARY;
+    Index node2 = NO_BOUNDARY;
 };
 
-struct EdgesConnection{
-    unsigned int node1;
-    unsigned int node2;
+// FVM EdgeProperty analogue; parallel to Edges::edgesConnection.
+struct EdgeProperties
+{
+    double natural_length = 0.0;
+    double stiffness = 0.0;
+    double cached_extension = 0.0;   // current length, refreshed from nodePosFlat
+    Index boundaryId = NO_BOUNDARY;  // boundary tag, set only for boundary chords
 };
 
-struct EdgeProperties{
-    double natural_length;
-    double stiffness;
-    double cached_extension;
-};
+// Cells and edges follow the FVM reference layout: struct-of-structs with
+// parallel arrays addressed by index. See DeveloperReference.md section 1.
+class Mesh
+{
+public:
+    // One entry per edge in every array, addressed by edge index.
+    struct Edges
+    {
+        Index numEdges = 0;
+        std::vector<EdgeProperties> edgesProperty;             // M
+        std::vector<EdgesConnection> edgesConnection;          // M
+        std::vector<std::array<Vec2D, 2>> vertices;            // M, derived cache
+        std::vector<Vec2D> edgeEvaluationPoints;               // M, derived cache
+    };
 
-class Mesh{
-    private:
-        struct ConstraintParameter{
-            double x0;
-            double m;
-        };
+    // A spring network has no cells: the node is the control volume.
+    struct Nodes
+    {
+        Index numNodes = 0;
+        std::vector<Vec2D> nodesPos;                           // N
+        std::vector<std::vector<Index>> edgeIndices;           // N, incident edges
+        std::vector<Index> boundaryId;                         // N, NO_BOUNDARY if interior
+        std::vector<Vec2D> normals;                            // N, outward unit normal when tagged
+    };
 
-        struct Edges{
-            unsigned int numEdges = 0;
-            std::vector<EdgeProperties> edgesProperty; // M
-            std::vector<EdgesConnection> edgesConnection; // M
-        };
+    Nodes nodes;
+    Edges edges;
+    VecXd nodePosFlat;
 
-        // struct Constraint{
-        //     std::function<double(double x0t, double t, double m)> func;
-        //     ConstraintParameter param;
-        // };
-        // struct Constraints{
-        //     unsigned int numConstraints = 0;
-        //     unsigned int numFree = 0;
-        //     std::vector<unsigned int> fixedIndices; // numConstraints
-        //     std::vector<unsigned int> freeIndices; // numNodes - numConstraints
-        //     // std::vector<Constraint> constraints; // numConstraints
-        // };
+    // ---- boundary bookkeeping -------------------------------------------------
+    Index numBoundaries = 0;
+    Index numBoundaryNodes = 0;
+    // Id -> tagged node indices. Ids are dense: boundaryIdentifiers[i].first == i.
+    std::vector<std::pair<Index, std::vector<Index>>> boundaryIdentifiers;
+    std::vector<Index> boundaryEdgesIndices;
+    std::vector<Index> domainEdgesIndices;
+    std::vector<BoundarySegment> boundarySegments;
+    std::vector<BoundaryCondition> boundaryConditions;         // one per boundary id
 
+    // Material region used while seeding nodes, not boundary tags. Mesh-owned, so
+    // passing a temporary BoundaryMeshBuildInformation is safe.
+    double areaOfDxf = 4.0;
 
-        struct Nodes{
-            unsigned int numNodes = 0;
-            std::vector<Vec2D> nodesPos; // N
-            // Constraints constraints;
-        };
+    // ---- mesh generation ------------------------------------------------------
+    void insertNodesAtPositions(const std::vector<Vec2D> nodePos);
+    Index initializeBoundaryNodes(const BoundaryMeshBuildInformation& boundaryBuildInfo);
+    void initializeInternalEdgesNodes(const InternalEdgesMeshBuildInformation internalEdgeBuildInfo);
+    void addInternalNodes_Random(Index numNodesToAdd);
+    void addInternalNodes_Uniform(int numNodesToTargetAdd);
+    double calculateAreaOfMeshObject(Index numSamples);
+    void createEdges(Index K, double distanceTheshold);
 
-        struct EdgeKey
+    // ---- boundary tagging (FVM identifyBoundaryEdgesAndCells analogue) --------
+    // Returns a fresh, empty tag id. One per boundary polygon.
+    Index createBoundaryTag();
+    // Retags nodes inside `region`, always overriding (a node has one tag).
+    // NO_BOUNDARY creates a new tag. Interior nodes are only promoted when
+    // includeInteriorNodes is set.
+    Index tagNodesByDomain(const Domain& region, Index boundaryId = NO_BOUNDARY,
+                           bool includeInteriorNodes = false);
+    // Adjacency, edge classification and normals. Idempotent.
+    void rebuildBoundaryBookkeeping();
+    void ensureBoundaryBookkeeping();
+    void buildNodeEdgeAdjacency();
+    void classifyBoundaryEdges();
+    void computeBoundaryNodeNormals();
+
+    // ---- boundary conditions --------------------------------------------------
+    void setBoundaryCondition(Index boundaryId, const BoundaryCondition& condition);
+    [[nodiscard]] const BoundaryCondition& boundaryCondition(Index boundaryId) const;
+    [[nodiscard]] const std::vector<Index>& boundaryNodes(Index boundaryId) const;
+    [[nodiscard]] bool isBoundaryNode(Index nodeIndex) const;
+    void logBoundarySummary() const;
+
+    // ---- flat vector (Eigen) --------------------------------------------------
+    void createFlatVec();
+    void cacheEdgesExtensionFromFlatVec();
+    void syncVecWithFlatVecData();
+
+private:
+    struct EdgeKey
+    {
+        Index a;
+        Index b;
+
+        EdgeKey(Index i, Index j)
         {
-            unsigned int a;
-            unsigned int b;
+            a = std::min(i, j);
+            b = std::max(i, j);
+        }
 
-            EdgeKey(unsigned int i, unsigned int j)
-            {
-                a = std::min(i, j);
-                b = std::max(i, j);
-            }
-
-            bool operator==(const EdgeKey& other) const
-            {
-                return a == other.a && b == other.b;
-            }
-        };
-        struct EdgeHash
+        bool operator==(const EdgeKey& other) const
         {
-            size_t operator()(const EdgeKey& e) const
-            {
-                return std::hash<unsigned int>()(e.a) ^
-                       (std::hash<unsigned int>()(e.b) << 1);
-            }
-        };
-        bool areaCalculationDone = false;
+            return a == other.a && b == other.b;
+        }
+    };
+    struct EdgeHash
+    {
+        size_t operator()(const EdgeKey& e) const
+        {
+            return std::hash<Index>()(e.a) ^
+                   (std::hash<Index>()(e.b) << 1);
+        }
+    };
 
+    std::vector<std::pair<Vec2D, Vec2D>> segmentDiscontinuities;
+    Index numSegmentDiscontinuities = 0;
+    bool areaCalculationDone = false;
+    bool bookkeepingDirty = true;
 
+    // Owned copies of the generation filters, with domainFilters pointing at them.
+    std::vector<std::unique_ptr<Domain>> ownedDomainFilters;
+    std::vector<const Domain*> domainFilters;
+    std::vector<bool> domainFilterParity;
 
-        // nanoflann::KNNResultSet<double> result;
-        // KDTree tree;
-        std::vector<std::pair<Vec2D, Vec2D>> segmentDiscontinuities;
-        unsigned int numSegmentDiscontinuities = 0;
-        void findNearestNeighbours(const KDTree& tree, const Vec2D& queryPoint, unsigned int K, std::vector<size_t>& indices, std::vector<double>& distances);
-        bool doesEdgeIntersectDiscontinuity(const unsigned int node1Idx, unsigned int node2Idx);
-    public:
-        Nodes nodes;
-        VecXd nodePosFlat;
-        Edges edges;
-        double areaOfDxf = 4.0;
-        unsigned int highestBoundaryID = 0;
-        std::vector<BoundaryEdgeInformation> boundaryEdgeInfo;
-        unsigned int numBoundaries = 0;
-        unsigned int numBoundaryPoints = 0;
-
-        std::vector<const Domain*> boundaries;
-        std::vector<bool> boundaryIncludeExclude;
-        void insertNodesAtPositions(const std::vector<Vec2D> nodePos);
-        void initializeBoundaryNodes(const BoundaryMeshBuildInformation& boundaryBuildInfo);
-        void initializeInternalEdgesNodes(const InternalEdgesMeshBuildInformation internalEdgeBuildInfo);
-        void addInternalNodes_Random(const unsigned int numNodesToAdd);
-        void addInternalNodes_Uniform(const int numNodesToTargetAdd);
-        double calculateAreaOfMeshObject(const unsigned int numSamples);
-        double constraintParameter = 0.0f;
-        void createEdges(const unsigned int K, const double distanceTheshold);
-        // void enforceConstraints(double t);
-        void createFlatVec();
-        void cacheEdgesExtensionFromFlatVec();
-        void syncVecWithFlatVecData();
-
-
-        // Mesh();
+    void findNearestNeighbours(const KDTree& tree, const Vec2D& queryPoint, Index K, std::vector<size_t>& indices, std::vector<double>& distances);
+    bool doesEdgeIntersectDiscontinuity(Index node1Idx, Index node2Idx);
+    void resizeNodeAttributes();
+    void rebuildBoundaryIdentifiers();
+    void pruneBoundarySegments();
+    // Rebuilds chords from spring adjacency for tags with no generation polygon.
+    void inferBoundarySegments(Index boundaryId);
+    void rebuildNormalsForBoundary(Index boundaryId, const Vec2D& normalOverride);
 };
-
-
-
