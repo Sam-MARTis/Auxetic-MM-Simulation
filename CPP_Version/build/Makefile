@@ -155,6 +155,19 @@ dxf_diagnostics/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dxf_diagnostics.dir/build.make CMakeFiles/dxf_diagnostics.dir/build
 .PHONY : dxf_diagnostics/fast
 
+#=============================================================================
+# Target rules for targets named gmsh_mesh_tests
+
+# Build rule for target.
+gmsh_mesh_tests: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gmsh_mesh_tests
+.PHONY : gmsh_mesh_tests
+
+# fast build rule for target.
+gmsh_mesh_tests/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/gmsh_mesh_tests.dir/build.make CMakeFiles/gmsh_mesh_tests.dir/build
+.PHONY : gmsh_mesh_tests/fast
+
 external/imgui-sfml/imgui-SFML.o: external/imgui-sfml/imgui-SFML.cpp.o
 .PHONY : external/imgui-sfml/imgui-SFML.o
 
@@ -347,6 +360,33 @@ external/implot/implot_items.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/runThis.dir/build.make CMakeFiles/runThis.dir/external/implot/implot_items.cpp.s
 .PHONY : external/implot/implot_items.cpp.s
 
+src/gmsh_mesher.o: src/gmsh_mesher.cpp.o
+.PHONY : src/gmsh_mesher.o
+
+# target to build an object file
+src/gmsh_mesher.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/runThis.dir/build.make CMakeFiles/runThis.dir/src/gmsh_mesher.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/gmsh_mesh_tests.dir/build.make CMakeFiles/gmsh_mesh_tests.dir/src/gmsh_mesher.cpp.o
+.PHONY : src/gmsh_mesher.cpp.o
+
+src/gmsh_mesher.i: src/gmsh_mesher.cpp.i
+.PHONY : src/gmsh_mesher.i
+
+# target to preprocess a source file
+src/gmsh_mesher.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/runThis.dir/build.make CMakeFiles/runThis.dir/src/gmsh_mesher.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/gmsh_mesh_tests.dir/build.make CMakeFiles/gmsh_mesh_tests.dir/src/gmsh_mesher.cpp.i
+.PHONY : src/gmsh_mesher.cpp.i
+
+src/gmsh_mesher.s: src/gmsh_mesher.cpp.s
+.PHONY : src/gmsh_mesher.s
+
+# target to generate assembly for a file
+src/gmsh_mesher.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/runThis.dir/build.make CMakeFiles/runThis.dir/src/gmsh_mesher.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/gmsh_mesh_tests.dir/build.make CMakeFiles/gmsh_mesh_tests.dir/src/gmsh_mesher.cpp.s
+.PHONY : src/gmsh_mesher.cpp.s
+
 src/loader.o: src/loader.cpp.o
 .PHONY : src/loader.o
 
@@ -354,6 +394,7 @@ src/loader.o: src/loader.cpp.o
 src/loader.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/runThis.dir/build.make CMakeFiles/runThis.dir/src/loader.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dxf_diagnostics.dir/build.make CMakeFiles/dxf_diagnostics.dir/src/loader.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/gmsh_mesh_tests.dir/build.make CMakeFiles/gmsh_mesh_tests.dir/src/loader.cpp.o
 .PHONY : src/loader.cpp.o
 
 src/loader.i: src/loader.cpp.i
@@ -363,6 +404,7 @@ src/loader.i: src/loader.cpp.i
 src/loader.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/runThis.dir/build.make CMakeFiles/runThis.dir/src/loader.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dxf_diagnostics.dir/build.make CMakeFiles/dxf_diagnostics.dir/src/loader.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/gmsh_mesh_tests.dir/build.make CMakeFiles/gmsh_mesh_tests.dir/src/loader.cpp.i
 .PHONY : src/loader.cpp.i
 
 src/loader.s: src/loader.cpp.s
@@ -372,6 +414,7 @@ src/loader.s: src/loader.cpp.s
 src/loader.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/runThis.dir/build.make CMakeFiles/runThis.dir/src/loader.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dxf_diagnostics.dir/build.make CMakeFiles/dxf_diagnostics.dir/src/loader.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/gmsh_mesh_tests.dir/build.make CMakeFiles/gmsh_mesh_tests.dir/src/loader.cpp.s
 .PHONY : src/loader.cpp.s
 
 src/main.o: src/main.cpp.o
@@ -430,6 +473,7 @@ src/mesh.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/runThis.dir/build.make CMakeFiles/runThis.dir/src/mesh.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/boundary_tests.dir/build.make CMakeFiles/boundary_tests.dir/src/mesh.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dxf_diagnostics.dir/build.make CMakeFiles/dxf_diagnostics.dir/src/mesh.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/gmsh_mesh_tests.dir/build.make CMakeFiles/gmsh_mesh_tests.dir/src/mesh.cpp.o
 .PHONY : src/mesh.cpp.o
 
 src/mesh.i: src/mesh.cpp.i
@@ -440,6 +484,7 @@ src/mesh.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/runThis.dir/build.make CMakeFiles/runThis.dir/src/mesh.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/boundary_tests.dir/build.make CMakeFiles/boundary_tests.dir/src/mesh.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dxf_diagnostics.dir/build.make CMakeFiles/dxf_diagnostics.dir/src/mesh.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/gmsh_mesh_tests.dir/build.make CMakeFiles/gmsh_mesh_tests.dir/src/mesh.cpp.i
 .PHONY : src/mesh.cpp.i
 
 src/mesh.s: src/mesh.cpp.s
@@ -450,6 +495,7 @@ src/mesh.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/runThis.dir/build.make CMakeFiles/runThis.dir/src/mesh.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/boundary_tests.dir/build.make CMakeFiles/boundary_tests.dir/src/mesh.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dxf_diagnostics.dir/build.make CMakeFiles/dxf_diagnostics.dir/src/mesh.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/gmsh_mesh_tests.dir/build.make CMakeFiles/gmsh_mesh_tests.dir/src/mesh.cpp.s
 .PHONY : src/mesh.cpp.s
 
 src/renderer.o: src/renderer.cpp.o
@@ -484,6 +530,7 @@ src/solid.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/runThis.dir/build.make CMakeFiles/runThis.dir/src/solid.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/boundary_tests.dir/build.make CMakeFiles/boundary_tests.dir/src/solid.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dxf_diagnostics.dir/build.make CMakeFiles/dxf_diagnostics.dir/src/solid.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/gmsh_mesh_tests.dir/build.make CMakeFiles/gmsh_mesh_tests.dir/src/solid.cpp.o
 .PHONY : src/solid.cpp.o
 
 src/solid.i: src/solid.cpp.i
@@ -494,6 +541,7 @@ src/solid.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/runThis.dir/build.make CMakeFiles/runThis.dir/src/solid.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/boundary_tests.dir/build.make CMakeFiles/boundary_tests.dir/src/solid.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dxf_diagnostics.dir/build.make CMakeFiles/dxf_diagnostics.dir/src/solid.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/gmsh_mesh_tests.dir/build.make CMakeFiles/gmsh_mesh_tests.dir/src/solid.cpp.i
 .PHONY : src/solid.cpp.i
 
 src/solid.s: src/solid.cpp.s
@@ -504,6 +552,7 @@ src/solid.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/runThis.dir/build.make CMakeFiles/runThis.dir/src/solid.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/boundary_tests.dir/build.make CMakeFiles/boundary_tests.dir/src/solid.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dxf_diagnostics.dir/build.make CMakeFiles/dxf_diagnostics.dir/src/solid.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/gmsh_mesh_tests.dir/build.make CMakeFiles/gmsh_mesh_tests.dir/src/solid.cpp.s
 .PHONY : src/solid.cpp.s
 
 tests/dxf_diagnostics.o: tests/dxf_diagnostics.cpp.o
@@ -529,6 +578,30 @@ tests/dxf_diagnostics.s: tests/dxf_diagnostics.cpp.s
 tests/dxf_diagnostics.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dxf_diagnostics.dir/build.make CMakeFiles/dxf_diagnostics.dir/tests/dxf_diagnostics.cpp.s
 .PHONY : tests/dxf_diagnostics.cpp.s
+
+tests/gmsh_mesh_test.o: tests/gmsh_mesh_test.cpp.o
+.PHONY : tests/gmsh_mesh_test.o
+
+# target to build an object file
+tests/gmsh_mesh_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/gmsh_mesh_tests.dir/build.make CMakeFiles/gmsh_mesh_tests.dir/tests/gmsh_mesh_test.cpp.o
+.PHONY : tests/gmsh_mesh_test.cpp.o
+
+tests/gmsh_mesh_test.i: tests/gmsh_mesh_test.cpp.i
+.PHONY : tests/gmsh_mesh_test.i
+
+# target to preprocess a source file
+tests/gmsh_mesh_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/gmsh_mesh_tests.dir/build.make CMakeFiles/gmsh_mesh_tests.dir/tests/gmsh_mesh_test.cpp.i
+.PHONY : tests/gmsh_mesh_test.cpp.i
+
+tests/gmsh_mesh_test.s: tests/gmsh_mesh_test.cpp.s
+.PHONY : tests/gmsh_mesh_test.s
+
+# target to generate assembly for a file
+tests/gmsh_mesh_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/gmsh_mesh_tests.dir/build.make CMakeFiles/gmsh_mesh_tests.dir/tests/gmsh_mesh_test.cpp.s
+.PHONY : tests/gmsh_mesh_test.cpp.s
 
 tests/test_boundary.o: tests/test_boundary.cpp.o
 .PHONY : tests/test_boundary.o
@@ -564,6 +637,7 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... boundary_tests"
 	@echo "... dxf_diagnostics"
+	@echo "... gmsh_mesh_tests"
 	@echo "... runThis"
 	@echo "... external/imgui-sfml/imgui-SFML.o"
 	@echo "... external/imgui-sfml/imgui-SFML.i"
@@ -589,6 +663,9 @@ help:
 	@echo "... external/implot/implot_items.o"
 	@echo "... external/implot/implot_items.i"
 	@echo "... external/implot/implot_items.s"
+	@echo "... src/gmsh_mesher.o"
+	@echo "... src/gmsh_mesher.i"
+	@echo "... src/gmsh_mesher.s"
 	@echo "... src/loader.o"
 	@echo "... src/loader.i"
 	@echo "... src/loader.s"
@@ -610,6 +687,9 @@ help:
 	@echo "... tests/dxf_diagnostics.o"
 	@echo "... tests/dxf_diagnostics.i"
 	@echo "... tests/dxf_diagnostics.s"
+	@echo "... tests/gmsh_mesh_test.o"
+	@echo "... tests/gmsh_mesh_test.i"
+	@echo "... tests/gmsh_mesh_test.s"
 	@echo "... tests/test_boundary.o"
 	@echo "... tests/test_boundary.i"
 	@echo "... tests/test_boundary.s"

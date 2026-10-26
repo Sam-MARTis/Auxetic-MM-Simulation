@@ -33,6 +33,18 @@ constexpr double DEFAULT_DISTANCE_THRESHOLD_FOR_EDGES = 12e-2;
 constexpr double DEFAULT_EDGE_RENDER_THICKNESS = 4e-3;
 constexpr double DEFAULT_EDGE_STIFFNESS = 1.0;
 constexpr double DEFAULT_BOUNDARY_NORMAL_RENDER_LENGTH = 4e-2;
+// Incident boundary chords whose normals differ by less than this dot product are
+// treated as one plane; a sharper corner gets a constraint row per edge.
+constexpr double BOUNDARY_CORNER_DOT_THRESHOLD = 0.966;   // cos(15 deg)
+
+// Gmsh meshing (see include/gmsh_mesher.hpp)
+constexpr bool DEFAULT_USE_GMSH_MESHER = true;
+constexpr double DEFAULT_GMSH_MESH_SIZE = 1.0 / TARGET_INTERNAL_EDGE_NODE_DENSITY;
+// Cuts are removed as slots of this width. Keep it near the mesh size: a thinner
+// slot leaves stiff short springs at the tip and destabilises the solve.
+constexpr double DEFAULT_GMSH_SLOT_WIDTH = DEFAULT_GMSH_MESH_SIZE;
+constexpr bool DEFAULT_GMSH_WRITE_MESH = false;
+constexpr const char* DEFAULT_GMSH_MESH_PATH = "gmsh_mesh.msh";
 
 static constexpr int    MAX_SOLVER_INTERNAL_ITER = 5;
 static constexpr double TOL      = 1e-2;

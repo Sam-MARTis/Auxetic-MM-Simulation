@@ -1,4 +1,5 @@
 #pragma once
+#include <cstddef>
 #include <vector>
 #include <cmath>
 
@@ -6,13 +7,6 @@
 #include "utils.hpp"
 #include "domains.hpp"
 #include <string>
-
-// struct Segment
-// {
-//     Point2D startPos;
-//     Point2D endPos;
-//     Segment(Point2D startPos, Point2D endPos){this->startPos=startPos; this->endPos=endPos;};
-// };
 
 struct BoundaryMeshBuildInformation
 {
@@ -39,12 +33,13 @@ struct InternalEdgesMeshBuildInformation
 class Loader
 {
 private:
-    unsigned int numBoundaryPoints;
+    unsigned int numBoundaryLines;
     unsigned int numCutPairs;
 public:
+    // Closed, ordered polygon assembled from the DXF's BOUNDARY lines.
     std::vector<Vec2D> boundaryNodesPos;
     std::vector<std::pair<Vec2D, Vec2D>> internalEdgesNodesPos;
     Loader(const std::string& dxfFilepath);
     void alignPoints();
+    [[nodiscard]] std::size_t numBoundaryPolygonPoints() const { return boundaryNodesPos.size(); }
 };
-

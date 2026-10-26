@@ -16,6 +16,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/runThis.dir/external/implot/implot.cpp.o.d"
   "CMakeFiles/runThis.dir/external/implot/implot_items.cpp.o"
   "CMakeFiles/runThis.dir/external/implot/implot_items.cpp.o.d"
+  "CMakeFiles/runThis.dir/src/gmsh_mesher.cpp.o"
+  "CMakeFiles/runThis.dir/src/gmsh_mesher.cpp.o.d"
   "CMakeFiles/runThis.dir/src/loader.cpp.o"
   "CMakeFiles/runThis.dir/src/loader.cpp.o.d"
   "CMakeFiles/runThis.dir/src/main.cpp.o"

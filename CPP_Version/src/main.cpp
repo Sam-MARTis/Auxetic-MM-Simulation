@@ -10,6 +10,9 @@
 #include "menu.hpp"
 #include "mesh.hpp"
 #include "loader.hpp"
+#if defined(HAS_GMSH)
+#include "gmsh_mesher.hpp"
+#endif
 #include <omp.h>
 #include <implot.h>
 
@@ -38,13 +41,47 @@ int main()
         .internalEdges = dxfLoader.internalEdgesNodesPos,
     };
 
-    mesh.initializeBoundaryNodes(boundaryInfo);
-    mesh.initializeInternalEdgesNodes(internalEdgeInfo);
-    const double dxfArea = mesh.calculateAreaOfMeshObject(DEFAULT_NUMBER_AREA_SAMPLES);
-    std::cout << "dxfArea=" << dxfArea << std::endl;
+    const auto buildWithNodeSampling = [&]()
+    {
+        mesh.initializeBoundaryNodes(boundaryInfo);
+        mesh.initializeInternalEdgesNodes(internalEdgeInfo);
+        mesh.calculateAreaOfMeshObject(DEFAULT_NUMBER_AREA_SAMPLES);
+        mesh.addInternalNodes_Uniform(DEFAULT_NUMBER_INTERNAL_NODES);
+        mesh.createEdges(DEFAULT_NUM_NEIGHBOURS_FOR_EDGES, DEFAULT_DISTANCE_THRESHOLD_FOR_EDGES);
+    };
 
-    mesh.addInternalNodes_Uniform(DEFAULT_NUMBER_INTERNAL_NODES);
-    mesh.createEdges(DEFAULT_NUM_NEIGHBOURS_FOR_EDGES, DEFAULT_DISTANCE_THRESHOLD_FOR_EDGES);
+    if (DEFAULT_USE_GMSH_MESHER)
+    {
+#if defined(HAS_GMSH)
+        GmshMeshOptions gmshOptions{
+            .targetMeshSize = DEFAULT_GMSH_MESH_SIZE,
+            .slotWidth = DEFAULT_GMSH_SLOT_WIDTH,
+            .writeMeshFile = DEFAULT_GMSH_WRITE_MESH,
+            .meshFilePath = DEFAULT_GMSH_MESH_PATH,
+        };
+        try
+        {
+            mesh.initializeFromSpringMesh(
+                GmshMesher::build(dxfLoader.boundaryNodesPos, dxfLoader.internalEdgesNodesPos,
+                                  gmshOptions));
+            std::cout << "Meshed with gmsh: " << mesh.nodes.numNodes << " nodes, "
+                      << mesh.edges.numEdges << " springs" << std::endl;
+        }
+        catch (const std::exception& error)
+        {
+            std::cerr << "gmsh meshing failed (" << error.what()
+                      << "); falling back to the node-sampling mesher." << std::endl;
+            buildWithNodeSampling();
+        }
+#else
+        std::cerr << "Built without gmsh; falling back to the node-sampling mesher." << std::endl;
+        buildWithNodeSampling();
+#endif
+    }
+    else
+    {
+        buildWithNodeSampling();
+    }
     std::cout << "Edges initialized" << std::endl;
 
     // boundary 0 is the auto-tagged outline. Uniform expansion is the stable

@@ -362,8 +362,13 @@ namespace
         }
 
         expect(solid.numFixedNodesCount() == 0, "FIXED_NORMAL does not eliminate DOFs");
-        expect(solid.numConstrainedNodes() == mesh.numBoundaryNodes,
-               "FIXED_NORMAL and DISPLACE_NORMAL each add one plane row per tagged node");
+        Index expectedPlaneRows = 0;
+        for (Index nodeIdx = 0; nodeIdx < mesh.nodes.numNodes; nodeIdx++)
+            expectedPlaneRows += static_cast<Index>(mesh.nodes.constraintNormals.at(nodeIdx).size());
+        expect(solid.numConstrainedNodes() == expectedPlaneRows,
+               "one plane row per incident boundary plane");
+        expect(solid.numConstrainedNodes() >= mesh.numBoundaryNodes,
+               "every tagged node has at least one plane row");
 
         for (int step = 0; step < 5; step++) solid.timeStep(DEFAULT_TIME_STEP);
 
@@ -411,8 +416,8 @@ namespace
         }
 
         expect(solid.numFixedNodesCount() == 0, "DISPLACE_NORMAL does not eliminate DOFs");
-        expect(solid.numConstrainedNodes() == tagged.size(),
-               "DISPLACE_NORMAL adds one plane row per tagged node");
+        expect(solid.numConstrainedNodes() >= tagged.size(),
+               "DISPLACE_NORMAL adds at least one plane row per tagged node");
 
         const int numSteps = 4;
         for (int step = 0; step < numSteps; step++) solid.timeStep(DEFAULT_TIME_STEP);

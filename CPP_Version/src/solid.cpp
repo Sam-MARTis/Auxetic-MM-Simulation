@@ -44,17 +44,23 @@ void Solid::buildNormalConstraints()
         const BoundaryCondition& condition = mesh.boundaryConditions.at(boundaryId);
         if (!condition.usesNormalConstraint()) continue;
 
-        Vec2D normal = mesh.nodes.normals.at(nodeIdx);
-        const double magnitude = normal.norm();
-        if (magnitude <= EPSILON)
+        // One row per incident boundary plane: a straight edge contributes one, a
+        // corner contributes one per edge, which pins it at the intersection of the
+        // offset planes instead of letting it slide.
+        for (Vec2D normal : mesh.nodes.constraintNormals.at(nodeIdx))
         {
-            std::cerr << "Solid: node " << nodeIdx << " on boundary " << boundaryId
-                      << " has no usable outward normal, skipping its plane constraint. "
-                      << "Set BoundaryCondition::normalOverride for this boundary." << std::endl;
-            continue;
+            const double magnitude = normal.norm();
+            if (magnitude <= EPSILON)
+            {
+                std::cerr << "Solid: node " << nodeIdx << " on boundary " << boundaryId
+                          << " has no usable outward normal, skipping its plane constraint. "
+                          << "Set BoundaryCondition::normalOverride for this boundary." << std::endl;
+                continue;
+            }
+            normal /= magnitude;
+            normalConstraints.push_back(
+                NormalConstraint{boundaryId, nodeIdx, normal, condition.velocity});
         }
-        normal /= magnitude;
-        normalConstraints.push_back(NormalConstraint{boundaryId, nodeIdx, normal, condition.velocity});
     }
 }
 

@@ -5,7 +5,21 @@ project(runThis)
 set(CMAKE_CXX_STANDARD 20)
 option(SHOULD_PROFILE "Enable runtime profiling output" OFF)
 
+# Gmsh C++ SDK (no pkg-config file is shipped, so search directly).
+find_path(GMSH_INCLUDE_DIR NAMES gmsh.h)
+find_library(GMSH_LIBRARY NAMES gmsh)
+if(GMSH_INCLUDE_DIR AND GMSH_LIBRARY)
+    set(HAS_GMSH TRUE)
+    message(STATUS "gmsh found: ${GMSH_LIBRARY}")
+else()
+    set(HAS_GMSH FALSE)
+    message(STATUS "gmsh not found: the node-sampling mesher is used instead")
+endif()
+
 file(GLOB_RECURSE SOURCES "src/*.cpp")
+if(NOT HAS_GMSH)
+    list(FILTER SOURCES EXCLUDE REGEX "gmsh_mesher\.cpp$")
+endif()
 set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/external/imgui)
 set(IMGUI_SFML_DIR ${CMAKE_SOURCE_DIR}/external/imgui-sfml)
 set(IMPLOT_DIR ${CMAKE_SOURCE_DIR}/external/implot)
@@ -69,6 +83,12 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 find_package(OpenGL REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL::GL)
 
+if(HAS_GMSH)
+    target_include_directories(${PROJECT_NAME} PRIVATE ${GMSH_INCLUDE_DIR})
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${GMSH_LIBRARY})
+    target_compile_definitions(${PROJECT_NAME} PRIVATE HAS_GMSH)
+endif()
+
 # Headless, no SFML: runs without a display.
 option(BUILD_TESTS "Build the host-only unit tests" ON)
 if(BUILD_TESTS)
@@ -104,5 +124,28 @@ if(BUILD_DXF_DIAGNOSTICS)
     target_link_libraries(dxf_diagnostics PRIVATE
             Eigen3::Eigen
             OpenMP::OpenMP_CXX
+            umfpack)
+endif()
+
+# Needs the gmsh SDK; meshes the real DXF with the OpenCASCADE kernel.
+option(BUILD_GMSH_TESTS "Build the gmsh meshing tests" ON)
+if(BUILD_GMSH_TESTS AND HAS_GMSH)
+    add_executable(gmsh_mesh_tests
+            tests/gmsh_mesh_test.cpp
+            src/mesh.cpp
+            src/solid.cpp
+            src/loader.cpp
+            src/gmsh_mesher.cpp)
+    target_include_directories(gmsh_mesh_tests PRIVATE
+            include/
+            ${GMSH_INCLUDE_DIR}
+            /usr/include/suitesparse)
+    target_compile_definitions(gmsh_mesh_tests PRIVATE
+            SUBROUTINES_PATH="${CMAKE_SOURCE_DIR}/src/subroutines"
+            DXFS_DIRECTORY_PATH="${CMAKE_SOURCE_DIR}/resources/DXFs")
+    target_link_libraries(gmsh_mesh_tests PRIVATE
+            Eigen3::Eigen
+            OpenMP::OpenMP_CXX
+            ${GMSH_LIBRARY}
             umfpack)
 endif()

@@ -1,5 +1,6 @@
 /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/build/CMakeFiles/runThis.dir
 /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/build/CMakeFiles/boundary_tests.dir
 /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/build/CMakeFiles/dxf_diagnostics.dir
+/home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/build/CMakeFiles/gmsh_mesh_tests.dir
 /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/build/CMakeFiles/edit_cache.dir
 /home/odin/Academic/Research/Metamaterials/Auxetic_Mechanical_MM/Bistable/Computational_Exploration/CPP_Version/build/CMakeFiles/rebuild_cache.dir

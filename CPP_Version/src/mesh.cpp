@@ -49,6 +49,7 @@ void Mesh::resizeNodeAttributes()
     // resize() preserves existing entries, so tags/normals survive appending.
     nodes.boundaryId.resize(numNodes, NO_BOUNDARY);
     nodes.normals.resize(numNodes, Vec2D{0.0, 0.0});
+    nodes.constraintNormals.resize(numNodes);
 }
 
 void Mesh::insertNodesAtPositions(const std::vector<Vec2D> nodePos)
@@ -200,6 +201,7 @@ void Mesh::rebuildNormalsForBoundary(const Index boundaryId, const Vec2D& normal
     for (const Index nodeIdx : taggedNodes)
     {
         nodes.normals.at(nodeIdx) = Vec2D{0.0, 0.0};
+        nodes.constraintNormals.at(nodeIdx).clear();
     }
 
     const double overrideMagnitude = normalOverride.norm();
@@ -209,6 +211,7 @@ void Mesh::rebuildNormalsForBoundary(const Index boundaryId, const Vec2D& normal
         for (const Index nodeIdx : taggedNodes)
         {
             nodes.normals.at(nodeIdx) = unitNormal;
+            nodes.constraintNormals.at(nodeIdx).assign(1, unitNormal);
         }
         return;
     }
@@ -216,8 +219,21 @@ void Mesh::rebuildNormalsForBoundary(const Index boundaryId, const Vec2D& normal
     for (const BoundarySegment& segment : boundarySegments)
     {
         if (segment.boundaryId != boundaryId) continue;
-        nodes.normals.at(segment.node1) += segment.outwardNormal;
-        nodes.normals.at(segment.node2) += segment.outwardNormal;
+        for (const Index nodeIdx : {segment.node1, segment.node2})
+        {
+            nodes.normals.at(nodeIdx) += segment.outwardNormal;
+            std::vector<Vec2D>& distinct = nodes.constraintNormals.at(nodeIdx);
+            bool alreadyPresent = false;
+            for (const Vec2D& existing : distinct)
+            {
+                if (Vec2D::dot(existing, segment.outwardNormal) > BOUNDARY_CORNER_DOT_THRESHOLD)
+                {
+                    alreadyPresent = true;
+                    break;
+                }
+            }
+            if (!alreadyPresent) distinct.push_back(segment.outwardNormal);
+        }
     }
 
     Vec2D centroid{0.0, 0.0};
@@ -242,11 +258,21 @@ void Mesh::rebuildNormalsForBoundary(const Index boundaryId, const Vec2D& normal
         nodes.normals.at(nodeIdx) =
             radialMagnitude > EPSILON ? (radial / radialMagnitude) : Vec2D{0.0, 0.0};
     }
+
+    // A node with no chord at all (a promoted interior node) still needs one plane.
+    for (const Index nodeIdx : taggedNodes)
+    {
+        if (nodes.constraintNormals.at(nodeIdx).empty())
+        {
+            nodes.constraintNormals.at(nodeIdx).push_back(nodes.normals.at(nodeIdx));
+        }
+    }
 }
 
 void Mesh::computeBoundaryNodeNormals()
 {
     std::fill(nodes.normals.begin(), nodes.normals.end(), Vec2D{0.0, 0.0});
+    for (std::vector<Vec2D>& perNode : nodes.constraintNormals) perNode.clear();
     for (Index boundaryId = 0; boundaryId < numBoundaries; boundaryId++)
     {
         rebuildNormalsForBoundary(boundaryId, boundaryConditions.at(boundaryId).normalOverride);
@@ -372,6 +398,62 @@ void Mesh::logBoundarySummary() const
 // ---------------------------------------------------------------------------
 // Mesh generation
 // ---------------------------------------------------------------------------
+
+void Mesh::initializeFromSpringMesh(const SpringMeshDescription& description)
+{
+    nodes.nodesPos = description.nodePositions;
+    resizeNodeAttributes();
+
+    edges.edgesProperty.clear();
+    edges.edgesConnection.clear();
+    edges.vertices.clear();
+    edges.edgeEvaluationPoints.clear();
+    const std::size_t numSprings = description.springs.size();
+    edges.edgesProperty.reserve(numSprings);
+    edges.edgesConnection.reserve(numSprings);
+    edges.vertices.reserve(numSprings);
+    edges.edgeEvaluationPoints.reserve(numSprings);
+
+    for (const EdgesConnection& spring : description.springs)
+    {
+        if (spring.node1 >= nodes.numNodes || spring.node2 >= nodes.numNodes) continue;
+        if (spring.node1 == spring.node2) continue;
+        const Vec2D p1 = nodes.nodesPos.at(spring.node1);
+        const Vec2D p2 = nodes.nodesPos.at(spring.node2);
+        const double length = (p1 - p2).norm();
+        if (length <= EPSILON) continue;
+        edges.edgesConnection.push_back(spring);
+        edges.edgesProperty.push_back(EdgeProperties{
+            .natural_length = length,
+            .stiffness = DEFAULT_EDGE_STIFFNESS / length,
+            .cached_extension = length,
+        });
+        edges.vertices.push_back(std::array<Vec2D, 2>{p1, p2});
+        edges.edgeEvaluationPoints.push_back((p1 + p2) * 0.5);
+    }
+    edges.numEdges = static_cast<Index>(edges.edgesConnection.size());
+
+    segmentDiscontinuities = description.cutSegments;
+    numSegmentDiscontinuities = static_cast<Index>(segmentDiscontinuities.size());
+
+    boundarySegments.clear();
+    if (!description.boundarySegments.empty())
+    {
+        const Index boundaryId = createBoundaryTag();
+        for (BoundarySegment segment : description.boundarySegments)
+        {
+            if (segment.node1 >= nodes.numNodes || segment.node2 >= nodes.numNodes) continue;
+            if (segment.node1 == segment.node2) continue;
+            segment.boundaryId = boundaryId;
+            nodes.boundaryId.at(segment.node1) = boundaryId;
+            nodes.boundaryId.at(segment.node2) = boundaryId;
+            boundarySegments.push_back(segment);
+        }
+    }
+
+    bookkeepingDirty = true;
+    rebuildBoundaryBookkeeping();
+}
 
 Index Mesh::initializeBoundaryNodes(const BoundaryMeshBuildInformation& boundaryBuildInfo)
 {

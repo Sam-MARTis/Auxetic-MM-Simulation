@@ -44,6 +44,19 @@ struct EdgeProperties
     Index boundaryId = NO_BOUNDARY;  // boundary tag, set only for boundary chords
 };
 
+// A ready-made spring network, e.g. derived from a Gmsh mesh.
+struct SpringMeshDescription
+{
+    std::vector<Vec2D> nodePositions;
+    std::vector<EdgesConnection> springs;
+    std::vector<BoundarySegment> boundarySegments;         // outer boundary chords
+    std::vector<std::pair<Vec2D, Vec2D>> cutSegments;
+    // Diagnostics filled in by the mesher.
+    Index numTriangles = 0;
+    Index numBoundaryEdges = 0;
+    Index numCutBoundaryEdges = 0;
+};
+
 // Cells and edges follow the FVM reference layout: struct-of-structs with
 // parallel arrays addressed by index. See DeveloperReference.md section 1.
 class Mesh
@@ -67,6 +80,9 @@ public:
         std::vector<std::vector<Index>> edgeIndices;           // N, incident edges
         std::vector<Index> boundaryId;                         // N, NO_BOUNDARY if interior
         std::vector<Vec2D> normals;                            // N, outward unit normal when tagged
+        // N, one entry per distinct incident boundary plane: a straight edge gives
+        // one, a corner gives one per edge, so the corner cannot slide.
+        std::vector<std::vector<Vec2D>> constraintNormals;
     };
 
     Nodes nodes;
@@ -89,6 +105,9 @@ public:
 
     // ---- mesh generation ------------------------------------------------------
     void insertNodesAtPositions(const std::vector<Vec2D> nodePos);
+    // Replaces nodes/edges/boundary data with a pre-built network, e.g. one read
+    // from a Gmsh mesh. Gives every node of the supplied boundary chords tag 0.
+    void initializeFromSpringMesh(const SpringMeshDescription& description);
     Index initializeBoundaryNodes(const BoundaryMeshBuildInformation& boundaryBuildInfo);
     void initializeInternalEdgesNodes(const InternalEdgesMeshBuildInformation internalEdgeBuildInfo);
     void addInternalNodes_Random(Index numNodesToAdd);
