@@ -32,6 +32,13 @@ constexpr unsigned int DEFAULT_NUM_NEIGHBOURS_FOR_EDGES = 15;
 constexpr double DEFAULT_DISTANCE_THRESHOLD_FOR_EDGES = 12e-2;
 constexpr double DEFAULT_EDGE_RENDER_THICKNESS = 4e-3;
 constexpr double DEFAULT_EDGE_STIFFNESS = 1.0;
+// Bond-angle (torsional) spring. Dimensionless prefactor for the per-element
+// stiffness kappa = DEFAULT_TORSIONAL_STIFFNESS * 0.5*(k1+k2)*l1*l2; see
+// physicsDerivation.md section 13.
+constexpr double DEFAULT_TORSIONAL_STIFFNESS = 1.0;
+// An element whose sine is below this is (nearly) collinear. The cosine energy
+// is stationary there, so count it as a diagnostic rather than silently skipping.
+constexpr double NEAR_COLLINEAR_SINE_THRESHOLD = 1e-6;
 constexpr double DEFAULT_BOUNDARY_NORMAL_RENDER_LENGTH = 4e-2;
 // Incident boundary chords whose normals differ by less than this dot product are
 // treated as one plane; a sharper corner gets a constraint row per edge.
@@ -49,6 +56,25 @@ constexpr const char* DEFAULT_GMSH_MESH_PATH = "gmsh_mesh.msh";
 static constexpr int    MAX_SOLVER_INTERNAL_ITER = 5;
 static constexpr double TOL      = 1e-2;
 static constexpr double EPSILON2  = 1e-12;
+
+// Energy-decreasing backtracking line search on the Newton step; see
+// physicsDerivation.md section 14. The constraint is linear, so any scaled step
+// keeps A dx = -violation and never increases the violation.
+constexpr int    LINE_SEARCH_MAX_ITERATIONS = 20;
+constexpr double LINE_SEARCH_INITIAL_STEP = 1.0;
+constexpr double LINE_SEARCH_REDUCTION = 0.5;
+constexpr double LINE_SEARCH_ARMIJO = 1e-4;
+constexpr double LINE_SEARCH_MIN_STEP = 1e-8;
+constexpr double STEP_TOL = 1e-8;
+// Used only when the Hessian is indefinite and the Newton step is not a descent
+// direction: K + shift*I is retried with a growing shift.
+constexpr double HESSIAN_SHIFT_INITIAL = 1e-8;
+constexpr double HESSIAN_SHIFT_FACTOR = 10.0;
+constexpr double HESSIAN_SHIFT_MAX = 1e8;
+// Above this plane violation the KKT step is a feasibility step for a moving
+// constraint target; the energy may legitimately increase, so no energy line
+// search is applied. After a good KKT solve the violation is ~1e-16.
+constexpr double CONSTRAINT_FEASIBILITY_TOL = 1e-8;
 
 constexpr double DEFAULT_INTERNAL_EDGE_EXPANSIVE_FACTOR = 1.000001;
 

@@ -2,6 +2,7 @@
 // conditions. Headless; exit code 0 means all checks passed.
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <iostream>
 #include <limits>
@@ -542,6 +543,132 @@ namespace
         }
         expect(normalizedOverride, "a non-unit override is normalised");
     }
+
+    void testTorsionalElement()
+    {
+        std::cout << "[torsional bond-angle element]" << std::endl;
+
+        SpringMeshDescription description;
+        description.nodePositions = {
+            Vec2D{0.0, 0.0}, Vec2D{1.0, 0.0}, Vec2D{0.35, 0.9}};
+        description.springs = {
+            EdgesConnection{0, 1}, EdgesConnection{1, 2}, EdgesConnection{2, 0}};
+        description.triangles = {std::array<Index, 3>{0, 1, 2}};
+        description.numTriangles = 1;
+
+        Mesh mesh;
+        mesh.initializeFromSpringMesh(description);
+
+        expect(mesh.edges.numEdges == 3, "one triangle gives three springs");
+        expect(mesh.torsions.numTorsions == 3,
+               "one triangle gives three torsional corners");
+        expect(mesh.numNearCollinearTorsions == 0,
+               "the reference triangle is not near-collinear");
+
+        const auto hasSpring = [&mesh](const Index a, const Index b)
+        {
+            for (Index e = 0; e < mesh.edges.numEdges; e++)
+            {
+                const EdgesConnection& c = mesh.edges.edgesConnection.at(e);
+                if ((c.node1 == a && c.node2 == b) || (c.node1 == b && c.node2 == a))
+                    return true;
+            }
+            return false;
+        };
+
+        bool allLegsAreSprings = true;
+        bool stiffnessFormula = true;
+        for (Index t = 0; t < mesh.torsions.numTorsions; t++)
+        {
+            const TorsionConnection& c = mesh.torsions.torsionConnection.at(t);
+            const TorsionProperties& p = mesh.torsions.torsionProperty.at(t);
+            if (!hasSpring(c.nodeI, c.nodeApex) || !hasSpring(c.nodeApex, c.nodeK))
+                allLegsAreSprings = false;
+            const double kA = mesh.edges.edgesProperty.at(p.legEdgeA).stiffness;
+            const double kB = mesh.edges.edgesProperty.at(p.legEdgeB).stiffness;
+            const double expected = DEFAULT_TORSIONAL_STIFFNESS
+                                  * 0.5 * (kA + kB)
+                                  * p.natural_length_a * p.natural_length_b;
+            if (std::abs(p.stiffness - expected) > 1e-12) stiffnessFormula = false;
+        }
+        expect(allLegsAreSprings, "every torsion leg is a spring");
+        expect(stiffnessFormula, "torsion stiffness follows the edge-normalised formula");
+
+        mesh.createFlatVec();
+        Solid solid(mesh);
+
+        // Perturb away from the reference so the gradient is non-zero.
+        for (Index i = 0; i < mesh.nodes.numNodes; i++)
+        {
+            mesh.nodePosFlat[2 * i]     += 0.04 * static_cast<double>(i + 1);
+            mesh.nodePosFlat[2 * i + 1] -= 0.03 * static_cast<double>(i + 1);
+        }
+        solid.assembleEnergyDerivatives();
+
+        const VecXd g = solid.gradient();
+        const SpMat K = solid.hessian();
+        const int numDofs = static_cast<int>(g.size());
+        expect(numDofs == 6, "three free nodes give six DOFs");
+
+        const VecXd x0 = mesh.nodePosFlat;
+        const double h = 1e-5;
+
+        double maxGradientError = 0.0;
+        for (int p = 0; p < numDofs; p++)
+        {
+            mesh.nodePosFlat = x0;
+            mesh.nodePosFlat[p] += h;
+            const double plus = solid.computeTotalPotentialEnergy();
+            mesh.nodePosFlat = x0;
+            mesh.nodePosFlat[p] -= h;
+            const double minus = solid.computeTotalPotentialEnergy();
+            const double fd = (plus - minus) / (2.0 * h);
+            maxGradientError = std::max(maxGradientError, std::abs(fd - g[p]));
+        }
+        mesh.nodePosFlat = x0;
+        expect(maxGradientError < 1e-6, "torsion gradient matches finite differences");
+
+        double maxHessianError = 0.0;
+        for (int p = 0; p < numDofs; p++)
+        {
+            for (int q = 0; q < numDofs; q++)
+            {
+                const auto energyAt = [&](const double dp, const double dq)
+                {
+                    mesh.nodePosFlat = x0;
+                    mesh.nodePosFlat[p] += dp;
+                    mesh.nodePosFlat[q] += dq;
+                    return solid.computeTotalPotentialEnergy();
+                };
+                const double fd = (energyAt(h, h) - energyAt(h, -h)
+                                   - energyAt(-h, h) + energyAt(-h, -h))
+                                  / (4.0 * h * h);
+                maxHessianError = std::max(maxHessianError, std::abs(fd - K.coeff(p, q)));
+            }
+        }
+        mesh.nodePosFlat = x0;
+        expect(maxHessianError < 1e-4, "torsion Hessian matches finite differences");
+
+        double maxAsymmetry = 0.0;
+        for (int p = 0; p < numDofs; p++)
+            for (int q = 0; q < numDofs; q++)
+                maxAsymmetry = std::max(maxAsymmetry, std::abs(K.coeff(p, q) - K.coeff(q, p)));
+        expect(maxAsymmetry < 1e-12, "torsion Hessian is symmetric");
+
+        VecXd translationX = VecXd::Zero(numDofs);
+        VecXd translationY = VecXd::Zero(numDofs);
+        for (int i = 0; i < numDofs / 2; i++)
+        {
+            translationX[2 * i] = 1.0;
+            translationY[2 * i + 1] = 1.0;
+        }
+        expect((K * translationX).norm() < 1e-10 && (K * translationY).norm() < 1e-10,
+               "torsion Hessian annihilates translations");
+
+        mesh.createFlatVec();
+        expect(solid.computeTotalPotentialEnergy() < 1e-12,
+               "the reference triangle has zero potential energy");
+    }
 }
 
 int main()
@@ -559,6 +686,7 @@ int main()
     testFreeHasNoConstraints();
     testFreeBoundaryMovesWhileFixedDoesNot();
     testConditionCannotBeSilentlyDropped();
+    testTorsionalElement();
 
     std::cout << "=== " << (numChecks - numFailures) << "/" << numChecks
               << " checks passed ===" << std::endl;

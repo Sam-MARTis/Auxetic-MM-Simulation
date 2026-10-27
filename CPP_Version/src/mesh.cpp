@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <cmath>
 #include <iostream>
+#include <set>
+#include <unordered_map>
 #include <unordered_set>
 
 #include "constants.hpp"
@@ -46,6 +48,7 @@ void Mesh::resizeNodeAttributes()
     const Index numNodes = static_cast<Index>(nodes.nodesPos.size());
     nodes.numNodes = numNodes;
     nodes.edgeIndices.resize(numNodes);
+    nodes.torsionIndices.resize(numNodes);
     // resize() preserves existing entries, so tags/normals survive appending.
     nodes.boundaryId.resize(numNodes, NO_BOUNDARY);
     nodes.normals.resize(numNodes, Vec2D{0.0, 0.0});
@@ -58,6 +61,7 @@ void Mesh::insertNodesAtPositions(const std::vector<Vec2D> nodePos)
 
     nodes.nodesPos.insert(nodes.nodesPos.end(), nodePos.begin(), nodePos.end());
     resizeNodeAttributes();
+    clearTorsions();
 }
 
 Index Mesh::createBoundaryTag()
@@ -403,6 +407,7 @@ void Mesh::initializeFromSpringMesh(const SpringMeshDescription& description)
 {
     nodes.nodesPos = description.nodePositions;
     resizeNodeAttributes();
+    clearTorsions();
 
     edges.edgesProperty.clear();
     edges.edgesConnection.clear();
@@ -432,6 +437,8 @@ void Mesh::initializeFromSpringMesh(const SpringMeshDescription& description)
         edges.edgeEvaluationPoints.push_back((p1 + p2) * 0.5);
     }
     edges.numEdges = static_cast<Index>(edges.edgesConnection.size());
+
+    buildTorsionsFromTriangles(description.triangles);
 
     segmentDiscontinuities = description.cutSegments;
     numSegmentDiscontinuities = static_cast<Index>(segmentDiscontinuities.size());
@@ -692,6 +699,7 @@ void Mesh::findNearestNeighbours(const KDTree& tree, const Vec2D& queryPoint, co
 
 void Mesh::createEdges(const Index K, const double distanceTheshold)
 {
+    clearTorsions();
     PointCloud cloud{.pointsPos = nodes.nodesPos};
     KDTree tree(2, cloud, nanoflann::KDTreeSingleIndexAdaptorParams(DEFAULT_NUMBER_NODES_PER_TREE_LEAF));
     std::vector<size_t> indices(K);
@@ -774,6 +782,154 @@ void Mesh::cacheEdgesExtensionFromFlatVec()
         const Vec2D p2{x2, y2};
         edges.vertices.at(i) = std::array<Vec2D, 2>{p1, p2};
         edges.edgeEvaluationPoints.at(i) = (p1 + p2) * 0.5;
+    }
+}
+
+void Mesh::cacheTorsionStateFromFlatVec()
+{
+    numNearCollinearTorsions = 0;
+    for (Index t = 0; t < torsions.numTorsions; t++)
+    {
+        TorsionProperties& property = torsions.torsionProperty.at(t);
+        const TorsionConnection& connection = torsions.torsionConnection.at(t);
+
+        const double ux = nodePosFlat[2 * connection.nodeI]
+                        - nodePosFlat[2 * connection.nodeApex];
+        const double uy = nodePosFlat[2 * connection.nodeI + 1]
+                        - nodePosFlat[2 * connection.nodeApex + 1];
+        const double vx = nodePosFlat[2 * connection.nodeK]
+                        - nodePosFlat[2 * connection.nodeApex];
+        const double vy = nodePosFlat[2 * connection.nodeK + 1]
+                        - nodePosFlat[2 * connection.nodeApex + 1];
+
+        const double a = std::hypot(ux, uy);
+        const double b = std::hypot(vx, vy);
+        property.cached_a = a;
+        property.cached_b = b;
+        if (a <= EPSILON || b <= EPSILON)
+        {
+            property.cached_cosine = 1.0;
+            property.cached_sine = 0.0;
+            continue;
+        }
+
+        property.cached_cosine = std::clamp((ux * vx + uy * vy) / (a * b), -1.0, 1.0);
+        property.cached_sine = std::clamp((ux * vy - uy * vx) / (a * b), -1.0, 1.0);
+        if (std::abs(property.cached_sine) < NEAR_COLLINEAR_SINE_THRESHOLD)
+            numNearCollinearTorsions++;
+    }
+}
+
+void Mesh::clearTorsions()
+{
+    torsions.numTorsions = 0;
+    torsions.torsionConnection.clear();
+    torsions.torsionProperty.clear();
+    for (std::vector<Index>& incident : nodes.torsionIndices) incident.clear();
+    numNearCollinearTorsions = 0;
+}
+
+void Mesh::buildNodeTorsionAdjacency()
+{
+    for (std::vector<Index>& incident : nodes.torsionIndices) incident.clear();
+    for (Index t = 0; t < torsions.numTorsions; t++)
+    {
+        const TorsionConnection& connection = torsions.torsionConnection.at(t);
+        const std::array<Index, 3> nodesOfTorsion{
+            connection.nodeI, connection.nodeApex, connection.nodeK};
+        for (const Index nodeIdx : nodesOfTorsion)
+        {
+            if (nodeIdx < nodes.numNodes) nodes.torsionIndices.at(nodeIdx).push_back(t);
+        }
+    }
+}
+
+void Mesh::buildTorsionsFromTriangles(const std::vector<std::array<Index, 3>>& triangles)
+{
+    clearTorsions();
+    if (triangles.empty() || edges.numEdges == 0) return;
+
+    // Edge lookup so a corner is only turned into a torsion when both legs are
+    // actual springs. On a triangle mesh that is always the case.
+    std::unordered_map<EdgeKey, Index, EdgeHash> edgeIndex;
+    edgeIndex.reserve(edges.numEdges * 2);
+    for (Index edgeIdx = 0; edgeIdx < edges.numEdges; edgeIdx++)
+    {
+        const EdgesConnection& connection = edges.edgesConnection.at(edgeIdx);
+        edgeIndex.emplace(EdgeKey(connection.node1, connection.node2), edgeIdx);
+    }
+
+    // A triangle corner is unique, but the set also protects against duplicate
+    // triangles or a future fan-based builder.
+    std::set<std::array<Index, 3>> seen;
+    torsions.torsionConnection.reserve(triangles.size() * 3);
+    torsions.torsionProperty.reserve(triangles.size() * 3);
+
+    const auto addCorner = [&](Index nodeI, const Index apex, Index nodeK)
+    {
+        if (nodeI >= nodes.numNodes || apex >= nodes.numNodes || nodeK >= nodes.numNodes) return;
+        if (nodeI == apex || apex == nodeK || nodeI == nodeK) return;
+        // (i,apex,k) and (k,apex,i) are the same element.
+        if (nodeI > nodeK) std::swap(nodeI, nodeK);
+        const std::array<Index, 3> key{nodeI, apex, nodeK};
+        if (!seen.insert(key).second) return;
+
+        const auto legA = edgeIndex.find(EdgeKey(nodeI, apex));
+        const auto legB = edgeIndex.find(EdgeKey(apex, nodeK));
+        if (legA == edgeIndex.end() || legB == edgeIndex.end()) return;
+
+        const Vec2D u = nodes.nodesPos.at(nodeI) - nodes.nodesPos.at(apex);
+        const Vec2D v = nodes.nodesPos.at(nodeK) - nodes.nodesPos.at(apex);
+        const double a = u.norm();
+        const double b = v.norm();
+        if (a <= EPSILON || b <= EPSILON) return;
+
+        TorsionProperties property{};
+        property.natural_length_a = a;
+        property.natural_length_b = b;
+        property.natural_cosine = std::clamp(Vec2D::dot(u, v) / (a * b), -1.0, 1.0);
+        property.legEdgeA = legA->second;
+        property.legEdgeB = legB->second;
+        property.cached_a = a;
+        property.cached_b = b;
+        property.cached_cosine = property.natural_cosine;
+        property.cached_sine = std::clamp(
+            (u[0] * v[1] - u[1] * v[0]) / (a * b), -1.0, 1.0);
+
+        torsions.torsionConnection.push_back(TorsionConnection{nodeI, apex, nodeK});
+        torsions.torsionProperty.push_back(property);
+    };
+
+    for (const std::array<Index, 3>& triangle : triangles)
+    {
+        const Index a = triangle[0];
+        const Index b = triangle[1];
+        const Index c = triangle[2];
+        addCorner(a, b, c);   // apex b
+        addCorner(b, c, a);   // apex c
+        addCorner(c, a, b);   // apex a
+    }
+
+    torsions.numTorsions = static_cast<Index>(torsions.torsionConnection.size());
+    buildNodeTorsionAdjacency();
+    assignTorsionalStiffnesses();
+}
+
+void Mesh::assignTorsionalStiffnesses()
+{
+    for (Index t = 0; t < torsions.numTorsions; t++)
+    {
+        TorsionProperties& property = torsions.torsionProperty.at(t);
+        if (property.legEdgeA >= edges.numEdges || property.legEdgeB >= edges.numEdges)
+        {
+            property.stiffness = 0.0;
+            continue;
+        }
+        const double legStiffnessA = edges.edgesProperty.at(property.legEdgeA).stiffness;
+        const double legStiffnessB = edges.edgesProperty.at(property.legEdgeB).stiffness;
+        property.stiffness = DEFAULT_TORSIONAL_STIFFNESS
+                           * 0.5 * (legStiffnessA + legStiffnessB)
+                           * property.natural_length_a * property.natural_length_b;
     }
 }
 

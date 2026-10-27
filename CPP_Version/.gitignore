@@ -2,3 +2,7 @@ build
 AgentsReference.md
 DeveloperReference.md
 *.msh
+build/*
+output/
+tests/
+*.md

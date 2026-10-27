@@ -228,6 +228,9 @@ SpringMeshDescription GmshMesher::build(const std::vector<Vec2D>& boundaryPolygo
             description.boundarySegments.push_back(
                 BoundarySegment{edge.first, edge.second, NO_BOUNDARY, normal});
         }
+
+        // Torsional springs are built from the triangle corners downstream.
+        description.triangles = triangles;
     }
     catch (...)
     {

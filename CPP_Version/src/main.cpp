@@ -65,7 +65,8 @@ int main()
                 GmshMesher::build(dxfLoader.boundaryNodesPos, dxfLoader.internalEdgesNodesPos,
                                   gmshOptions));
             std::cout << "Meshed with gmsh: " << mesh.nodes.numNodes << " nodes, "
-                      << mesh.edges.numEdges << " springs" << std::endl;
+                      << mesh.edges.numEdges << " springs, "
+                      << mesh.torsions.numTorsions << " torsions" << std::endl;
         }
         catch (const std::exception& error)
         {
@@ -167,7 +168,7 @@ int main()
         {
             solid.timeStep(dt);
             time += dt;
-            recorder.logEnergy(time, solid.computeElasticEnergyFromExtensionCache());
+            recorder.logEnergy(time, solid.computeTotalPotentialEnergy());
         }
 
         ImGui::Begin("Energy vs Time");

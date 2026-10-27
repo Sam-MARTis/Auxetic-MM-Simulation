@@ -35,6 +35,31 @@ struct EdgesConnection
     Index node2 = NO_BOUNDARY;
 };
 
+// A bond-angle (torsional) spring on the triple (nodeI, nodeApex, nodeK).
+// The two legs are (nodeI, nodeApex) and (nodeApex, nodeK); the energy depends on
+// the angle between them. See physicsDerivation.md.
+struct TorsionConnection
+{
+    Index nodeI = NO_BOUNDARY;
+    Index nodeApex = NO_BOUNDARY;
+    Index nodeK = NO_BOUNDARY;
+};
+
+struct TorsionProperties
+{
+    double natural_length_a = 0.0;   // |X_i - X_apex|
+    double natural_length_b = 0.0;   // |X_k - X_apex|
+    double natural_cosine = 1.0;     // cos(theta0)
+    double stiffness = 0.0;          // kappa in E = 0.5*kappa*(c-c0)^2
+    Index legEdgeA = NO_BOUNDARY;    // edge (nodeI, nodeApex)
+    Index legEdgeB = NO_BOUNDARY;    // edge (nodeApex, nodeK)
+    // Derived caches, refreshed from nodePosFlat at every assembly.
+    double cached_a = 0.0;
+    double cached_b = 0.0;
+    double cached_cosine = 1.0;
+    double cached_sine = 0.0;
+};
+
 // FVM EdgeProperty analogue; parallel to Edges::edgesConnection.
 struct EdgeProperties
 {
@@ -49,6 +74,9 @@ struct SpringMeshDescription
 {
     std::vector<Vec2D> nodePositions;
     std::vector<EdgesConnection> springs;
+    // Triangle corners (node-local indices) in the same numbering as
+    // nodePositions. Torsional springs are built from these.
+    std::vector<std::array<Index, 3>> triangles;
     std::vector<BoundarySegment> boundarySegments;         // outer boundary chords
     std::vector<std::pair<Vec2D, Vec2D>> cutSegments;
     // Diagnostics filled in by the mesher.
@@ -78,6 +106,7 @@ public:
         Index numNodes = 0;
         std::vector<Vec2D> nodesPos;                           // N
         std::vector<std::vector<Index>> edgeIndices;           // N, incident edges
+        std::vector<std::vector<Index>> torsionIndices;        // N, incident torsions
         std::vector<Index> boundaryId;                         // N, NO_BOUNDARY if interior
         std::vector<Vec2D> normals;                            // N, outward unit normal when tagged
         // N, one entry per distinct incident boundary plane: a straight edge gives
@@ -85,9 +114,22 @@ public:
         std::vector<std::vector<Vec2D>> constraintNormals;
     };
 
+    // One entry per torsional element in every array, addressed by torsion index.
+    struct Torsions
+    {
+        Index numTorsions = 0;
+        std::vector<TorsionProperties> torsionProperty;        // T
+        std::vector<TorsionConnection> torsionConnection;      // T
+    };
+
     Nodes nodes;
     Edges edges;
+    Torsions torsions;
     VecXd nodePosFlat;
+
+    // Diagnostic: number of torsions whose sine was below
+    // NEAR_COLLINEAR_SINE_THRESHOLD in the last cache refresh.
+    Index numNearCollinearTorsions = 0;
 
     // ---- boundary bookkeeping -------------------------------------------------
     Index numBoundaries = 0;
@@ -140,7 +182,15 @@ public:
     // ---- flat vector (Eigen) --------------------------------------------------
     void createFlatVec();
     void cacheEdgesExtensionFromFlatVec();
+    // Refreshes a, b, cos(theta), sin(theta) for every torsion.
+    void cacheTorsionStateFromFlatVec();
     void syncVecWithFlatVecData();
+
+    // ---- torsional springs ----------------------------------------------------
+    // Assigns TorsionProperties::stiffness from the two leg edges. Called after
+    // the edge stiffnesses are set; the future connectivity normalisation can call
+    // it again after re-weighting the edges.
+    void assignTorsionalStiffnesses();
 
 private:
     struct EdgeKey
@@ -181,6 +231,10 @@ private:
     void findNearestNeighbours(const KDTree& tree, const Vec2D& queryPoint, Index K, std::vector<size_t>& indices, std::vector<double>& distances);
     bool doesEdgeIntersectDiscontinuity(Index node1Idx, Index node2Idx);
     void resizeNodeAttributes();
+    // Builds one torsional spring per triangle corner from the given triangles.
+    void buildTorsionsFromTriangles(const std::vector<std::array<Index, 3>>& triangles);
+    void clearTorsions();
+    void buildNodeTorsionAdjacency();
     void rebuildBoundaryIdentifiers();
     void pruneBoundarySegments();
     // Rebuilds chords from spring adjacency for tags with no generation polygon.

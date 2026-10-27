@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <map>
+#include <set>
 #include <cmath>
 #include <iostream>
 #include <limits>
@@ -90,6 +91,41 @@ int main(int argc, char** argv)
     expect(mesh.numBoundaryNodes > 0, "boundary nodes are tagged",
            std::to_string(mesh.numBoundaryNodes));
 
+    expect(description.triangles.size() == description.numTriangles,
+           "the mesher description carries the triangle array");
+    expect(mesh.torsions.numTorsions == 3 * description.numTriangles,
+           "one torsional spring per triangle corner",
+           std::to_string(mesh.torsions.numTorsions));
+
+    std::set<std::pair<Index, Index>> springPairs;
+    for (Index e = 0; e < mesh.edges.numEdges; e++)
+    {
+        const EdgesConnection& spring = mesh.edges.edgesConnection.at(e);
+        springPairs.emplace(std::min(spring.node1, spring.node2),
+                            std::max(spring.node1, spring.node2));
+    }
+    Index torsionLegsNotSprings = 0;
+    for (Index t = 0; t < mesh.torsions.numTorsions; t++)
+    {
+        const TorsionConnection& c = mesh.torsions.torsionConnection.at(t);
+        if (springPairs.count(std::make_pair(std::min(c.nodeI, c.nodeApex),
+                                             std::max(c.nodeI, c.nodeApex))) == 0)
+            torsionLegsNotSprings++;
+        if (springPairs.count(std::make_pair(std::min(c.nodeApex, c.nodeK),
+                                             std::max(c.nodeApex, c.nodeK))) == 0)
+            torsionLegsNotSprings++;
+    }
+    Index torsionIncidence = 0;
+    for (Index i = 0; i < mesh.nodes.numNodes; i++)
+        torsionIncidence += static_cast<Index>(mesh.nodes.torsionIndices.at(i).size());
+    expect(torsionLegsNotSprings == 0, "every torsion leg is a spring",
+           std::to_string(torsionLegsNotSprings));
+    expect(torsionIncidence == 3 * mesh.torsions.numTorsions,
+           "torsion incidence lists cover all three nodes",
+           std::to_string(torsionIncidence));
+    std::cout << "       torsions=" << mesh.torsions.numTorsions
+              << " nearCollinear=" << mesh.numNearCollinearTorsions << std::endl;
+
     // No spring may cross a cut away from its tip: that is the point of meshing
     // around them. Right at the tip the slot cap is coarse, so a crossing there is
     // a meshing artefact rather than a missing slit.
@@ -175,6 +211,9 @@ int main(int argc, char** argv)
     mesh.setBoundaryCondition(0, BoundaryCondition::displaceNormal(VELOCITY_CONSTRAINTS_EVOLUTION));
     mesh.createFlatVec();
     Solid solid(mesh);
+    expect(std::abs(solid.computeTorsionalEnergyFromCache()) < 1e-12,
+           "reference torsional energy is zero",
+           std::to_string(solid.computeTorsionalEnergyFromCache()));
 
     double maxDisplacement = 0.0;
     double maxStretch = 0.0;
@@ -270,6 +309,10 @@ int main(int argc, char** argv)
            std::to_string(maxStretch));
     expect(solid.constraintViolation() < 1e-6, "plane constraints satisfied",
            std::to_string(solid.constraintViolation()));
+    const double finalEnergy = solid.computeTotalPotentialEnergy();
+    expect(std::isfinite(finalEnergy), "total potential energy stayed finite",
+           std::to_string(finalEnergy));
+    std::cout << "       final total energy=" << finalEnergy << std::endl;
 
     std::cout << (failures == 0 ? "GMSH MESH OK" : "GMSH MESH PROBLEMS") << std::endl;
     return failures == 0 ? 0 : 1;

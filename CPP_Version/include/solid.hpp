@@ -19,7 +19,6 @@ class Solid
     VecXd c;              // M           : current plane offsets
     SpMat K;
     VecXd g;
-    SpMat K_aug;
     std::vector<Eigen::Triplet<double>> triplets;
 
     // DOF bookkeeping. Sizes are the full 2*numNodes / reduced DOF count.
@@ -47,18 +46,29 @@ class Solid
     [[nodiscard]] VecXd gatherReducedPositions() const;
 
     bool patternAnalyzed = false;
+    bool nearCollinearWarned = false;
 public:
     Eigen::UmfPackLU<SpMat> solver;
     Solid(Mesh& solidMesh);
     std::vector<double> EnergyHistory;
     Mesh& mesh;
     double computeElasticEnergyFromExtensionCache();
+    // Reads the torsion cache; call after Mesh::cacheTorsionStateFromFlatVec().
+    [[nodiscard]] double computeTorsionalEnergyFromCache() const;
+    // Refreshes both derived caches and returns extension + torsional energy.
+    // This is the line-search merit function.
+    double computeTotalPotentialEnergy();
+    // Refreshes g and K at the current nodePosFlat (diagnostics and tests).
+    void assembleEnergyDerivatives();
     void timeStep(const double dt);
     void logCurrentElasticEnergy();
     // Required after changing Mesh::boundaryConditions post-construction.
     void refreshBoundaryConditions();
     [[nodiscard]] Index numConstrainedNodes() const { return static_cast<Index>(normalConstraints.size()); }
     [[nodiscard]] Index numFixedNodesCount() const { return numFixedNodes; }
+    // Reduced gradient / Hessian of the total potential energy.
+    [[nodiscard]] const VecXd& gradient() const { return g; }
+    [[nodiscard]] const SpMat& hessian() const { return K; }
     // max |n . x - c| over plane rows (0 if none); ~1e-16 after a good solve.
     [[nodiscard]] double constraintViolation() const;
     [[nodiscard]] double gradientNorm() const;
